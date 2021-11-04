@@ -1,0 +1,1 @@
+export type Component = (props: any) => JSX.Element
