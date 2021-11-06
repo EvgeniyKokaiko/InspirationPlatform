@@ -6,6 +6,12 @@ export const StylesOne = StyleSheet.create({
     screenContainer: {
         flex: 1
     },
+
+    logoAddition: {
+        fontSize: fontSizeDP(24),
+        color: colors.SignIn_Font2,
+    },
+
     fontLogo: {
         fontFamily: "Metropolis-Bold",
         letterSpacing: 5,
@@ -97,4 +103,15 @@ export const StylesOne = StyleSheet.create({
         fontWeight: "800",
         fontFamily: "Metropolis",
     },
+
+    wh200px: {
+        width: mockupWidthToDP(200),
+        height: mockupWidthToDP(200),
+    },
+
+    whc_img100: {
+        width: "100%",
+        height: "100%",
+        resizeMode: 'contain',
+    }
 })

@@ -7,6 +7,7 @@ import {images} from "../assets/images";
 import {fontSizeDP, mockupHeightToDP, mockupWidthToDP} from "../Parts/utils";
 import {colors} from "../Parts/colors";
 import {MP} from "../Styles/MP";
+import {KeyboardAvoidingComponent} from "./Core/KeyboardAvoidingComponent";
 
 interface IProps {
 
@@ -18,15 +19,16 @@ const SignInComponent = (props: IProps) => {
 
     return (
     <View style={[StylesOne.screenContainer, backgrounds.signIn_bg]}>
-        <View style={{flexDirection: 'column', alignItems: "center", marginTop: mockupHeightToDP(50)}}>
+        <KeyboardAvoidingComponent>
+        <View style={[StylesOne.flex_column, StylesOne.flex_ai_c, MP.mt50]}>
         <View>
-            <Text style={{fontSize: fontSizeDP(24), color: colors.SignIn_Font2}}>Welcome to</Text>
+            <Text style={StylesOne.logoAddition}>Welcome to</Text>
         </View>
-            <View style={{marginBottom: mockupHeightToDP(-50)}}>
+            <View style={MP.mbminus50}>
                 <Text style={StylesOne.fontLogo}>Valhalla</Text>
             </View>
-            <View style={{width: mockupWidthToDP(200), height: mockupWidthToDP(200)}}>
-                <Image style={{width: "100%", height: "100%", resizeMode: 'contain'}} source={images.logo} />
+            <View style={StylesOne.wh200px}>
+                <Image style={StylesOne.whc_img100} source={images.logo} />
             </View>
         </View>
         <View style={StylesOne.inputContainer}>
@@ -62,6 +64,7 @@ const SignInComponent = (props: IProps) => {
             </TouchableOpacity>
             </View>
         </View>
+        </KeyboardAvoidingComponent>
     </View>
     )
 }
