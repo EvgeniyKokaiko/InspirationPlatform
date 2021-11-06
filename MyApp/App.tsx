@@ -1,5 +1,5 @@
 import React from 'react';
-import {View} from 'react-native';
+import {StatusBar, View} from 'react-native';
 import {Provider} from "react-redux";
 import {AnyAction, applyMiddleware, compose, createStore, Store} from "redux";
 import thunk, {ThunkDispatch} from "redux-thunk";
@@ -27,6 +27,7 @@ constructor(props: IState) {
     render () {
         return (
             <Provider store={this.store}>
+                <StatusBar />
                 <MainNavigationScreen />
             </Provider>
         )

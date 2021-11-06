@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react'
 import {NavigationContainer} from "@react-navigation/native";
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import SignIn from "../SignIn";
+import SignInComponent from "../SignInComponent";
 import {Component} from "../../Types/Types";
 interface IProps {
 
@@ -13,10 +13,10 @@ const MainNavigationScreen: React.FC = (props:IProps) => {
        onStartApp()
     }, [])
     const Stack = createNativeStackNavigator();
-    const InitialScreen = {name: "SignIn"}
+    const InitialScreen = {name: "SignInComponent"}
     const Screens: {name: string, component: Component, options?: any }[] =
     [
-        {name: "SignIn", component: SignIn, options: {headerShown: false,}}
+        {name: "SignInComponent", component: SignInComponent, options: {headerShown: false,}}
     ]
 
     const onStartApp = () => {
@@ -34,7 +34,7 @@ const MainNavigationScreen: React.FC = (props:IProps) => {
         <NavigationContainer>
             <Stack.Navigator initialRouteName={InitialScreen.name}>
                 {Screens.map((el ) => {
-                    return <Stack.Screen name={el.name} component={el.component} options={el.options}  />
+                    return <Stack.Screen key={el.name} name={el.name} component={el.component} options={el.options}  />
                 })}
             </Stack.Navigator>
         </NavigationContainer>
