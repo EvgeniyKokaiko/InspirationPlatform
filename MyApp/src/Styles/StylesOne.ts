@@ -18,8 +18,20 @@ export const StylesOne = StyleSheet.create({
         fontSize: fontSizeDP(56),
         color: colors.SignIn_Font,
     },
+    fontLogo_black: {
+        fontFamily: "Metropolis-Bold",
+        letterSpacing: 5,
+        fontSize: fontSizeDP(56),
+        color: colors.SignIn_Font2,
+    },
     fontInputText: {
         color: colors.SignIn_Font,
+        fontSize: fontSizeDP(16),
+        fontFamily: "Metropolis-Medium",
+        paddingBottom: mockupHeightToDP(20),
+    },
+    fontInputText_black: {
+        color: colors.SignIn_Font2,
         fontSize: fontSizeDP(16),
         fontFamily: "Metropolis-Medium",
         paddingBottom: mockupHeightToDP(20),
@@ -59,6 +71,20 @@ export const StylesOne = StyleSheet.create({
 
     flex_jc_c: {
       justifyContent: 'center',
+    },
+
+    flex_jc_fs: {
+        justifyContent: 'flex-start',
+    },
+
+    image24: {
+        width: mockupWidthToDP(16),
+        height: mockupWidthToDP(16),
+        resizeMode: 'contain',
+    },
+
+    rm_c: {
+      resizeMode: 'contain',
     },
 
     flexCenter: {
@@ -113,5 +139,43 @@ export const StylesOne = StyleSheet.create({
         width: "100%",
         height: "100%",
         resizeMode: 'contain',
+    },
+    CheckBox_text: {
+      fontSize: fontSizeDP(20),
+      fontFamily: "Metropolis",
+      fontWeight: "800",
+        color: colors.SignIn_Font2,
+    },
+    CheckBox_terms: {
+        fontSize: fontSizeDP(20),
+        fontFamily: "Metropolis",
+        fontWeight: "800",
+        color: colors.Primary_Red,
+        textDecorationLine: "underline",
+        textDecorationColor: colors.Primary_Red,
+    },
+    SendBtn_active_text: {
+        fontFamily: "Metropolis",
+        fontWeight: "800",
+        fontSize: fontSizeDP(18),
+        color: colors.SignIn_Font,
+    },
+    SendBtn_active_button: {
+       backgroundColor: colors.Primary_Red,
+        width: mockupWidthToDP(255),
+        height: mockupHeightToDP(50),
+        borderRadius: 40,
+    },
+    SendBtn_inactive_button: {
+        backgroundColor: colors.inactive_btn,
+        width: mockupWidthToDP(255),
+        height: mockupHeightToDP(50),
+        borderRadius: 40,
+    },
+    SendBtn_inactive_text: {
+        fontFamily: "Metropolis",
+        fontWeight: "800",
+        fontSize: fontSizeDP(18),
+        color: colors.inactive,
     }
 })

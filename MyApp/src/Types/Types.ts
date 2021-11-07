@@ -1,1 +1,3 @@
-export type Component = (props: any) => JSX.Element
+import React from "react";
+
+export type Component = any

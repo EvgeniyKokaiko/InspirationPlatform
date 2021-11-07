@@ -1,10 +1,25 @@
 import React, {useEffect} from 'react'
-import {NavigationContainer} from "@react-navigation/native";
+import {NavigationContainer, StackRouterOptions, useFocusEffect} from "@react-navigation/native";
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import SignInComponent from "../SignInComponent";
 import {Component} from "../../Types/Types";
+import SignUpComponent from "../SignUpComponent";
+import {BackHandler} from "react-native";
 interface IProps {
 
+}
+
+export enum StackScreens {
+    SignIn = "SignInComponent",
+    SignUp = "SignUpComponent",
+}
+
+export const noGoBack = () => {
+    useFocusEffect(() => {
+        BackHandler.addEventListener('hardwareBackPress', () => {
+            return true;
+        })
+    })
 }
 
 
@@ -16,7 +31,8 @@ const MainNavigationScreen: React.FC = (props:IProps) => {
     const InitialScreen = {name: "SignInComponent"}
     const Screens: {name: string, component: Component, options?: any }[] =
     [
-        {name: "SignInComponent", component: SignInComponent, options: {headerShown: false,}}
+        {name: StackScreens.SignUp, component: SignUpComponent, options: {headerShown: false,}},
+        {name: StackScreens.SignIn, component: SignInComponent, options: {headerShown: false,}},
     ]
 
     const onStartApp = () => {
@@ -26,9 +42,7 @@ const MainNavigationScreen: React.FC = (props:IProps) => {
         // при старті аппки
     }
 
-    const toSignIn = () => {
 
-    }
 
     return (
         <NavigationContainer>

@@ -1,11 +1,12 @@
 import React from 'react';
-import {StatusBar, View} from 'react-native';
+import {SafeAreaView, StatusBar, View} from 'react-native';
 import {Provider} from "react-redux";
 import {AnyAction, applyMiddleware, compose, createStore, Store} from "redux";
 import thunk, {ThunkDispatch} from "redux-thunk";
 import reducers from "./src/redux/reducers/reducers";
 import {composeWithDevTools} from 'remote-redux-devtools';
 import MainNavigationScreen from "./src/Screens/Core/MainNavigationScreen";
+import {StylesOne} from "./src/Styles/StylesOne";
 
 
 
@@ -27,8 +28,10 @@ constructor(props: IState) {
     render () {
         return (
             <Provider store={this.store}>
+              <SafeAreaView style={StylesOne.screenContainer}>
                 <StatusBar />
                 <MainNavigationScreen />
+              </SafeAreaView>
             </Provider>
         )
     }
