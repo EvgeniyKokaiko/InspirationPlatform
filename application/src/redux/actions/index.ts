@@ -39,9 +39,14 @@ export const Setup = (username: {data: string}, full_name: string, location: str
 }
 
 
-export const Login = (username: string, password: string) => async (dispatch: Dispatch<Action>) => {
+export const Authorize = (username: string, password: string) => async (dispatch: Dispatch<Action>) => {
+    console.log('asdas')
         await axios.post(`http://${apiUrl}/auth/login`, {
-
+            username: username,
+            password: password,
+        }).then(el => {
+            console.log({statusCode: el.status, data: el.data.data}, "login")
+            dispatch({type: ActionTypes.Login, payload: {statusCode: el.status, data: el.data.data}})
         })
 }
 

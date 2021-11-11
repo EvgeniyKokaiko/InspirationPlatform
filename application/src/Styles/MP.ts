@@ -32,5 +32,11 @@ export const MP = StyleSheet.create({
     },
     plm20: {
         paddingLeft: mockupWidthToDP(-20),
-    }
+    },
+    ph25: {
+        paddingHorizontal: mockupWidthToDP(25),
+    },
+    mt20: {
+        marginTop: mockupHeightToDP(20),
+    },
 })

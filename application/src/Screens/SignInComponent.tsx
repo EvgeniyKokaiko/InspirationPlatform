@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from 'react'
-import reducers from "../redux/reducers/reducers";
-import {View, Text, Image, TextInput, TouchableOpacity, BackHandler} from "react-native";
+import React, {useEffect, useLayoutEffect, useState} from 'react'
+import reducers, {Reducers} from "../redux/reducers/reducers";
+import {View, Text, Image, TextInput, TouchableOpacity, BackHandler, Alert} from "react-native";
 import {StylesOne} from "../Styles/StylesOne";
 import {backgrounds} from "../Styles/Backgrounds";
 import {images} from "../assets/images";
@@ -10,6 +10,9 @@ import {MP} from "../Styles/MP";
 import {KeyboardAvoidingComponent} from "./Core/KeyboardAvoidingComponent";
 import {StackScreens} from "./Core/MainNavigationScreen";
 import {BaseProps} from "../Types/Types";
+import {DefaultRootState, useDispatch, useSelector} from "react-redux";
+import {Authorize} from "../redux/actions/index"
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 type IProps = {} & BaseProps
@@ -17,18 +20,44 @@ type IProps = {} & BaseProps
 const SignInComponent = (props: IProps) => {
     const [login, setLogin] = useState("");
     const [password, setPassword] = useState("");
+    const dispatch = useDispatch();
+    const state: any = useSelector<Reducers>(state => state)
 
+    useEffect( () => {
+        AsyncStorage.getItem("Access_TOKEN").then(el => {
+            if (typeof el !== "undefined") {
+                if (el?.length! > 30) {
+                    props.navigation.navigate(StackScreens.UserProfile)
+                } else {
+                    return
+                }
+            }
 
-
-    useEffect(() => {
-        BackHandler.addEventListener('hardwareBackPress', () => {
-            return false;
         })
-    }, [])
+    })
 
     const goToSignUpScreen = () => {
         props.navigation.navigate(StackScreens.SignUp);
     }
+
+    const Login = () => {
+        if (login.length > 2 || password.length > 2) {
+           return  dispatch(Authorize(login, password));
+        }
+        return Alert.alert("Oops,", "Invalid Data");
+    }
+
+    useLayoutEffect( () => {
+        console.log(state.loginReducer, state.loginReducer.statusCode)
+        if (state.loginReducer.statusCode === 200) {
+          AsyncStorage.setItem("Access_TOKEN", state.loginReducer.data).then(() => {
+              Alert.alert("Access Granted!")
+          })
+            props.navigation.navigate(StackScreens.UserProfile)
+        } else if (state.loginReducer.statusCode === 208) {
+            Alert.alert("Oops,", "Invalid Data");
+        }
+    }, [Login])
 
 
 
@@ -62,7 +91,7 @@ const SignInComponent = (props: IProps) => {
         />
         </View>
         <View style={[StylesOne.w100, StylesOne.flex_column ,StylesOne.flex_ai_c]}>
-            <TouchableOpacity style={[StylesOne.SignInButton, StylesOne.shadowRed]}>
+            <TouchableOpacity onPress={Login} style={[StylesOne.SignInButton, StylesOne.shadowRed]}>
                 <View style={[StylesOne.flexCenter, StylesOne.h100]}>
                     <Text style={StylesOne.SignIn_textStyle}>Sign in</Text>
                     <Image style={StylesOne.SignIn_image} source={images.arrowRight} />

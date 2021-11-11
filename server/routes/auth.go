@@ -59,10 +59,10 @@ func Auth(route *gin.Engine, db *database.DB) {
 			result, errstr := db.Login(&req)
 			if errstr == "Accepted" {
 				c.JSON(http.StatusOK, map[string]interface{}{
-					"data": result,
+					"data": result.Token,
 				})
 			} else {
-				c.JSON(http.StatusOK, map[string]interface{}{
+				c.JSON(http.StatusAlreadyReported, map[string]interface{}{
 					"message": "Invalid Data",
 				})
 			}

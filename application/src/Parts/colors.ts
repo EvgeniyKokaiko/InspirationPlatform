@@ -13,4 +13,6 @@ export const colors = {
     White: "#FFFFFF",
     transparent: "rgba(0,0,0,0)",
     PrimaryBlue: "#000099",
+    Dark: "#484860",
+    WhiteAlice: "#ECEDF4",
 }

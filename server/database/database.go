@@ -66,24 +66,16 @@ func (db *DB) SetupAccount(item *models.User) error {
 }
 
 
-func (db *DB) Login(item *models.EmptyUser) (models.User, string) {
+func (db *DB) Login(item *models.EmptyUser) (models.EmptyUser, string) {
 	var result models.User
 	var tokenModel models.EmptyUser
 	db.database.Raw("SELECT username, email, password, token FROM users WHERE username= ? ;", item.Username).Scan(&result)
 	err := bcrypt.CompareHashAndPassword([]byte(result.Password), []byte(item.Password))
 	if err != nil {
-		return models.User{}, "Denied"
+		return models.EmptyUser{}, "Denied"
 	} else {
 		tokenModel.Token = utils.CreateToken(result.Username, result.Email)
 		db.database.Table("users").Where("username = ?", result.Username).Updates(&tokenModel)
-		result.Token = tokenModel.Token
-		return result, "Accepted"
+		return tokenModel, "Accepted"
 	}
 }
-
-
-func (db *DB) OrganizeToken() {
-
-}
-
-//

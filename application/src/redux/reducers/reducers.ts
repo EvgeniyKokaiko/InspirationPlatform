@@ -2,8 +2,9 @@ import {combineReducers} from "redux";
 import {Action, ActionTypes} from "../types/ActionTypes";
 
 export interface Reducers {
-    registerReducer: object
-    setupReducer:    object
+    registerReducer: any
+    setupReducer:    any
+    loginReducer:    any
 }
 
 function RegisterReducer(state = [], action: Action) {
@@ -25,7 +26,16 @@ function SetupReducer(state = [], action: Action) {
     return state
 }
 
+function LoginReducer(state = [], action: Action) {
+    if (action.type === ActionTypes.Login) {
+       return  action.payload
+    }
+    return state
+}
+
+
 export default combineReducers({
    registerReducer: RegisterReducer,
-   setupReducer: SetupReducer
+   setupReducer: SetupReducer,
+   loginReducer: LoginReducer,
 })
