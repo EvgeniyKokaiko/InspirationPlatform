@@ -8,16 +8,17 @@ import {fontSizeDP, mockupHeightToDP, mockupWidthToDP} from "../Parts/utils";
 import {colors} from "../Parts/colors";
 import {MP} from "../Styles/MP";
 import {KeyboardAvoidingComponent} from "./Core/KeyboardAvoidingComponent";
-import {NavigationAction, NavigationProp} from "@react-navigation/native";
 import {StackScreens} from "./Core/MainNavigationScreen";
+import {BaseProps} from "../Types/Types";
 
-interface IProps {
-    navigation: any
-}
+
+type IProps = {} & BaseProps
 
 const SignInComponent = (props: IProps) => {
     const [login, setLogin] = useState("");
     const [password, setPassword] = useState("");
+
+
 
     useEffect(() => {
         BackHandler.addEventListener('hardwareBackPress', () => {
@@ -47,7 +48,7 @@ const SignInComponent = (props: IProps) => {
         </View>
         <View style={StylesOne.inputContainer}>
         <TextInput onChangeText={(value) => setLogin(value)}
-                   placeholder="Email"
+                   placeholder="Username"
                    placeholderTextColor={colors.Placeholder}
                    underlineColorAndroid={colors.Underline_rgba}
                    style={StylesOne.fontInputText}

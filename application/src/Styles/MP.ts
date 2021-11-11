@@ -29,5 +29,8 @@ export const MP = StyleSheet.create({
     },
     mt40: {
         marginTop: mockupHeightToDP(40),
+    },
+    plm20: {
+        paddingLeft: mockupWidthToDP(-20),
     }
 })

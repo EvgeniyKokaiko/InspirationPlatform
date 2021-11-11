@@ -1,0 +1,17 @@
+    // const onAvatarPick = async () => {
+    //    await launchImageLibrary({mediaType: "photo",
+    //     quality: 1,
+    //     selectionLimit: 1,
+    //     includeBase64: true}, (response) => {
+    //         setAvatar(response)
+    //         console.log(response)
+    //     })
+    // }
+    // <TouchableOpacity onPress={onAvatarPick} style={[StylesOne.PickerButton, StylesOne.shadowRed, StylesOne.w100]}>
+    //     <View style={[StylesOne.flexCenter, StylesOne.h100]}>
+    //         <Text style={StylesOne.SignIn_textStyle}>Pick Avatar</Text>
+    //     </View>
+    // </TouchableOpacity>
+
+
+const [avatar, setAvatar]: [any, Function] = useState(null);

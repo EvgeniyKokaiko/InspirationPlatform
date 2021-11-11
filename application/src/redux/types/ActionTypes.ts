@@ -1,5 +1,7 @@
 export enum ActionTypes {
     Register = "Register",
+    Setup = "Setup",
+    Clear = "Clear",
 }
 
 

@@ -10,4 +10,7 @@ export const colors = {
     Underline_rgba_black: "rgba(0,0,0,0.1)",
     inactive: "#676875",
     inactive_btn: "#bfbdbd",
+    White: "#FFFFFF",
+    transparent: "rgba(0,0,0,0)",
+    PrimaryBlue: "#000099",
 }

@@ -46,6 +46,12 @@ export const StylesOne = StyleSheet.create({
         width: mockupWidthToDP(200),
         height: mockupHeightToDP(50),
     },
+    PickerButton: {
+        borderRadius: 60,
+        backgroundColor: colors.SignIn_Font2,
+        width: mockupWidthToDP(200),
+        height: mockupHeightToDP(50),
+    },
     w100: {
         width: "100%",
     },
@@ -177,5 +183,23 @@ export const StylesOne = StyleSheet.create({
         fontWeight: "800",
         fontSize: fontSizeDP(18),
         color: colors.inactive,
-    }
+    },
+
+    DropdownStyles: {
+      color: colors.Placeholder,
+      fontSize: fontSizeDP(16),
+      fontFamily: "Metropolis-Medium",
+        height: mockupHeightToDP(60),
+        marginLeft: mockupWidthToDP(-15),
+    },
+    borderBottom: {
+        borderBottomWidth: 1,
+        borderBottomColor: colors.Underline_rgba_black,
+        height: 2,
+        marginLeft: mockupWidthToDP(15),
+    },
+
+    cInactive: {
+      color: colors.Placeholder
+    },
 })

@@ -1,21 +1,22 @@
-import React, {useState} from "react";
+import React, {useCallback, useEffect, useLayoutEffect, useMemo, useState} from "react";
 import {View, Text, TouchableOpacity, Image, TextInput, Alert} from "react-native";
 import {images} from "../assets/images";
 import {StylesOne} from "../Styles/StylesOne";
 import {colors} from "../Parts/colors";
-import {noGoBack} from "./Core/MainNavigationScreen";
+import {noGoBack, StackScreens} from "./Core/MainNavigationScreen";
 import {MP} from "../Styles/MP";
 import CheckBox from "@react-native-community/checkbox";
 import { KeyboardAvoidingComponent } from "./Core/KeyboardAvoidingComponent";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {Register} from "../redux/actions";
+import {BaseProps} from "../Types/Types";
+import {Reducers} from "../redux/reducers/reducers";
 
-interface IProps {
-    navigation: any
-}
-
+type IProps = {} & BaseProps
+ //dispatch(Register(username, email, password))
 const SignUpComponent = (props: IProps) => {
     const dispatch = useDispatch()
+    let state: any = useSelector<Reducers>(state => state.registerReducer);
     const [username, setUsername]: [string, Function] = useState("");
     const [email, setEmail]: [string,Function] = useState("");
     const [password, setPassword]: [string, Function] = useState("");
@@ -25,23 +26,39 @@ const SignUpComponent = (props: IProps) => {
         props.navigation.goBack()
     }
 
+
+
     function onTermOfUserHandler() {
         console.log("onTermOfUserHandler");
     }
+
 
     const onSendBtnHandler = async () => {
         try {
             if (username.length < 2 || email.length < 2 || password.length < 2 || cPassword.length < 2) {
                 Alert.alert("Something went wrong", "Incorrect data");
+            } else {
+                if (password !== cPassword) {
+                    Alert.alert("Something went wrong", "Password mismatch")
+                } else {
+                    dispatch(Register(username, email, password))
+                }
             }
-            if (password !== cPassword) {
-                Alert.alert("Something went wrong", "Password mismatch")
-            }
-            await dispatch(Register(username, email, password))
         } catch (ex) {
             console.log('onSendBtnHandler ex', ex);
         }
     }
+
+    useLayoutEffect(() => {
+        console.log(state, 5427)
+        if (state.statusCode === 200) {
+            props.navigation.navigate(StackScreens.SetupAccount)
+        } else if (state.statusCode === 208) {
+            Alert.alert("Oops", "Something went wrong");
+        }
+    }, [state])
+
+
     noGoBack()
     return (
         <View>
