@@ -5,6 +5,7 @@ export interface Reducers {
     registerReducer: any
     setupReducer:    any
     loginReducer:    any
+    meReducer:       any
 }
 
 function RegisterReducer(state = [], action: Action) {
@@ -33,9 +34,17 @@ function LoginReducer(state = [], action: Action) {
     return state
 }
 
+function MeReducer(state = [], action: Action) {
+    if (action.type === ActionTypes.Me) {
+        return action.payload
+    }
+    return state
+}
+
 
 export default combineReducers({
    registerReducer: RegisterReducer,
    setupReducer: SetupReducer,
    loginReducer: LoginReducer,
+    meReducer: MeReducer
 })

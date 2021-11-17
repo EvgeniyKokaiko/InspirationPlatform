@@ -7,6 +7,7 @@ import reducers from "./src/redux/reducers/reducers";
 import {composeWithDevTools} from 'remote-redux-devtools';
 import MainNavigationScreen from "./src/Screens/Core/MainNavigationScreen";
 import {StylesOne} from "./src/Styles/StylesOne";
+import NavContext from './src/context/NavContext';
 
 
 
@@ -14,7 +15,7 @@ type IProps = {}
 type IState = {}
 
 class App extends React.Component<IProps, IState> {
-    private store: Store;
+    private readonly store: Store;
 constructor(props: IState) {
     super(props);
     this.store = createStore(reducers, composeWithDevTools(applyMiddleware(thunk)));

@@ -1,4 +1,4 @@
-import React, {useEffect, useLayoutEffect, useState} from 'react'
+import React, {RefObject, useEffect, useLayoutEffect, useState} from 'react'
 import reducers, {Reducers} from "../redux/reducers/reducers";
 import {View, Text, Image, TextInput, TouchableOpacity, BackHandler, Alert} from "react-native";
 import {StylesOne} from "../Styles/StylesOne";
@@ -10,7 +10,7 @@ import {MP} from "../Styles/MP";
 import {KeyboardAvoidingComponent} from "./Core/KeyboardAvoidingComponent";
 import {StackScreens} from "./Core/MainNavigationScreen";
 import {BaseProps} from "../Types/Types";
-import {DefaultRootState, useDispatch, useSelector} from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {Authorize} from "../redux/actions/index"
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -32,7 +32,6 @@ const SignInComponent = (props: IProps) => {
                     return
                 }
             }
-
         })
     })
 
@@ -44,18 +43,18 @@ const SignInComponent = (props: IProps) => {
         if (login.length > 2 || password.length > 2) {
            return  dispatch(Authorize(login, password));
         }
-        return Alert.alert("Oops,", "Invalid Data");
+        //зробити красним цветом штуку
     }
 
     useLayoutEffect( () => {
         console.log(state.loginReducer, state.loginReducer.statusCode)
         if (state.loginReducer.statusCode === 200) {
           AsyncStorage.setItem("Access_TOKEN", state.loginReducer.data).then(() => {
-              Alert.alert("Access Granted!")
+              console.log("good");
           })
             props.navigation.navigate(StackScreens.UserProfile)
         } else if (state.loginReducer.statusCode === 208) {
-            Alert.alert("Oops,", "Invalid Data");
+           //тоже зробити красним подсветку
         }
     }, [Login])
 

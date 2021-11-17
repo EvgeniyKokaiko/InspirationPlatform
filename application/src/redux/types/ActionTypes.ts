@@ -3,6 +3,7 @@ export enum ActionTypes {
     Setup = "Setup",
     Clear = "Clear",
     Login = "Login",
+    Me = "ME"
 }
 
 

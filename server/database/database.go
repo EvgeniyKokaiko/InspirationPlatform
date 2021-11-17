@@ -79,3 +79,21 @@ func (db *DB) Login(item *models.EmptyUser) (models.EmptyUser, string) {
 		return tokenModel, "Accepted"
 	}
 }
+
+
+func (db *DB) Me(username string) *models.User {
+	var result *models.User
+	var resultPointer = &result
+	db.database.Table("users").Where("username = ?", username).Take(&result).Scan(&result)
+	(*resultPointer).Token = ""
+	(*resultPointer).Password = ""
+	return result
+}
+
+
+func (db *DB) Avatar(username string) string {
+	var result *models.User
+	db.database.Table("users").Where("username = ?", username).Take(&result).Scan(&result)
+	fmt.Println(result.Avatar, "5454")
+	return result.Avatar
+}

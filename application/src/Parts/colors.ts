@@ -14,5 +14,8 @@ export const colors = {
     transparent: "rgba(0,0,0,0)",
     PrimaryBlue: "#000099",
     Dark: "#484860",
-    WhiteAlice: "#ECEDF4",
+    absoluteBlack: "#1D1D28",
+    WhiteAlice: "rgba(193, 197, 227,0.4)",
+    WhiteChalk: "#A4A4B2",
+    PurpleRed: "#FF005C",
 }

@@ -6,5 +6,5 @@ export type Component = any
 
 
 export interface BaseProps {
-    navigation: NavigationProp<any>
+    navigation: any
 }

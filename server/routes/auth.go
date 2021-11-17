@@ -71,15 +71,3 @@ func Auth(route *gin.Engine, db *database.DB) {
 		})
 	}
 }
-
-
-//warning := db.SetupAccount(&requestedData)
-//if warning != nil {
-//	c.JSON(400, map[string]interface{}{
-//		"message": warning,
-//	})
-//} else {
-//	c.JSON(http.StatusOK, map[string]interface{}{
-//		"data": "Your data was successfully saved!",
-//	})
-//}

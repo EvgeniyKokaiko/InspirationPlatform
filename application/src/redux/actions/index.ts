@@ -51,6 +51,21 @@ export const Authorize = (username: string, password: string) => async (dispatch
 }
 
 
+export const getMe = () => async (dispatch: Dispatch<Action>) => {
+     await AsyncStorage.getItem("Access_TOKEN").then( async (el) => {
+         await axios.get(`http://${apiUrl}/users/me`, {
+            headers: {
+                "Authorization": `Bearer ${el}`
+            }
+        }).then(el => {
+            console.log('getMe ex', el.data)
+            dispatch({type: ActionTypes.Me, payload: {statusCode: el.status, data: el.data.data, avatar: el.data.avatar}})
+         })
+    })
+
+}
+
+
 export const Clear = () => {
     return {
         type: ActionTypes.Clear,
