@@ -78,12 +78,6 @@ const MainNavigationScreen: React.FC = (props:IProps) => {
         }
     }
 
-    const NavBar = () => {
-        withoutNavigation.find(el => {
-
-        })
-    }
-
 
     return (
         <NavigationContainer>
@@ -99,7 +93,6 @@ const MainNavigationScreen: React.FC = (props:IProps) => {
                     return <Tab.Screen key={el.name} name={el.name} component={el.component} options={el.options}  />
                 })}
             </Tab.Navigator>
-            {/*<BottomNavigation />*/}
         </NavigationContainer>
     )
 }

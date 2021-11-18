@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"server/database"
 	"server/utils"
-	"strings"
 )
 
 func Users(route *gin.Engine, db *database.DB) {
@@ -14,9 +13,7 @@ func Users(route *gin.Engine, db *database.DB) {
 	{
 		router.GET("/me", func(c *gin.Context) {
 			if len(c.Request.Header.Get("Authorization")) > 10 {
-				authorizationHeader := strings.Split(c.Request.Header.Get("Authorization"), " ")
-				token := authorizationHeader[1]
-				name, email, err := utils.ParseToken(token)
+				name, email, err := utils.ParseHeader(c)
 				fmt.Println(name, email, 5427)
 				data := db.Me(name)
 				if err != nil {

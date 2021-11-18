@@ -1,6 +1,7 @@
 package database
 
 import (
+	"errors"
 	"fmt"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/mysql"
@@ -96,4 +97,13 @@ func (db *DB) Avatar(username string) string {
 	db.database.Table("users").Where("username = ?", username).Take(&result).Scan(&result)
 	fmt.Println(result.Avatar, "5454")
 	return result.Avatar
+}
+
+
+func (db *DB) AddPost(username string, data *models.Post) (string, error) {
+	response := db.database.Table("posts").Create(&data)
+	if response.Error != nil {
+		return "", errors.New("ERROR! Something went wrong on post creation")
+	}
+	return "Good", nil
 }

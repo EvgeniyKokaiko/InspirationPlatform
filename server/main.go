@@ -12,5 +12,6 @@ func main() {
 	db := database.CreateDB()
 	routes.Auth(server,db)
 	routes.Users(server, db)
+	routes.Posts(server, db)
 	server.Run(":8080")
 }
