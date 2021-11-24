@@ -100,8 +100,8 @@ func (db *DB) Avatar(username string) string {
 }
 
 
-func (db *DB) AddPost(username string, data *models.Post) (string, error) {
-	response := db.database.Table("posts").Create(&data)
+func (db *DB) AddPost(username string, data map[string]interface{}) (string, error) {
+	response := db.database.Table("posts").Create(data)
 	if response.Error != nil {
 		return "", errors.New("ERROR! Something went wrong on post creation")
 	}

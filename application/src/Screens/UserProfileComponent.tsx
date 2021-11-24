@@ -21,7 +21,14 @@ const UserProfileComponent: React.FC<IProps> = (props: IProps) => {
     const [avatar, setAvatar] = useState("")
     const dispatch = useDispatch()
     const state: any = useSelector<Reducers>(state => state)
-    const fakeData = [images.StandardAvatar9, images.StandardAvatar9, images.StandardAvatar9, images.StandardAvatar9, images.StandardAvatar9, images.StandardAvatar9, ]
+    const fakeData = [images.StandardAvatar9, images.StandardAvatar9, images.StandardAvatar9, images.StandardAvatar9, images.StandardAvatar9, images.StandardAvatar9,
+        images.StandardAvatar9,
+        images.StandardAvatar9,
+        images.StandardAvatar9,
+        images.StandardAvatar9,
+        images.StandardAvatar9,
+        images.StandardAvatar9,
+        images.StandardAvatar9,]
     noGoBack()
 
     const onPersonalSitePress = async () => {
@@ -50,7 +57,7 @@ const UserProfileComponent: React.FC<IProps> = (props: IProps) => {
 
 
 
-    return user && avatar ? <View style={[StylesOne.screenContainer, MP.ph25]}>
+    return user && avatar ? <ScrollView style={[StylesOne.screenContainer, MP.ph25]}>
             <View style={[StylesOne.w100]}>
                 <View style={[StylesOne.flex_row, StylesOne.flex_jc_sb, StylesOne.flex_ai_c, MP.mv20]}>
                     <TouchableOpacity onPress={() => {/*goBack(props.navigation)*/}} style={StylesOne.image24}>
@@ -110,7 +117,7 @@ const UserProfileComponent: React.FC<IProps> = (props: IProps) => {
             <ScrollView showsVerticalScrollIndicator={false} style={[St.postListStyles]} contentContainerStyle={St.listContainer}>
                 {renderPosts()}
             </ScrollView>
-        </View> : <View>
+        </ScrollView> : <View>
         <Text>Preloader</Text>
     </View>
 

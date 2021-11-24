@@ -10,7 +10,7 @@ export const images: {[key: string]: ImageSourcePropType} = {
     StandardAvatar6: require("./images/standartAvatars/StandartAvatar6.png"),
     StandardAvatar7: require("./images/standartAvatars/StandartAvatar7.png"),
     StandardAvatar8: require("./images/standartAvatars/StandartAvatar8.png"),
-    StandardAvatar9: require("./images/standartAvatars/StandartAvatar9.png"),
+    StandardAvatar9: require("./images/standartAvatars/standartAvatar9.jpg"),
 
 
     logo: require('./images/logo.png'),
