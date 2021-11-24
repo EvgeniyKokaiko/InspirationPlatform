@@ -13,7 +13,7 @@ import (
 func Auth(route *gin.Engine, db *database.DB) {
 	auth := route.Group("/auth")
 	{
-		auth.POST("/register", func (c *gin.Context) {
+		auth.POST("/register", func (c *gin.Context) { //создавати папку в сторейджі з avatar, posts
 			var requestData = models.EmptyUser{}
 			jsonDataBytes, err := ioutil.ReadAll(c.Request.Body)
 			json.Unmarshal(jsonDataBytes, &requestData)
