@@ -107,3 +107,10 @@ func (db *DB) AddPost(username string, data map[string]interface{}) (string, err
 	}
 	return "Good", nil
 }
+
+
+func (db *DB) GetMyPosts(username string) ([]*models.Post, error) {
+	var result []*models.Post
+	db.database.Table("posts").Where("owner = ?", username).Find(&result).Scan(&result)
+	return result, nil
+}

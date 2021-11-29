@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {BaseProps} from "../Types/Types";
-import {View, Text, TouchableOpacity, Image, Linking, ScrollView} from "react-native";
+import {View, Text, TouchableOpacity, Image, Linking, ScrollView, RefreshControl, FlatList} from "react-native";
 import {goBack, noGoBack} from "./Core/MainNavigationScreen";
 import {StylesOne} from "../Styles/StylesOne";
 import {MP} from "../Styles/MP";
@@ -19,6 +19,7 @@ type IProps = BaseProps & {}
 const UserProfileComponent: React.FC<IProps> = (props: IProps) => {
     const [user, setUser]: [User | null, Function] = useState(null)
     const [avatar, setAvatar] = useState("")
+    const [refresh,setRefresh] = useState(false)
     const dispatch = useDispatch()
     const state: any = useSelector<Reducers>(state => state)
     const fakeData = [images.StandardAvatar9, images.StandardAvatar9, images.StandardAvatar9, images.StandardAvatar9, images.StandardAvatar9, images.StandardAvatar9,
@@ -38,7 +39,13 @@ const UserProfileComponent: React.FC<IProps> = (props: IProps) => {
         useEffect(() => {
                 dispatch(getMe())
                 console.log(user)
+                setRefresh(false);
         }, [])
+
+    const makeRequest = useCallback(() => {
+            dispatch(getMe())
+            console.log(user)
+    }, []);
 
     useEffect(() => {
             setUser(state.meReducer.data)
@@ -57,7 +64,7 @@ const UserProfileComponent: React.FC<IProps> = (props: IProps) => {
 
 
 
-    return user && avatar ? <ScrollView style={[StylesOne.screenContainer, MP.ph25]}>
+    return user && avatar ? <ScrollView style={[StylesOne.screenContainer, MP.ph25]} refreshControl={<RefreshControl refreshing={refresh} onRefresh={makeRequest} />}>
             <View style={[StylesOne.w100]}>
                 <View style={[StylesOne.flex_row, StylesOne.flex_jc_sb, StylesOne.flex_ai_c, MP.mv20]}>
                     <TouchableOpacity onPress={() => {/*goBack(props.navigation)*/}} style={StylesOne.image24}>
@@ -117,9 +124,9 @@ const UserProfileComponent: React.FC<IProps> = (props: IProps) => {
             <ScrollView showsVerticalScrollIndicator={false} style={[St.postListStyles]} contentContainerStyle={St.listContainer}>
                 {renderPosts()}
             </ScrollView>
-        </ScrollView> : <View>
+        </ScrollView> : <ScrollView refreshControl={<RefreshControl refreshing={refresh} onRefresh={makeRequest} />}>
         <Text>Preloader</Text>
-    </View>
+    </ScrollView>
 
 }
 

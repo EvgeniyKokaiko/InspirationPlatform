@@ -12,6 +12,7 @@ type Post struct {
 	Caption 		string		`json:"caption"`
 	LikeId 			string  	`json:"like_id"`
 	DateOfCreation  string		`json:"date_of_creation"`
+	DataCount 		string      `json:"data_count"`
 }
 
 type PostForm struct {

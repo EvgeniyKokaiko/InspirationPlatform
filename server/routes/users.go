@@ -24,7 +24,7 @@ func Users(route *gin.Engine, db *database.DB) {
 					c.JSON(http.StatusOK, map[string]interface{}{
 						"me":   true,
 						"data": data,
-						"avatar" : "http://" + c.Request.Host + "/users/avatar/" + data.Username,
+						"avatar" : "http://" + c.Request.Host + "/storage/" + name + "/avatar/avatar.png",
 					})
 				}
 			}

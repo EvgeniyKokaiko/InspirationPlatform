@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"path/filepath"
 	"reflect"
 	"server/database"
 	"server/utils"
@@ -17,12 +16,12 @@ func Posts(route *gin.Engine, db *database.DB) {
 	{
 		router.POST("/add", func (c *gin.Context) {
 			var requestData = map[string]interface{}{}
-			//var requestFiles = map[string]interface{}{}
 			form, err := c.MultipartForm()
 			val := form.Value
 			files := form.File["image"]
 			fmt.Println(files)
-			var a int = 0
+			postName := utils.RandomString(30)
+			var a = 0
 			for key, value := range val {
 				fmt.Println(key, value)
 				if len(value) > 1 {
@@ -36,14 +35,15 @@ func Posts(route *gin.Engine, db *database.DB) {
 			name, _, _ := utils.ParseHeader(c)
 			fileIndex := 0
 			for _, file := range files {
-				fileExtension := filepath.Ext(file.Filename)
-				if _, err := os.Stat("storage/" + name + "/" + "posts/1"); os.IsNotExist(err) {
+				if _, err := os.Stat("storage/" + name + "/" + "posts"); os.IsNotExist(err) {
 					os.Mkdir("storage/" + name + "/" + "posts", 777)
-					os.Mkdir("storage/" + name + "/" + "posts/1", 777)
+					os.Mkdir("storage/" + name + "/" + "posts/" + postName, 777)
+				} else {
+					os.Mkdir("storage/" + name + "/" + "posts/" + postName, 777)
 				}
-				if err := c.SaveUploadedFile(file, fmt.Sprintf("storage/%s/posts/1/%d%s", name, fileIndex, fileExtension)); err != nil {
+				if err := c.SaveUploadedFile(file, fmt.Sprintf("storage/%s/posts/%s/%d%s", name, postName ,fileIndex, ".png")); err != nil {
 					c.String(http.StatusBadRequest, fmt.Sprintf("upload file err: %s", err.Error()))
-					fmt.Println( fmt.Sprintf("/storage/%s/posts/1/%d%s", name, fileIndex, fileExtension), fileIndex)
+					//fmt.Println( fmt.Sprintf("/storage/%s/posts/1/%d%s", name, fileIndex, fileExtension), fileIndex)
 					return
 				}
 				fileIndex++
@@ -58,6 +58,8 @@ func Posts(route *gin.Engine, db *database.DB) {
 			} else {
 				requestData["owner"] = name
 				requestData["like_id"] = name
+				requestData["image"] = postName
+				requestData["data_count"] = fileIndex
 				result, errDB := db.AddPost(name, requestData)
 				if errDB != nil {
 					c.JSON(http.StatusLocked, map[string]interface{}{
@@ -71,6 +73,25 @@ func Posts(route *gin.Engine, db *database.DB) {
 				}
 			}
 		})
+		router.GET("/me", func (c *gin.Context) {
+			name, _, err := utils.ParseHeader(c)
+			if err != nil {
+				c.JSON(http.StatusLocked, map[string]interface{}{
+					"message": "Locked!Bad RequestData",
+				})
+			} else {
+				result, err := db.GetMyPosts(name)
+				if err != nil {
+
+				} else {
+					c.JSON(http.StatusLocked, map[string]interface{}{
+						"data": result,
+					})
+				}
+			}
+		})
+
+
 		router.POST("/test", func(c *gin.Context) {
 			var requestData  = map[string]interface{}{}
 			c.Request.ParseForm()
