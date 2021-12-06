@@ -26,4 +26,7 @@ export const images: {[key: string]: ImageSourcePropType} = {
     me: require("./images/bottomNavigation/me.png"),
     menu: require("./images/bottomNavigation/menu.png"),
     notifications: require("./images/bottomNavigation/notifications.png"),
+    shrink: require("./images/shrink_btn.png"),
+    userImg: require("./images/user_circle.png"),
+    plus: require("./images/plus.png"),
 }

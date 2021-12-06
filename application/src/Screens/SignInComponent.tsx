@@ -47,12 +47,12 @@ const SignInComponent = (props: IProps) => {
     }
 
     useLayoutEffect( () => {
+        //TODO переделать всю эту логику в сплеш скрин.
         console.log(state.loginReducer, state.loginReducer.statusCode)
         if (state.loginReducer.statusCode === 200) {
           AsyncStorage.setItem("Access_TOKEN", state.loginReducer.data).then(() => {
               console.log("good");
           })
-            props.navigation.navigate(StackScreens.UserProfile)
         } else if (state.loginReducer.statusCode === 208) {
            //тоже зробити красним подсветку
         }

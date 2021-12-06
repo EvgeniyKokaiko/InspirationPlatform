@@ -29,10 +29,27 @@ func Users(route *gin.Engine, db *database.DB) {
 				}
 			}
 		})
-		router.GET("/avatar/:username", func (c *gin.Context) {
-				var username = c.Param("username")
-				avatar := db.Avatar(username)
-				c.File(avatar)
+		router.GET("/check", func (c *gin.Context) {
+			if len(c.Request.Header.Get("Authorization")) > 10 {
+				name, _, err := utils.ParseHeader(c)
+				if err != nil {
+					c.JSON(http.StatusLocked, map[string]interface{}{
+						"message": "Bad Token!",
+					})
+				} else {
+					user, err := db.CheckToken(name)
+					if err != nil {
+						c.JSON(http.StatusLocked, map[string]interface{}{
+							"message": "Bad Data!",
+						})
+					} else {
+						c.JSON(http.StatusOK, map[string]interface{}{
+							"message": "Accepted!",
+							"currentUser": user,
+						})
+					}
+				}
+			}
 		})
 	}
 }

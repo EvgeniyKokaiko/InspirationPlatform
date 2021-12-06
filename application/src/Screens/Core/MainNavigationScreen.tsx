@@ -20,11 +20,13 @@ import AddComponent from "../AddComponent";
 import NotificationsComponent from "../NotificationsComponent";
 import BottomNavigation from "../segments/BottomNavigation";
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
+import SplashComponent from "./SplashComponent";
 
 
 interface IProps {}
 
 export enum StackScreens {
+    Splash = "SplashComponent",
     SignIn = "SignInComponent",
     SignUp = "SignUpComponent",
     SetupAccount = "SetupAccountComponent",
@@ -51,12 +53,13 @@ export const goBack = (navProps: NavigationProp<any>) => {
 const MainNavigationScreen: React.FC = (props:IProps) => {
     const Stack = createNativeStackNavigator();
     const Tab = createBottomTabNavigator()
-    let defaultScreen = "";
+    let defaultScreen = "SplashComponent";
     const withoutNavigation = [StackScreens.SignIn, StackScreens.SignUp, StackScreens.SetupAccount];
-    const withoutNavigationIndex = [0,1,2];
+    const withoutNavigationIndex = [0,1,2,3];
     const Screens: { name: string, component: Component, options?: any }[] =
         [
             // Service screens
+            {name: StackScreens.Splash, component: SplashComponent, options: {headerShown: false,}},
             {name: StackScreens.SignIn, component: SignInComponent, options: {headerShown: false,}},
             {name: StackScreens.SignUp, component: SignUpComponent, options: {headerShown: false,}},
             {name: StackScreens.SetupAccount, component: SetupAccountComponent, options: {headerShown: false,}},
@@ -70,13 +73,13 @@ const MainNavigationScreen: React.FC = (props:IProps) => {
             {name: StackScreens.Notifications, component: NotificationsComponent, options: {headerShown: false,}},
         ]
 
-    const onStartApp = () => {
-        if (true) {
-            defaultScreen = StackScreens.SignIn
-        } else {
-            defaultScreen = StackScreens.SignIn
-        }
-    }
+    // const onStartApp = () => {
+    //     if (true) {
+    //         defaultScreen = StackScreens.SignIn
+    //     } else {
+    //         defaultScreen = StackScreens.SignIn
+    //     }
+    // }
 
 
     return (

@@ -114,3 +114,19 @@ func (db *DB) GetMyPosts(username string) ([]*models.Post, error) {
 	db.database.Table("posts").Where("owner = ?", username).Find(&result).Scan(&result)
 	return result, nil
 }
+
+
+func (db *DB) CheckToken(username string) (string, error) {
+	var result *models.EmptyUser
+	err := db.database.Table("users").Where("username = ?", username).Find(&result).Scan(&result)
+	if err.Error != nil && len(result.Token) < 10 {
+		fmt.Println(result)
+		return "", err.Error
+	}
+	name, _, error := utils.ParseToken(result.Token)
+	if error != nil && username != name {
+	return "", error
+	}
+
+	return result.Username, nil
+}

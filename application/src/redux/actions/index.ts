@@ -2,9 +2,11 @@ import {Dispatch} from "redux";
 import axios from "axios"
 import {Action, ActionTypes} from "../types/ActionTypes";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {Asset} from "../../Types/Models";
+import {Platform} from "react-native";
 
 
-const apiUrl = "192.168.1.80:8080";
+export const apiUrl = "192.168.1.80:8080";
 
 export const Register = (username: string, email: string, password: string) => async (dispatch: Dispatch<Action>) => {
     try {
@@ -63,6 +65,59 @@ export const getMe = () => async (dispatch: Dispatch<Action>) => {
          })
     })
 
+}
+
+
+export const getMyPosts = () => async (dispatch: Dispatch<Action>) => {
+    console.log("getMyPosts")
+    await AsyncStorage.getItem("Access_TOKEN").then( async (el) => {
+        await axios.get(`http://${apiUrl}/posts/me`, {
+            headers: {
+                "Authorization": `Bearer ${el}`
+            }
+        }).then(el => {
+            console.log(data => console.log(data, "data"))
+            dispatch({type: ActionTypes.MePosts, payload: {statusCode: el.status, counter: el.data.counter ,data: el.data.data}})
+        })
+    })
+}
+
+export const addPost = (caption: string, file: Asset[], type: number) => async (dispatch: Dispatch<Action>) => {
+    const formData = new FormData();
+    //TODO реализовать отправку фото
+    formData.append("caption", caption);
+    formData.append("type", type);
+    // console.log(file, file[i].base64, "addPost file")
+    //     console.log(file[i].uri)
+        formData.append('image', file[0]);
+    await AsyncStorage.getItem("Access_TOKEN").then( async (el) => {
+
+
+
+        await axios.post(`http://${apiUrl}/posts/add`, formData, {
+            headers: {
+                "Authorization": `Bearer ${el}`,
+                "Content-type": "multipart/form-data",
+            },
+            }
+
+        ).then(el => {
+            dispatch({type: ActionTypes.AddPost, payload: {statusCode: el.status}})
+        })
+    })
+}
+
+
+export const checkForConnection = () => async (dispatch: Dispatch<Action>) => {
+    await AsyncStorage.getItem("Access_TOKEN").then( async (el) => {
+        await axios.get(`http://${apiUrl}/users/check`, {
+            headers: {
+                "Authorization": `Bearer ${el}`
+            }
+        }).then(el => {
+            dispatch({type: ActionTypes.Check, payload: {statusCode: el.status}})
+        })
+    })
 }
 
 

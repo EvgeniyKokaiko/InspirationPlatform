@@ -17,10 +17,13 @@ func Posts(route *gin.Engine, db *database.DB) {
 		router.POST("/add", func (c *gin.Context) {
 			var requestData = map[string]interface{}{}
 			form, err := c.MultipartForm()
+			fmt.Println(form, "val")
 			val := form.Value
 			files := form.File["image"]
-			fmt.Println(files)
-			postName := utils.RandomString(30)
+			for key, val := range form.File {
+				fmt.Println(key, val, "abobb")
+			}
+			postName := utils.RandStringBytesRmndr(30)
 			var a = 0
 			for key, value := range val {
 				fmt.Println(key, value)
@@ -35,6 +38,7 @@ func Posts(route *gin.Engine, db *database.DB) {
 			name, _, _ := utils.ParseHeader(c)
 			fileIndex := 0
 			for _, file := range files {
+				fmt.Println(file, "filess")
 				if _, err := os.Stat("storage/" + name + "/" + "posts"); os.IsNotExist(err) {
 					os.Mkdir("storage/" + name + "/" + "posts", 777)
 					os.Mkdir("storage/" + name + "/" + "posts/" + postName, 777)
@@ -84,7 +88,7 @@ func Posts(route *gin.Engine, db *database.DB) {
 				if err != nil {
 
 				} else {
-					c.JSON(http.StatusLocked, map[string]interface{}{
+					c.JSON(http.StatusOK, map[string]interface{}{
 						"data": result,
 					})
 				}

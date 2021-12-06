@@ -1,5 +1,6 @@
 import {combineReducers} from "redux";
 import {Action, ActionTypes} from "../types/ActionTypes";
+import {act} from "react-test-renderer";
 
 export interface Reducers {
     registerReducer: any
@@ -41,10 +42,30 @@ function MeReducer(state = [], action: Action) {
     return state
 }
 
+function MePostsReducer(state = [], action: Action) {
+    if (action.type === ActionTypes.MePosts) {
+        return action.payload
+    }
+    return state
+}
+
+function CheckForConnectionReducer(state = [], action: Action) {
+    if (action.type === ActionTypes.Check) {
+        return action.payload
+    } if (action.type === ActionTypes.AddPost) {
+        return action.payload
+    }
+    return state
+}
+
+
+
 
 export default combineReducers({
    registerReducer: RegisterReducer,
    setupReducer: SetupReducer,
    loginReducer: LoginReducer,
-    meReducer: MeReducer
+    meReducer: MeReducer,
+    mePostsReducer: MePostsReducer,
+    checkForConnectionReducer: CheckForConnectionReducer,
 })

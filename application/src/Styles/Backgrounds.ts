@@ -7,5 +7,13 @@ export const backgrounds = StyleSheet.create({
     },
     myProfileBlocks: {
         backgroundColor: colors.WhiteAlice,
-    }
+    },
+    preloader: {
+        backgroundColor: 'rgba(0,0,0,0.5)'
+
+    },
+
+    addPost: {
+      backgroundColor: colors.darkPurple,
+    },
 })

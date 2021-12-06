@@ -11,8 +11,10 @@ import Avatar from "./segments/Avatar";
 import {mockupHeightToDP} from "../Parts/utils";
 import {useDispatch, useSelector} from "react-redux";
 import {Reducers} from "../redux/reducers/reducers";
-import {getMe} from "../redux/actions";
+import {getMe, getMyPosts} from "../redux/actions";
 import {User} from "../Types/Models";
+import MyPost from "./segments/MyPost";
+import FullScreenPreloader from "./segments/FullScreenPreloader";
 
 type IProps = BaseProps & {}
 
@@ -20,16 +22,9 @@ const UserProfileComponent: React.FC<IProps> = (props: IProps) => {
     const [user, setUser]: [User | null, Function] = useState(null)
     const [avatar, setAvatar] = useState("")
     const [refresh,setRefresh] = useState(false)
+    const [posts, setPosts] = useState([])
     const dispatch = useDispatch()
     const state: any = useSelector<Reducers>(state => state)
-    const fakeData = [images.StandardAvatar9, images.StandardAvatar9, images.StandardAvatar9, images.StandardAvatar9, images.StandardAvatar9, images.StandardAvatar9,
-        images.StandardAvatar9,
-        images.StandardAvatar9,
-        images.StandardAvatar9,
-        images.StandardAvatar9,
-        images.StandardAvatar9,
-        images.StandardAvatar9,
-        images.StandardAvatar9,]
     noGoBack()
 
     const onPersonalSitePress = async () => {
@@ -38,33 +33,32 @@ const UserProfileComponent: React.FC<IProps> = (props: IProps) => {
 
         useEffect(() => {
                 dispatch(getMe())
-                console.log(user)
+                dispatch(getMyPosts());
                 setRefresh(false);
         }, [])
 
     const makeRequest = useCallback(() => {
             dispatch(getMe())
-            console.log(user)
+        dispatch(getMyPosts());
     }, []);
 
     useEffect(() => {
             setUser(state.meReducer.data)
         setAvatar(state.meReducer.avatar)
+        setPosts(state.mePostsReducer.data)
     }, [state])
 
     const renderPosts = () => {
-        return fakeData.map((el,index) => {
+        return posts.map((el,index) => {
             return (
-                <TouchableOpacity key={index} style={St.postListItem}>
-                    <Image style={[StylesOne.wh100, St.borderImage]} source={el} />
-                </TouchableOpacity>
+                <MyPost {...el} key={index} />
             )
         })
     }
 
 
 
-    return user && avatar ? <ScrollView style={[StylesOne.screenContainer, MP.ph25]} refreshControl={<RefreshControl refreshing={refresh} onRefresh={makeRequest} />}>
+    return user && avatar && posts ? <ScrollView style={[StylesOne.screenContainer, MP.ph25]} refreshControl={<RefreshControl refreshing={refresh} onRefresh={makeRequest} />}>
             <View style={[StylesOne.w100]}>
                 <View style={[StylesOne.flex_row, StylesOne.flex_jc_sb, StylesOne.flex_ai_c, MP.mv20]}>
                     <TouchableOpacity onPress={() => {/*goBack(props.navigation)*/}} style={StylesOne.image24}>
@@ -93,7 +87,7 @@ const UserProfileComponent: React.FC<IProps> = (props: IProps) => {
                         </TouchableOpacity>
                         <View style={[St.verticalLine]} />
                         <View style={[MP.mh15, StylesOne.flex_column, StylesOne.flex_ai_c]}>
-                            <Text style={St.myAccButtonsHeader}>6</Text>
+                            <Text style={St.myAccButtonsHeader}>{posts.length}</Text>
                             <Text style={St.myAccButtonsDescr}>Posts</Text>
                         </View>
                     </View>
@@ -124,8 +118,8 @@ const UserProfileComponent: React.FC<IProps> = (props: IProps) => {
             <ScrollView showsVerticalScrollIndicator={false} style={[St.postListStyles]} contentContainerStyle={St.listContainer}>
                 {renderPosts()}
             </ScrollView>
-        </ScrollView> : <ScrollView refreshControl={<RefreshControl refreshing={refresh} onRefresh={makeRequest} />}>
-        <Text>Preloader</Text>
+        </ScrollView> : <ScrollView contentContainerStyle={St.scrollView} refreshControl={<RefreshControl refreshing={refresh} onRefresh={makeRequest} />}>
+        <FullScreenPreloader />
     </ScrollView>
 
 }
