@@ -13,12 +13,13 @@ import (
 
 func Posts(route *gin.Engine, db *database.DB) {
 	router := route.Group("/posts")
-	{
+	{//TODO сделать валидацию если нет токена, ибо рантайм паник.
 		router.POST("/add", func (c *gin.Context) {
 			var requestData = map[string]interface{}{}
 			form, err := c.MultipartForm()
 			fmt.Println(form, "val")
 			val := form.Value
+			fmt.Println("image", form.Value)
 			files := form.File["image"]
 			for key, val := range form.File {
 				fmt.Println(key, val, "abobb")

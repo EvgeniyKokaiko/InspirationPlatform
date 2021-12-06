@@ -17,24 +17,26 @@ type IProps = {}
 const AddComponent: React.FC<IProps> = (props) => {
     const [caption, setCaption] = useState("");
     const [date, setDate] = useState("");
-    const files: Asset[] | undefined = [];
+    const [files, setFile]: [any, Function] = useState([])
     const dispatch = useDispatch();
     const type = 2;
     //owner, like_id from token on server
-    function onPostAdd() {
-        dispatch(addPost(caption, files as Asset[], type));
-    }
 
     const openImagePicker = async () => {
-       await launchImageLibrary({mediaType: "photo", selectionLimit: 10, includeBase64: true}, (response) => {
-            console.log(response.assets)
+       await launchImageLibrary({mediaType: "photo", selectionLimit: 10, quality: 1}, (response) => {
            if (response.didCancel) {
-               console.log(response.didCancel, response.errorCode, "picker err")
                return Alert.alert("Oops,", "Something went wrong");
            }
-           files.push(response.assets as Asset)
-           console.log(files)
+           if (files.length > 0) {
+               setFile([...files, response.assets![0]])
+           } else {
+               setFile([response.assets![0]])
+           }
         })
+    }
+
+    const onPostAdd = async () =>  {
+        dispatch(addPost(caption, files as Asset[], type));
     }
 
     return (

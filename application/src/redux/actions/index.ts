@@ -82,18 +82,19 @@ export const getMyPosts = () => async (dispatch: Dispatch<Action>) => {
     })
 }
 
-export const addPost = (caption: string, file: Asset[], type: number) => async (dispatch: Dispatch<Action>) => {
+export const addPost = (caption: string, image: any, type: number) => async (dispatch: Dispatch<Action>) => {
     const formData = new FormData();
-    //TODO реализовать отправку фото
     formData.append("caption", caption);
     formData.append("type", type);
-    // console.log(file, file[i].base64, "addPost file")
-    //     console.log(file[i].uri)
-        formData.append('image', file[0]);
+    formData.append("date_of_creation", `2021-12-05`) //TODO реализовать добавление текущей даты
+    for (let i = 0;i< image.length ; i++) {
+        formData.append('image', {
+            uri: image[i].uri,
+            name: image[i].fileName,
+            type: image[i].type
+        });
+    }
     await AsyncStorage.getItem("Access_TOKEN").then( async (el) => {
-
-
-
         await axios.post(`http://${apiUrl}/posts/add`, formData, {
             headers: {
                 "Authorization": `Bearer ${el}`,
