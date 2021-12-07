@@ -49,10 +49,12 @@ function MePostsReducer(state = [], action: Action) {
     return state
 }
 
-function CheckForConnectionReducer(state = [], action: Action) {
+function StatelessReducers(state = [], action: Action) {
     if (action.type === ActionTypes.Check) {
         return action.payload
     } if (action.type === ActionTypes.AddPost) {
+        return action.payload
+    } if (action.type === ActionTypes.DeletePost) {
         return action.payload
     }
     return state
@@ -67,5 +69,5 @@ export default combineReducers({
    loginReducer: LoginReducer,
     meReducer: MeReducer,
     mePostsReducer: MePostsReducer,
-    checkForConnectionReducer: CheckForConnectionReducer,
+    checkForConnectionReducer: StatelessReducers,
 })

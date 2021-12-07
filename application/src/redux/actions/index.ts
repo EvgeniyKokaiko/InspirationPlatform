@@ -2,8 +2,6 @@ import {Dispatch} from "redux";
 import axios from "axios"
 import {Action, ActionTypes} from "../types/ActionTypes";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Asset} from "../../Types/Models";
-import {Platform} from "react-native";
 
 
 export const apiUrl = "192.168.1.80:8080";
@@ -60,7 +58,6 @@ export const getMe = () => async (dispatch: Dispatch<Action>) => {
                 "Authorization": `Bearer ${el}`
             }
         }).then(el => {
-            console.log('getMe ex', el.data)
             dispatch({type: ActionTypes.Me, payload: {statusCode: el.status, data: el.data.data, avatar: el.data.avatar}})
          })
     })
@@ -69,14 +66,12 @@ export const getMe = () => async (dispatch: Dispatch<Action>) => {
 
 
 export const getMyPosts = () => async (dispatch: Dispatch<Action>) => {
-    console.log("getMyPosts")
     await AsyncStorage.getItem("Access_TOKEN").then( async (el) => {
         await axios.get(`http://${apiUrl}/posts/me`, {
             headers: {
                 "Authorization": `Bearer ${el}`
             }
         }).then(el => {
-            console.log(data => console.log(data, "data"))
             dispatch({type: ActionTypes.MePosts, payload: {statusCode: el.status, counter: el.data.counter ,data: el.data.data}})
         })
     })
@@ -104,6 +99,21 @@ export const addPost = (caption: string, image: any, type: number) => async (dis
 
         ).then(el => {
             dispatch({type: ActionTypes.AddPost, payload: {statusCode: el.status}})
+        })
+    })
+}
+
+
+export const deletePost = (hash: string) => async (dispatch: Dispatch<Action>) => {
+    await AsyncStorage.getItem("Access_TOKEN").then( async (el) => {
+        await axios.post(`http://${apiUrl}/posts/delete`, {hash}, {
+                headers: {
+                    "Authorization": `Bearer ${el}`,
+                },
+            }
+
+        ).then(el => {
+            dispatch({type: ActionTypes.DeletePost, payload: {statusCode: el.status}})
         })
     })
 }

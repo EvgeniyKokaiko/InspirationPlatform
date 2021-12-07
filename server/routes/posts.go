@@ -1,8 +1,10 @@
 package routes
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -38,6 +40,7 @@ func Posts(route *gin.Engine, db *database.DB) {
 			}
 			name, _, _ := utils.ParseHeader(c)
 			fileIndex := 0
+			//TODO винести це в отдельний файл
 			for _, file := range files {
 				fmt.Println(file, "filess")
 				if _, err := os.Stat("storage/" + name + "/" + "posts"); os.IsNotExist(err) {
@@ -91,6 +94,41 @@ func Posts(route *gin.Engine, db *database.DB) {
 				} else {
 					c.JSON(http.StatusOK, map[string]interface{}{
 						"data": result,
+					})
+				}
+			}
+		})
+
+
+		router.POST("/delete", func(c *gin.Context) {
+			header := c.Request.Header.Get("Authorization")
+			var request map[string]string
+			body, parseError := ioutil.ReadAll(c.Request.Body)
+			json.Unmarshal(body, &request)
+			if header == "" || len(header) < 20 {
+				c.JSON(http.StatusLocked, map[string]interface{}{
+					"statusCode": http.StatusLocked,
+					"statusMessage": "Invalid Token",
+				})
+			}
+			name, _, err := utils.ParseHeader(c)
+			if err != nil || parseError != nil {
+				c.JSON(http.StatusLocked, map[string]interface{}{
+					"statusCode": http.StatusLocked,
+					"statusMessage": "Troubles on token parsing",
+				})
+			} else {
+				result, error2 := db.DeletePost(name, request["hash"])
+				if error2 != nil {
+					c.JSON(http.StatusLocked, map[string]interface{}{
+						"statusCode": http.StatusLocked,
+						"statusMessage": "Troubles with database",
+					})
+				} else {
+					utils.DeletePostFS(name, request["hash"])
+					c.JSON(http.StatusOK, map[string]interface{}{
+						"statusCode": http.StatusOK,
+						"statusMessage": result,
 					})
 				}
 			}

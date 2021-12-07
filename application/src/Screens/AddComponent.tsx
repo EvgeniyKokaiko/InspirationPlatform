@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useCallback, useState} from "react";
 import {View, Text, TouchableOpacity, Image, TextInput, Alert} from "react-native";
 import {StylesOne} from "../Styles/StylesOne";
 import {MP} from "../Styles/MP";
@@ -11,6 +11,7 @@ import {launchImageLibrary} from "react-native-image-picker";
 import {Asset} from "../Types/Models";
 import {useDispatch} from "react-redux";
 import {addPost} from "../redux/actions";
+import BaseButton from "./segments/BaseButton";
 
 type IProps = {}
 
@@ -18,18 +19,21 @@ const AddComponent: React.FC<IProps> = (props) => {
     const [caption, setCaption] = useState("");
     const [date, setDate] = useState("");
     const [files, setFile]: [any, Function] = useState([])
+    const [addBtnDisabled, setAddBtnDisabled] = useState(true);
     const dispatch = useDispatch();
     const type = 2;
     //owner, like_id from token on server
-
+    console.log("rerender")
     const openImagePicker = async () => {
        await launchImageLibrary({mediaType: "photo", selectionLimit: 10, quality: 1}, (response) => {
            if (response.didCancel) {
                return Alert.alert("Oops,", "Something went wrong");
            }
            if (files.length > 0) {
+               setAddBtnDisabled(false)
                setFile([...files, response.assets![0]])
            } else {
+               setAddBtnDisabled(false)
                setFile([response.assets![0]])
            }
         })
@@ -37,6 +41,8 @@ const AddComponent: React.FC<IProps> = (props) => {
 
     const onPostAdd = async () =>  {
         dispatch(addPost(caption, files as Asset[], type));
+        setAddBtnDisabled(true);
+        setFile([]);
     }
 
     return (
@@ -61,12 +67,7 @@ const AddComponent: React.FC<IProps> = (props) => {
                 />
 
                 <View style={[MP.mt50, StylesOne.flex_row, StylesOne.flex_ai_c, StylesOne.flex_jc_c]}>
-                    <TouchableOpacity onPress={onPostAdd} style={[StylesOne.SignInButton, backgrounds.addPost]}>
-                        <View style={[StylesOne.flexCenter, StylesOne.h100]}>
-                            <Text style={StylesOne.SignIn_textStyle}>Add Post</Text>
-                            <Image style={StylesOne.SignIn_image} source={images.arrowRight} />
-                        </View>
-                    </TouchableOpacity>
+                    <BaseButton disabled={addBtnDisabled}  icon={images.arrowRight} onPress={onPostAdd} title={"Add Post"} />
                 </View>
             </View>
         </View>

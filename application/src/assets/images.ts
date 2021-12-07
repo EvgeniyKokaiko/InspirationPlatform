@@ -29,4 +29,5 @@ export const images: {[key: string]: ImageSourcePropType} = {
     shrink: require("./images/shrink_btn.png"),
     userImg: require("./images/user_circle.png"),
     plus: require("./images/plus.png"),
+    burger: require("./images/brgr.png"),
 }

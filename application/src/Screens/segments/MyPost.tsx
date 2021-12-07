@@ -1,18 +1,21 @@
 import React, {useCallback, useState} from 'react';
-import {Image, Modal, TouchableOpacity, View, Text, StyleSheet, Pressable, ScrollView} from "react-native";
+import {Image, Modal, TouchableOpacity, View, Text, StyleSheet, Pressable, ScrollView, Alert} from "react-native";
 import {St} from "../../Styles/StylesTwo";
 import {StylesOne} from "../../Styles/StylesOne";
 import {Post} from "../../Types/Models";
-import {apiUrl} from "../../redux/actions";
+import {apiUrl, deletePost} from "../../redux/actions";
 import {images} from "../../assets/images";
 import Carousel, {Pagination} from "react-native-snap-carousel";
 import {mockupHeightToDP} from "../../Parts/utils";
+import {useDispatch} from "react-redux";
 
 
-type myPostProps = {} & Post
+type myPostProps = {
+} & Post
 
 
 const MyPost = (props: myPostProps) => {
+    const dispatch = useDispatch()
     const dataPath = `http://${apiUrl}/storage/${props.owner}/posts/${props.image.length > 0 && props.data_count > 0 ? props.image : props.video}/`
     const [modal, showModal]: [boolean, Function] = useState(false);
     const createList = () => {
@@ -29,6 +32,26 @@ const MyPost = (props: myPostProps) => {
        );
    },[])
 
+    const onPostDelete = useCallback(() => {
+        Alert.alert("Warning", "This move irreversibly", [
+            {
+                text: "Delete",
+                onPress: onAlertDeletePost,
+                style: "destructive",
+            },
+            {
+                text: "Cancel",
+                style: "cancel",
+            },
+        ])
+    }, [])
+
+    const onAlertDeletePost = useCallback(() => {
+        dispatch(deletePost(props.image));
+        showModal(false);
+        Alert.alert("Posts", "Post delete");
+    }, [])
+
     return (
         <View key={props.id} style={[St.postListItem, St.zIndex2]}>
             <TouchableOpacity onPress={() => showModal(true)} key={props.id} style={St.image100}>
@@ -42,8 +65,11 @@ const MyPost = (props: myPostProps) => {
                         <View style={St.modalWidth}>
                             <View style={[St.centeredView, St.zIndex999]}>
                                 <View style={St.modalView}>
-                                     <TouchableOpacity onPress={() => showModal(false)} style={[St.exitButton]}>
-                                         <Image source={images.shrink} style={St.image100} />
+                                    <TouchableOpacity onPress={() => showModal(false)} style={[St.deletePost]}>
+                                        <Image source={images.shrink} style={St.image100} />
+                                    </TouchableOpacity>
+                                     <TouchableOpacity onPress={onPostDelete} style={[St.exitButton]}>
+                                         <Image source={images.burger} style={St.image100} />
                                      </TouchableOpacity>
                                     <Text style={St.ownerText}><Image style={St.image15} source={images.userImg} /> {props.owner}</Text>
                                     <View style={[St.PhotoList]}>

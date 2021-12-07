@@ -58,7 +58,6 @@ func (db *DB) CreateEmptyUser(item *models.EmptyUser) error {
 
 
 func (db *DB) SetupAccount(item *models.User) error {
-	fmt.Println(item, 34342)
 	err := db.database.Table("users").Where("username = ?", item.Username).Updates(&item)
 	if err != nil {
 		fmt.Println(err)
@@ -106,6 +105,14 @@ func (db *DB) AddPost(username string, data map[string]interface{}) (string, err
 		return "", errors.New("ERROR! Something went wrong on post creation")
 	}
 	return "Good", nil
+}
+
+func (db *DB) DeletePost(username string, hash string) (string, error) {
+	result := db.database.Table("posts").Where("owner = ? AND image = ?", username, hash).Delete(&models.Post{})
+	if result.Error != nil {
+		return "", errors.New("ERROR! Something went wrong")
+	}
+	return "Accept", nil
 }
 
 
