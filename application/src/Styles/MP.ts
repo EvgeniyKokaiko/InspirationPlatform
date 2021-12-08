@@ -27,6 +27,9 @@ export const MP = StyleSheet.create({
     mt80: {
         marginTop: mockupHeightToDP(80),
     },
+    mt30pc: {
+        marginTop: "80%",
+    },
     mt40: {
         marginTop: mockupHeightToDP(40),
     },
@@ -35,6 +38,9 @@ export const MP = StyleSheet.create({
     },
     ph25: {
         paddingHorizontal: mockupWidthToDP(25),
+    },
+    ph15: {
+        paddingHorizontal: mockupWidthToDP(15),
     },
     mt20: {
         marginTop: mockupHeightToDP(20),
@@ -56,6 +62,9 @@ export const MP = StyleSheet.create({
     },
     mr5: {
         marginRight: mockupWidthToDP(5),
+    },
+    mt5: {
+        marginTop: mockupHeightToDP(5),
     },
     mh15: {
         marginHorizontal: mockupWidthToDP(15),

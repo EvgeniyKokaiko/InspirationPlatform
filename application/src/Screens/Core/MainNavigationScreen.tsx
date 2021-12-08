@@ -21,6 +21,8 @@ import NotificationsComponent from "../NotificationsComponent";
 import BottomNavigation from "../segments/BottomNavigation";
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import SplashComponent from "./SplashComponent";
+import EditProfileComponent from "../EditProfileComponent";
+import SettingsComponent from "../SettingsComponent";
 
 
 interface IProps {}
@@ -35,6 +37,8 @@ export enum StackScreens {
     Menu = "MenuComponent",
     Add = "AddComponent",
     Notifications = "NotificationsComponent",
+    Settings = "SettingsComponent",
+    EditProfile = "EditProfileComponent",
 }
 
 export const noGoBack = () => {
@@ -49,28 +53,45 @@ export const goBack = (navProps: NavigationProp<any>) => {
     navProps.goBack()
 }
 
+export const goBackOnBottomButton = (navProps: NavigationProp<any>) => {
+    BackHandler.addEventListener('hardwareBackPress', () => {
+        navProps.goBack()
+        return false;
+    })
+}
+
+export const goToUserProfileScreenOnBottomButton = (navProps: any) => {
+    BackHandler.addEventListener('hardwareBackPress', () => {
+        navProps.navigate(StackScreens.UserProfile)
+        return false;
+    })
+}
+
 
 const MainNavigationScreen: React.FC = (props:IProps) => {
     const Stack = createNativeStackNavigator();
     const Tab = createBottomTabNavigator()
     let defaultScreen = "SplashComponent";
     const withoutNavigation = [StackScreens.SignIn, StackScreens.SignUp, StackScreens.SetupAccount];
-    const withoutNavigationIndex = [0,1,2,3];
+    const withoutNavigationIndex = [0,1,2,3,4,5];
     const Screens: { name: string, component: Component, options?: any }[] =
         [
             // Service screens
-            {name: StackScreens.Splash, component: SplashComponent, options: {headerShown: false,}},
-            {name: StackScreens.SignIn, component: SignInComponent, options: {headerShown: false,}},
-            {name: StackScreens.SignUp, component: SignUpComponent, options: {headerShown: false,}},
-            {name: StackScreens.SetupAccount, component: SetupAccountComponent, options: {headerShown: false,}},
+            {name: StackScreens.Splash, component: SplashComponent, options: {headerShown: false}},
+            {name: StackScreens.SignIn, component: SignInComponent, options: {headerShown: false}},
+            {name: StackScreens.SignUp, component: SignUpComponent, options: {headerShown: false}},
+            {name: StackScreens.SetupAccount, component: SetupAccountComponent, options: {headerShown: false}},
+            {name: StackScreens.EditProfile, component: EditProfileComponent, options: {headerShown: false}},
+            {name: StackScreens.Settings, component: SettingsComponent, options: {headerShown: false}},
 
 
             //Main screens
-            {name: StackScreens.UserProfile, component: UserProfileComponent, options: {headerShown: false,}},
-            {name: StackScreens.Home, component: HomeComponent, options: {headerShown: false,}},
-            {name: StackScreens.Menu, component: MenuComponent, options: {headerShown: false,}},
-            {name: StackScreens.Add, component: AddComponent, options: {headerShown: false,}},
-            {name: StackScreens.Notifications, component: NotificationsComponent, options: {headerShown: false,}},
+            {name: StackScreens.UserProfile, component: UserProfileComponent, options: {headerShown: false}},
+            {name: StackScreens.Home, component: HomeComponent, options: {headerShown: false}},
+            {name: StackScreens.Menu, component: MenuComponent, options: {headerShown: false}},
+            {name: StackScreens.Add, component: AddComponent, options: {headerShown: false}},
+            {name: StackScreens.Notifications, component: NotificationsComponent, options: {headerShown: false}},
+
         ]
 
     // const onStartApp = () => {

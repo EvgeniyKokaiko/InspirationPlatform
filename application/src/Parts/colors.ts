@@ -18,5 +18,6 @@ export const colors = {
     WhiteAlice: "rgba(193, 197, 227,0.4)",
     WhiteChalk: "#A4A4B2",
     PurpleRed: "#FF005C",
-    darkPurple: "rebeccapurple"
+    darkPurple: "rebeccapurple",
+    fontDarkness: "#3A3A3A",
 }

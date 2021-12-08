@@ -31,6 +31,8 @@ function SetupReducer(state = [], action: Action) {
 function LoginReducer(state = [], action: Action) {
     if (action.type === ActionTypes.Login) {
        return  action.payload
+    } else if (action.type === ActionTypes.Clear) {
+        return []
     }
     return state
 }
@@ -55,6 +57,8 @@ function StatelessReducers(state = [], action: Action) {
     } if (action.type === ActionTypes.AddPost) {
         return action.payload
     } if (action.type === ActionTypes.DeletePost) {
+        return action.payload
+    } if (action.type === ActionTypes.Logout) {
         return action.payload
     }
     return state

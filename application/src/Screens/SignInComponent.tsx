@@ -11,7 +11,7 @@ import {KeyboardAvoidingComponent} from "./Core/KeyboardAvoidingComponent";
 import {StackScreens} from "./Core/MainNavigationScreen";
 import {BaseProps} from "../Types/Types";
 import { useDispatch, useSelector } from "react-redux";
-import {Authorize} from "../redux/actions/index"
+import {Authorize, Clear} from "../redux/actions/index"
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
@@ -23,35 +23,30 @@ const SignInComponent = (props: IProps) => {
     const dispatch = useDispatch();
     const state: any = useSelector<Reducers>(state => state)
 
-    useEffect( () => {
-        AsyncStorage.getItem("Access_TOKEN").then(el => {
-            if (typeof el !== "undefined") {
-                if (el?.length! > 30) {
-                    props.navigation.navigate(StackScreens.UserProfile)
-                } else {
-                    return
-                }
-            }
-        })
-    })
+
+
+    const Login = () => {
+        if (login.length > 2 || password.length > 2) {
+            return  dispatch(Authorize(login, password));
+        }
+        //зробити красним цветом штуку
+    }
+
 
     const goToSignUpScreen = () => {
         props.navigation.navigate(StackScreens.SignUp);
     }
 
-    const Login = () => {
-        if (login.length > 2 || password.length > 2) {
-           return  dispatch(Authorize(login, password));
-        }
-        //зробити красним цветом штуку
-    }
 
     useLayoutEffect( () => {
         //TODO переделать всю эту логику в сплеш скрин.
         console.log(state.loginReducer, state.loginReducer.statusCode)
         if (state.loginReducer.statusCode === 200) {
           AsyncStorage.setItem("Access_TOKEN", state.loginReducer.data).then(() => {
-              console.log("good");
+              dispatch(Clear())
+              setPassword("");
+              setLogin("");
+              props.navigation.navigate(StackScreens.UserProfile)
           })
         } else if (state.loginReducer.statusCode === 208) {
            //тоже зробити красним подсветку
@@ -77,12 +72,14 @@ const SignInComponent = (props: IProps) => {
         <View style={StylesOne.inputContainer}>
         <TextInput onChangeText={(value) => setLogin(value)}
                    placeholder="Username"
+                   value={login}
                    placeholderTextColor={colors.Placeholder}
                    underlineColorAndroid={colors.Underline_rgba}
                    style={StylesOne.fontInputText}
         />
         <TextInput onChangeText={(value) => setPassword(value)}
                    placeholder="Password"
+                   value={password}
                    placeholderTextColor={colors.Placeholder}
                    underlineColorAndroid={colors.Underline_rgba}
                    style={StylesOne.fontInputText}

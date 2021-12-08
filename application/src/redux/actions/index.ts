@@ -131,6 +131,17 @@ export const checkForConnection = () => async (dispatch: Dispatch<Action>) => {
     })
 }
 
+export const logout = () => async (dispatch: Dispatch<Action>) => {
+    await AsyncStorage.getItem("Access_TOKEN").then( async (el) => {
+        await axios.get(`http://${apiUrl}/users/logout`, {
+            headers: {
+                "Authorization": `Bearer ${el}`
+            }
+        }).then(el => {
+            dispatch({type: ActionTypes.Logout, payload: {statusCode: el.status}})
+        })
+    })
+}
 
 export const Clear = () => {
     return {

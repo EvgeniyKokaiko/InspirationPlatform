@@ -93,6 +93,12 @@ export const StylesOne = StyleSheet.create({
         resizeMode: 'contain',
     },
 
+    image20: {
+        width: mockupWidthToDP(20),
+        height: mockupWidthToDP(20),
+        resizeMode: 'contain',
+    },
+
     image40: {
         width: mockupWidthToDP(40),
         height: mockupWidthToDP(40),

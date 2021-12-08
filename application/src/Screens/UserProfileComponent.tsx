@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {BaseProps} from "../Types/Types";
 import {View, Text, TouchableOpacity, Image, Linking, ScrollView, RefreshControl, FlatList} from "react-native";
-import {goBack, noGoBack} from "./Core/MainNavigationScreen";
+import {goBack, noGoBack, StackScreens} from "./Core/MainNavigationScreen";
 import {StylesOne} from "../Styles/StylesOne";
 import {MP} from "../Styles/MP";
 import {images} from "../assets/images";
@@ -57,6 +57,9 @@ const UserProfileComponent: React.FC<IProps> = (props: IProps) => {
     }
 
 
+    function onSettingsPress() {
+        props.navigation.navigate(StackScreens.Settings)
+    }
 
     return user && avatar && posts ? <ScrollView style={[StylesOne.screenContainer, MP.ph25]} refreshControl={<RefreshControl refreshing={refresh} onRefresh={makeRequest} />}>
             <View style={[StylesOne.w100]}>
@@ -101,7 +104,7 @@ const UserProfileComponent: React.FC<IProps> = (props: IProps) => {
                     <TouchableOpacity onPress={onPersonalSitePress}>
                         <Image style={St.imgIcon} source={images.personalSite} />
                     </TouchableOpacity>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={onSettingsPress}>
                         <Image style={St.imgIcon} source={images.settings} />
                     </TouchableOpacity>
                 </View>

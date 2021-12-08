@@ -123,6 +123,15 @@ func (db *DB) GetMyPosts(username string) ([]*models.Post, error) {
 }
 
 
+func (db *DB) Logout(username string) error {
+	result := db.database.Table("users").Where("username = ?", username).Update("token", "")
+	if result.Error != nil {
+		return errors.New("ERROR! Something went wrong on database")
+	}
+	return nil
+}
+
+
 func (db *DB) CheckToken(username string) (string, error) {
 	var result *models.EmptyUser
 	err := db.database.Table("users").Where("username = ?", username).Find(&result).Scan(&result)

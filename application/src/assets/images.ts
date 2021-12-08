@@ -30,4 +30,13 @@ export const images: {[key: string]: ImageSourcePropType} = {
     userImg: require("./images/user_circle.png"),
     plus: require("./images/plus.png"),
     burger: require("./images/brgr.png"),
+    avatar_mini: require("./images/user_avatar.png"),
+
+
+
+    logout: require("./images/Settings/logout.png"),
+    invite: require("./images/Settings/invite.png"),
+    hazard: require("./images/Settings/hazard.png"),
+    security: require("./images/Settings/security.png"),
+    about: require("./images/Settings/about.png"),
 }

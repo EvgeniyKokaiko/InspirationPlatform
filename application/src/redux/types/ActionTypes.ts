@@ -8,6 +8,7 @@ export enum ActionTypes {
     AddPost = "ADD_NEW_POST",
     DeletePost = "DELETE_MY_POST",
     Check = "CHECK_FOR_CONNECTION",
+    Logout = "LOGOUT_ME",
 }
 
 

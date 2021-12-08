@@ -51,6 +51,27 @@ func Users(route *gin.Engine, db *database.DB) {
 				}
 			}
 		})
+		router.GET("/logout", func (c *gin.Context) {
+			if tokenHeader := c.Request.Header.Get("Authorization"); len(tokenHeader) > 20 {
+				name, _, err := utils.ParseHeader(c)
+				if err != nil {
+					c.JSON(http.StatusLocked, map[string]interface{}{
+						"message": "Bad Token!",
+					})
+				}
+				dbErr := db.Logout(name)
+				if dbErr != nil {
+					c.JSON(http.StatusLocked, map[string]interface{}{
+						"message": "Bad Data!",
+					})
+				} else {
+					c.JSON(http.StatusOK, map[string]interface{}{
+						"statusCode": http.StatusOK,
+						"statusMessage": "accepted",
+					})
+				}
+			}
+		})
 	}
 }
 
