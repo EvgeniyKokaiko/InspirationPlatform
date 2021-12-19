@@ -14,14 +14,3 @@ type Post struct {
 	DateOfCreation  string		`json:"date_of_creation"`
 	DataCount 		string      `json:"data_count"`
 }
-
-type PostForm struct {
-	Owner 			string 		`form:"owner"`
-	Type  			int   		`form:"type"`
-	Image			string 		`form:"image"`
-	Video 			string 		`form:"video"`
-	Text  			string  	`form:"text"`
-	Caption 		string		`form:"caption"`
-	LikeId 			string  	`form:"like_id"`
-	DateOfCreation  string		`form:"date_of_creation"`
-}
