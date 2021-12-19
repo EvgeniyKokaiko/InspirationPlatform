@@ -232,6 +232,7 @@ export const St = StyleSheet.create({
     color: colors.Dark,
     alignItems: 'center',
     marginBottom: mockupHeightToDP(20),
+    marginTop: mockupHeightToDP(-12),
   },
 
   image100modal: {
