@@ -12,6 +12,21 @@ export const StylesOne = StyleSheet.create({
         color: colors.SignIn_Font2,
     },
 
+    searchPane: {
+         backgroundColor: "rgba(0,0,0,0.1)",
+        borderRadius: 10,
+        width: "100%",
+        paddingHorizontal: mockupWidthToDP(15),
+        marginVertical: mockupHeightToDP(10),
+        height: mockupHeightToDP(50),
+    },
+
+    searchPane_input: {
+        height: mockupHeightToDP(50),
+        marginTop: mockupHeightToDP(5),
+        width: "90%"
+    },
+
     fontLogo: {
         fontFamily: "Metropolis-Bold",
         letterSpacing: 5,

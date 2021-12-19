@@ -11,4 +11,10 @@ export const SThree = StyleSheet.create({
         color: colors.fontDarkness,
         marginLeft: mockupWidthToDP(12),
     },
+    post_caption: {
+         fontSize: fontSizeDP(22),
+        color: colors.Dark,
+        paddingLeft: mockupWidthToDP(5),
+        marginTop: mockupHeightToDP(15),
+    }
 })

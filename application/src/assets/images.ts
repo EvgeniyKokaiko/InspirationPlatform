@@ -39,4 +39,6 @@ export const images: {[key: string]: ImageSourcePropType} = {
     hazard: require("./images/Settings/hazard.png"),
     security: require("./images/Settings/security.png"),
     about: require("./images/Settings/about.png"),
+
+    search: require("./images/searchPane.png"),
 }

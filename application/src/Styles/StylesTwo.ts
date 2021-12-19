@@ -104,7 +104,11 @@ export const St = StyleSheet.create({
         resizeMode: 'contain',
     },
 
-
+    image20: {
+        width: mockupWidthToDP(20),
+        height: mockupWidthToDP(20),
+        resizeMode: 'contain',
+    },
 
     image15: {
         width: mockupWidthToDP(24),
@@ -128,7 +132,7 @@ export const St = StyleSheet.create({
     listContainer: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        paddingBottom: mockupHeightToDP(80),
+        paddingBottom: mockupHeightToDP(150),
     },
     BottomNavigationStyles: {
         position: 'absolute',
@@ -161,8 +165,8 @@ export const St = StyleSheet.create({
       width: DEVICE_WIDTH,
       height: DEVICE_HEIGHT,
       position: "absolute",
-      zIndex: 99999,
-      elevation: 99999,
+      zIndex: 99,
+      elevation: 99,
       flexDirection: "row",
       justifyContent: "center",
       alignItems: "center",
@@ -236,6 +240,8 @@ export const St = StyleSheet.create({
         width: "100%",
         height: "100%",
         borderRadius: 20,
+        borderBottomLeftRadius: 0,
+        borderBottomRightRadius: 0,
     },
     PhotoList: {
         height: "80%",

@@ -23,6 +23,7 @@ import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import SplashComponent from "./SplashComponent";
 import EditProfileComponent from "../EditProfileComponent";
 import SettingsComponent from "../SettingsComponent";
+import MenuContainer from "../Models/MenuContainer";
 
 
 interface IProps {}
@@ -88,7 +89,7 @@ const MainNavigationScreen: React.FC = (props:IProps) => {
             //Main screens
             {name: StackScreens.UserProfile, component: UserProfileComponent, options: {headerShown: false}},
             {name: StackScreens.Home, component: HomeComponent, options: {headerShown: false}},
-            {name: StackScreens.Menu, component: MenuComponent, options: {headerShown: false}},
+            {name: StackScreens.Menu, component: MenuContainer, options: {headerShown: false}},
             {name: StackScreens.Add, component: AddComponent, options: {headerShown: false}},
             {name: StackScreens.Notifications, component: NotificationsComponent, options: {headerShown: false}},
 

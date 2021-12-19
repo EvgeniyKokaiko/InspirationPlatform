@@ -8,6 +8,7 @@ import {images} from "../../assets/images";
 import Carousel, {Pagination} from "react-native-snap-carousel";
 import {mockupHeightToDP} from "../../Parts/utils";
 import {useDispatch} from "react-redux";
+import {SThree} from "../../Styles/StylesThree";
 
 
 type myPostProps = {
@@ -54,7 +55,7 @@ const MyPost = (props: myPostProps) => {
 
     return (
         <View key={props.id} style={[St.postListItem, St.zIndex2]}>
-            <TouchableOpacity onPress={() => showModal(true)} key={props.id} style={St.image100}>
+            <TouchableOpacity onLongPress={() => showModal(true)} onPressOut={() => showModal(false)} onPress={() => showModal(true)} key={props.id} style={St.image100}>
                 <Image style={[StylesOne.wh100, St.borderImage]} source={{uri: `${dataPath}0.png`}} />
             </TouchableOpacity>
                     <Modal
@@ -99,7 +100,7 @@ const MyPost = (props: myPostProps) => {
                                     {/*    inactiveDotScale={0.6}*/}
                                     {/*/>*/}
                                     <ScrollView style={[]}>
-                                        <Text>{props.caption}</Text>
+                                        <Text style={[SThree.post_caption]}>{props.caption}</Text>
                                     </ScrollView>
                                 </View>
                             </View>
