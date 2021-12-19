@@ -18,16 +18,18 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 type IProps = {} & BaseProps
 
 const SignInComponent = (props: IProps) => {
-    const [login, setLogin] = useState("");
-    const [password, setPassword] = useState("");
+    const [auth, setAuth]: [{login: string, password: string}, Function] = useState({
+        login: '',
+        password: '',
+    });
     const dispatch = useDispatch();
     const state: any = useSelector<Reducers>(state => state)
 
 
 
     const Login = () => {
-        if (login.length > 2 || password.length > 2) {
-            return  dispatch(Authorize(login, password));
+        if (auth.login.length > 2 || auth.password.length > 2) {
+            return  dispatch(Authorize(auth.login, auth.password));
         }
         //зробити красним цветом штуку
     }
@@ -44,8 +46,7 @@ const SignInComponent = (props: IProps) => {
         if (state.loginReducer.statusCode === 200) {
           AsyncStorage.setItem("Access_TOKEN", state.loginReducer.data).then(() => {
               dispatch(Clear())
-              setPassword("");
-              setLogin("");
+              setAuth({login: '', password: ''});
               props.navigation.navigate(StackScreens.UserProfile)
           })
         } else if (state.loginReducer.statusCode === 208) {
@@ -70,16 +71,16 @@ const SignInComponent = (props: IProps) => {
             </View>
         </View>
         <View style={StylesOne.inputContainer}>
-        <TextInput onChangeText={(value) => setLogin(value)}
+        <TextInput onChangeText={(value) => setAuth({...auth, login: value})}
                    placeholder="Username"
-                   value={login}
+                   value={auth.login}
                    placeholderTextColor={colors.Placeholder}
                    underlineColorAndroid={colors.Underline_rgba}
                    style={StylesOne.fontInputText}
         />
-        <TextInput onChangeText={(value) => setPassword(value)}
+        <TextInput onChangeText={(value) => setAuth({...auth, password: value})}
                    placeholder="Password"
-                   value={password}
+                   value={auth.password}
                    placeholderTextColor={colors.Placeholder}
                    underlineColorAndroid={colors.Underline_rgba}
                    style={StylesOne.fontInputText}

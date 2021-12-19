@@ -23,7 +23,8 @@ import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import SplashComponent from "./SplashComponent";
 import EditProfileComponent from "../EditProfileComponent";
 import SettingsComponent from "../SettingsComponent";
-import MenuContainer from "../Models/MenuContainer";
+import MenuContainer from "../Controllers/MenuContainer";
+import ExpandedPostContainer from "../Controllers/ExpandedPostContainer";
 
 
 interface IProps {}
@@ -40,6 +41,7 @@ export enum StackScreens {
     Notifications = "NotificationsComponent",
     Settings = "SettingsComponent",
     EditProfile = "EditProfileComponent",
+    PostDetails = "ExpandedPostComponent",
 }
 
 export const noGoBack = () => {
@@ -87,6 +89,7 @@ const MainNavigationScreen: React.FC = (props:IProps) => {
 
 
             //Main screens
+            {name: StackScreens.PostDetails, component: ExpandedPostContainer, options: {headerShown: false}},
             {name: StackScreens.UserProfile, component: UserProfileComponent, options: {headerShown: false}},
             {name: StackScreens.Home, component: HomeComponent, options: {headerShown: false}},
             {name: StackScreens.Menu, component: MenuContainer, options: {headerShown: false}},

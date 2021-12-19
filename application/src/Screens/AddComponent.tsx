@@ -24,6 +24,7 @@ const AddComponent: React.FC<IProps> = (props) => {
     const type = 2;
     //owner, like_id from token on server
     console.log("rerender")
+
     const openImagePicker = async () => {
        await launchImageLibrary({mediaType: "photo", selectionLimit: 10, quality: 1}, (response) => {
            if (response.didCancel) {
@@ -39,11 +40,11 @@ const AddComponent: React.FC<IProps> = (props) => {
         })
     }
 
-    const onPostAdd = async () =>  {
+    const onPostAdd =  useCallback(() =>  {
         dispatch(addPost(caption, files as Asset[], type));
         setAddBtnDisabled(true);
         setFile([]);
-    }
+    }, [])
 
     return (
         <View style={[StylesOne.screenContainer, MP.ph25]}>

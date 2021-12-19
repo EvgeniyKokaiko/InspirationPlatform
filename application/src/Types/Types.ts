@@ -6,5 +6,6 @@ export type Component = any
 
 
 export interface BaseProps {
-    navigation?: any
+    navigation?: any;
+    route?: any;
 }

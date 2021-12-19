@@ -21,4 +21,5 @@ export const colors = {
     darkPurple: "rebeccapurple",
     fontDarkness: "#3A3A3A",
     blurWhite: "#DADADA",
+    classicBlack: "#000000",
 }

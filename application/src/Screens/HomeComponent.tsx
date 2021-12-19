@@ -1,15 +1,14 @@
-import React from "react";
-import {View, Text} from "react-native";
+import React from 'react';
+import { View, Text } from 'react-native';
 
-type IProps = {}
+type IProps = {};
 
 const HomeComponent: React.FC<IProps> = (props) => {
-    return (
+  return (
     <View>
-     <Text>Home</Text>
+      <Text>Home</Text>
     </View>
-    )
-}
+  );
+};
 
-
-export default HomeComponent
+export default HomeComponent;
