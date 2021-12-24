@@ -23,7 +23,7 @@ const SignUpComponent = (props: IProps) => {
     const [cPassword, csetPassword]: [string, Function] = useState("");
     const [checkBox, setCheckBox]: [boolean, Function] = useState(false);
     const goBack = () => {
-        props.navigation.goBack()
+        props.navigation.navigate(StackScreens.SignIn)
     }
 
 
