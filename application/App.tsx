@@ -15,27 +15,31 @@ type IProps = {}
 type IState = {}
 
 class App extends React.Component<IProps, IState> {
-    private readonly store: Store;
-constructor(props: IState) {
+  private readonly store: Store;
+  constructor(props: IState) {
     super(props);
     this.store = createStore(reducers, composeWithDevTools(applyMiddleware(thunk)));
     this.storeLogger();
-}
+  }
 
-    private storeLogger = () => {
-        console.table('Redux STORE',this.store.getState())
-    }
+  componentDidMount() {
 
-    render () {
-        return (
-            <Provider store={this.store}>
-              <SafeAreaView style={StylesOne.screenContainer}>
-                <StatusBar />
-                <MainNavigationScreen />
-              </SafeAreaView>
-            </Provider>
-        )
-    }
+  }
+
+  private storeLogger = () => {
+    console.table('Redux STORE', this.store.getState());
+  };
+
+  render() {
+    return (
+      <Provider store={this.store}>
+        <SafeAreaView style={StylesOne.screenContainer}>
+          <StatusBar />
+          <MainNavigationScreen />
+        </SafeAreaView>
+      </Provider>
+    );
+  }
 }
 
 export default App;

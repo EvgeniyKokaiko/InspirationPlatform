@@ -8,7 +8,7 @@ import {MP} from "../Styles/MP";
 import CheckBox from "@react-native-community/checkbox";
 import { KeyboardAvoidingComponent } from "./Core/KeyboardAvoidingComponent";
 import {useDispatch, useSelector} from "react-redux";
-import {Register} from "../redux/actions";
+import {actionImpl} from "../redux/actions";
 import {BaseProps} from "../Types/Types";
 import {Reducers} from "../redux/reducers/reducers";
 
@@ -17,11 +17,14 @@ type IProps = {} & BaseProps
 const SignUpComponent = (props: IProps) => {
     const dispatch = useDispatch()
     let state: any = useSelector<Reducers>(state => state.registerReducer);
-    const [username, setUsername]: [string, Function] = useState("");
-    const [email, setEmail]: [string,Function] = useState("");
-    const [password, setPassword]: [string, Function] = useState("");
-    const [cPassword, csetPassword]: [string, Function] = useState("");
-    const [checkBox, setCheckBox]: [boolean, Function] = useState(false);
+    const [register, setRegister] = useState({
+        username: "",
+        email: "",
+        password: "",
+        cPassword: "",
+        checkbox: false,
+    })
+
     const goBack = () => {
         props.navigation.navigate(StackScreens.SignIn)
     }
@@ -35,13 +38,13 @@ const SignUpComponent = (props: IProps) => {
 
     const onSendBtnHandler = async () => {
         try {
-            if (username.length < 2 || email.length < 2 || password.length < 2 || cPassword.length < 2) {
+            if (register.username.length < 2 || register.email.length < 2 || register.password.length < 2 || register.cPassword.length < 2) {
                 Alert.alert("Something went wrong", "Incorrect data");
             } else {
-                if (password !== cPassword) {
+                if (register.password !== register.cPassword) {
                     Alert.alert("Something went wrong", "Password mismatch")
                 } else {
-                    dispatch(Register(username, email, password))
+                    dispatch(actionImpl.register(register.username, register.email, register.password))
                 }
             }
         } catch (ex) {
@@ -76,7 +79,7 @@ const SignUpComponent = (props: IProps) => {
                     <Text style={StylesOne.fontLogo_black}>Valhalla</Text>
                 </View>
                 <View style={[StylesOne.wh200px, MP.mbminus50]}>
-                    <Image style={[StylesOne.whc_img100, {tintColor: checkBox ? 'black' : colors.inactive_btn}]} source={images.logo} />
+                    <Image style={[StylesOne.whc_img100, {tintColor: register.checkbox ? 'black' : colors.inactive_btn}]} source={images.logo} />
                 </View>
             </View>
             <View style={[StylesOne.inputContainer]}>
@@ -84,36 +87,36 @@ const SignUpComponent = (props: IProps) => {
                            placeholderTextColor={colors.Placeholder}
                            underlineColorAndroid={colors.Underline_rgba_black}
                            style={StylesOne.fontInputText_black}
-                           onChangeText={(val) => setUsername(val)}
+                           onChangeText={(val) => setRegister({...register, username: val})}
                 />
                 <TextInput placeholder="Email"
                            placeholderTextColor={colors.Placeholder}
                            underlineColorAndroid={colors.Underline_rgba_black}
                            style={StylesOne.fontInputText_black}
-                           onChangeText={(val) => setEmail(val)}
+                           onChangeText={(val) => setRegister({...register, email: val})}
                 />
                 <TextInput placeholder="Password"
                            placeholderTextColor={colors.Placeholder}
                            underlineColorAndroid={colors.Underline_rgba_black}
                            style={StylesOne.fontInputText_black}
-                           onChangeText={(val) => setPassword(val)}
+                           onChangeText={(val) => setRegister({...register, password: val})}
                            secureTextEntry={true}
                 />
                 <TextInput placeholder="Confirm password"
                            placeholderTextColor={colors.Placeholder}
                            underlineColorAndroid={colors.Underline_rgba_black}
                            style={StylesOne.fontInputText_black}
-                           onChangeText={(val) => csetPassword(val)}
+                           onChangeText={(val) => setRegister({...register, cPassword: val})}
                            secureTextEntry={true}
                 />
             </View>
             <View style={[StylesOne.flex_row, StylesOne.flex_jc_c, StylesOne.flex_ai_c]}>
-                <CheckBox disabled={false} value={checkBox} onValueChange={(val) => setCheckBox(val)} tintColors={{true: colors.Primary_Red, false: colors.Primary_Red}}/>
+                <CheckBox disabled={false} value={register.checkbox} onValueChange={(val) => setRegister({...register, checkbox: val})} tintColors={{true: colors.Primary_Red, false: colors.Primary_Red}}/>
                 <Text><Text style={[StylesOne.CheckBox_text]}>I agree to the </Text><Text onPress={onTermOfUserHandler} style={StylesOne.CheckBox_terms}>Terms of Use</Text></Text>
             </View>
             <View style={[StylesOne.flex_row, StylesOne.flex_jc_c]}>
-                <TouchableOpacity onPress={onSendBtnHandler} disabled={!checkBox} style={[MP.mt40, checkBox ? StylesOne.SendBtn_active_button : StylesOne.SendBtn_inactive_button, StylesOne.flex_row, StylesOne.flex_jc_c, StylesOne.flex_ai_c]}>
-                    <Text style={[checkBox ? StylesOne.SendBtn_active_text : StylesOne.SendBtn_inactive_text]}>Send</Text>
+                <TouchableOpacity onPress={onSendBtnHandler} disabled={!register.checkbox} style={[MP.mt40, register.checkbox ? StylesOne.SendBtn_active_button : StylesOne.SendBtn_inactive_button, StylesOne.flex_row, StylesOne.flex_jc_c, StylesOne.flex_ai_c]}>
+                    <Text style={[register.checkbox ? StylesOne.SendBtn_active_text : StylesOne.SendBtn_inactive_text]}>Send</Text>
                 </TouchableOpacity>
             </View>
             </KeyboardAvoidingComponent>

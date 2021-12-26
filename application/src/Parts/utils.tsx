@@ -1,4 +1,6 @@
-import {Dimensions, NativeModules, PixelRatio, Platform, StatusBar} from "react-native";
+import {Dimensions, Image, NativeModules, PixelRatio, Platform, StatusBar} from "react-native";
+import {images} from "../assets/images";
+import React from "react";
 
 const { StatusBarManager } = NativeModules;
 export const DEVICE_WIDTH = Dimensions.get('window').width;

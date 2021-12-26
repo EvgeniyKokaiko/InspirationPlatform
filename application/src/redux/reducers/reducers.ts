@@ -9,69 +9,87 @@ export interface Reducers {
     meReducer:       any
 }
 
-function RegisterReducer(state = [], action: Action) {
-   if (action.type === ActionTypes.Register) {
-    return action.payload
-   } else if (action.type === ActionTypes.Clear) {
-       return []
-   }
-   return state
-}
-
-function SetupReducer(state = [], action: Action) {
-    if (action.type === ActionTypes.Setup) {
-        return action.payload
-    } else if (action.type === ActionTypes.Clear) {
-        return []
+class ReducersImpl {
+    public RegisterReducer(state = [], action: Action) {
+        if (action.type === ActionTypes.Register) {
+            return action.payload
+        } else if (action.type === ActionTypes.Clear) {
+            return []
+        }
+        return state
     }
 
-    return state
-}
+    public SetupReducer(state = [], action: Action) {
+        if (action.type === ActionTypes.Setup) {
+            return action.payload
+        } else if (action.type === ActionTypes.Clear) {
+            return []
+        }
 
-function LoginReducer(state = [], action: Action) {
-    if (action.type === ActionTypes.Login) {
-       return  action.payload
-    } else if (action.type === ActionTypes.Clear) {
-        return []
+        return state
     }
-    return state
-}
 
-function MeReducer(state = [], action: Action) {
-    if (action.type === ActionTypes.Me) {
-        return action.payload
+    public LoginReducer(state = [], action: Action) {
+        if (action.type === ActionTypes.Login) {
+            return  action.payload
+        } else if (action.type === ActionTypes.Clear) {
+            return []
+        }
+        return state
     }
-    return state
-}
 
-function MePostsReducer(state = [], action: Action) {
-    if (action.type === ActionTypes.MePosts) {
-        return action.payload
+    public MeReducer(state = [], action: Action) {
+        if (action.type === ActionTypes.Me) {
+            return action.payload
+        } else if (action.type === ActionTypes.Clear) {
+            return []
+        }
+        return state
     }
-    return state
-}
 
-function StatelessReducers(state = [], action: Action) {
-    if (action.type === ActionTypes.Check) {
-        return action.payload
-    } if (action.type === ActionTypes.AddPost) {
-        return action.payload
-    } if (action.type === ActionTypes.DeletePost) {
-        return action.payload
-    } if (action.type === ActionTypes.Logout) {
-        return action.payload
+    public MePostsReducer(state = [], action: Action) {
+        if (action.type === ActionTypes.MePosts) {
+            return action.payload
+        } else if (action.type === ActionTypes.Clear) {
+            return []
+        }
+        return state
     }
-    return state
+
+    public GetNewsLineReducer(state = [], action: Action) {
+        if (action.type === ActionTypes.NewsLine) {
+            return [...state, action.payload]
+        } if (action.type === ActionTypes.NewsLineRefresh) {
+            return [action.payload]
+        }
+        return state
+    }
+
+    public StatelessReducers(state = [], action: Action) {
+        if (action.type === ActionTypes.Check) {
+            return action.payload
+        } if (action.type === ActionTypes.AddPost) {
+            return action.payload
+        } if (action.type === ActionTypes.DeletePost) {
+            return action.payload
+        } if (action.type === ActionTypes.Logout) {
+            return action.payload
+        }
+        return state
+    }
+
+    public getAllReducers = () => {
+        return combineReducers({
+            registerReducer: this.RegisterReducer,
+            setupReducer: this.SetupReducer,
+            loginReducer: this.LoginReducer,
+            meReducer: this.MeReducer,
+            mePostsReducer: this.MePostsReducer,
+            checkForConnectionReducer: this.StatelessReducers,
+            getNewsLineReducer: this.GetNewsLineReducer,
+        })
+    }
 }
 
-
-
-
-export default combineReducers({
-   registerReducer: RegisterReducer,
-   setupReducer: SetupReducer,
-   loginReducer: LoginReducer,
-    meReducer: MeReducer,
-    mePostsReducer: MePostsReducer,
-    checkForConnectionReducer: StatelessReducers,
-})
+const reducers = new ReducersImpl();
+export default reducers.getAllReducers()

@@ -12,6 +12,9 @@ export const MP = StyleSheet.create({
     mr15: {
         marginRight: mockupWidthToDP(15),
     },
+    ml10: {
+        marginLeft: mockupWidthToDP(10),
+    },
     ml20: {
       marginLeft: mockupWidthToDP(20),
     },

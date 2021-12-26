@@ -3,158 +3,199 @@ import axios from 'axios';
 import { Action, ActionTypes } from '../types/ActionTypes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export const apiUrl = '192.168.1.80:8080';
+export const apiURL = '192.168.1.80:8080';
 
-export const Register = (username: string, email: string, password: string) => async (dispatch: Dispatch<Action>) => {
-  try {
-    const response = await axios
-      .post(`http://${apiUrl}/auth/register`, {
-        username,
-        email,
-        password,
-      })
-      .then((el) => {
-        console.log(el.status, el.data, 1444);
-        dispatch({ type: ActionTypes.Register, payload: { statusCode: el.status, data: el.data } });
-      });
-    console.log('Register', `${apiUrl}/register`);
-  } catch (ex) {
-    console.log('register ex', ex);
+class Actions {
+  private readonly _serverURL: string;
+  constructor(serverURL: string) {
+    this._serverURL = serverURL;
   }
-};
 
-export const Setup =
-  (username: { data: string }, full_name: string, location: string, description: string, gender: string) => async (dispatch: Dispatch<Action>) => {
-    console.log(username, 5555);
+  private _useToken = async (callback: Function) => {
+    await AsyncStorage.getItem('Access_TOKEN').then((el: string | null) => {
+      try {
+        if (callback !== void 0 && typeof el === 'string') {
+          callback(el);
+        }
+      } catch (ex) {
+        console.log('_useToken ex', ex);
+      }
+    });
+  };
+  public clear = () => {
+    return {
+      type: ActionTypes.Clear,
+    };
+  };
+
+  public register = (username: string, email: string, password: string) => async (dispatch: Dispatch<Action>) => {
+    try {
+      await axios
+        .post(`http://${apiURL}/auth/register`, {
+          username,
+          email,
+          password,
+        })
+        .then((el) => {
+          console.log(el.status, el.data, 1444);
+          dispatch({ type: ActionTypes.Register, payload: { statusCode: el.status, data: el.data } });
+        });
+      console.log('Register', `${apiURL}/register`);
+    } catch (ex) {
+      console.log('register ex', ex);
+    }
+  };
+
+  public setup =
+    (username: { data: string }, full_name: string, location: string, description: string, gender: string) => async (dispatch: Dispatch<Action>) => {
+      await axios
+        .post(`http://${apiURL}/auth/setup`, {
+          username: username.data,
+          full_name: full_name,
+          location: location,
+          description: description,
+          gender: gender,
+        })
+        .then((el) => {
+          console.log(el.status, el.data, 1444);
+          dispatch({ type: ActionTypes.Setup, payload: { statusCode: el.status, data: el.data.data } });
+        });
+    };
+
+  public authorize = (username: string, password: string) => async (dispatch: Dispatch<Action>) => {
+    console.log('asdas');
     await axios
-      .post(`http://${apiUrl}/auth/setup`, {
-        username: username.data,
-        full_name: full_name,
-        location: location,
-        description: description,
-        gender: gender,
+      .post(`http://${apiURL}/auth/login`, {
+        username: username,
+        password: password,
       })
       .then((el) => {
-        console.log(el.status, el.data, 1444);
-        dispatch({ type: ActionTypes.Setup, payload: { statusCode: el.status, data: el.data.data } });
+        console.log({ statusCode: el.status, data: el.data.data }, 'login');
+        dispatch({ type: ActionTypes.Login, payload: { statusCode: el.status, data: el.data.data } });
       });
   };
 
-export const Authorize = (username: string, password: string) => async (dispatch: Dispatch<Action>) => {
-  console.log('asdas');
-  await axios
-    .post(`http://${apiUrl}/auth/login`, {
-      username: username,
-      password: password,
-    })
-    .then((el) => {
-      console.log({ statusCode: el.status, data: el.data.data }, 'login');
-      dispatch({ type: ActionTypes.Login, payload: { statusCode: el.status, data: el.data.data } });
-    });
-};
-
-export const getMe = () => async (dispatch: Dispatch<Action>) => {
-  await AsyncStorage.getItem('Access_TOKEN').then(async (el) => {
-    await axios
-      .get(`http://${apiUrl}/users/me`, {
-        headers: {
-          Authorization: `Bearer ${el}`,
-        },
-      })
-      .then((el) => {
-        dispatch({ type: ActionTypes.Me, payload: { statusCode: el.status, data: el.data.data, avatar: el.data.avatar } });
-      });
-  });
-};
-
-export const getMyPosts = () => async (dispatch: Dispatch<Action>) => {
-  await AsyncStorage.getItem('Access_TOKEN').then(async (el) => {
-    await axios
-      .get(`http://${apiUrl}/posts/me`, {
-        headers: {
-          Authorization: `Bearer ${el}`,
-        },
-      })
-      .then((el) => {
-        dispatch({ type: ActionTypes.MePosts, payload: { statusCode: el.status, counter: el.data.counter, data: el.data.data } });
-      });
-  });
-};
-
-export const addPost = (caption: string, image: any, type: number) => async (dispatch: Dispatch<Action>) => {
-  const formData = new FormData();
-  formData.append('caption', caption);
-  formData.append('type', type);
-  formData.append('date_of_creation', `2021-12-05`); //TODO реализовать добавление текущей даты
-  for (let i = 0; i < image.length; i++) {
-    formData.append('image', {
-      uri: image[i].uri,
-      name: image[i].fileName,
-      type: image[i].type,
-    });
-  }
-  await AsyncStorage.getItem('Access_TOKEN').then(async (el) => {
-    await axios
-      .post(`http://${apiUrl}/posts/add`, formData, {
-        headers: {
-          Authorization: `Bearer ${el}`,
-          'Content-type': 'multipart/form-data',
-        },
-      })
-      .then((el) => {
-        dispatch({ type: ActionTypes.AddPost, payload: { statusCode: el.status } });
-      });
-  });
-};
-
-export const deletePost = (hash: string) => async (dispatch: Dispatch<Action>) => {
-  await AsyncStorage.getItem('Access_TOKEN').then(async (el) => {
-    await axios
-      .post(
-        `http://${apiUrl}/posts/delete`,
-        { hash },
-        {
+  public getMe = () => async (dispatch: Dispatch<Action>) => {
+    await this._useToken(async (el: string | null) => {
+      await axios
+        .get(`http://${apiURL}/users/me`, {
           headers: {
             Authorization: `Bearer ${el}`,
           },
-        }
-      )
-      .then((el) => {
-        dispatch({ type: ActionTypes.DeletePost, payload: { statusCode: el.status } });
-      });
-  });
-};
-
-export const checkForConnection = () => async (dispatch: Dispatch<Action>) => {
-  await AsyncStorage.getItem('Access_TOKEN').then(async (el) => {
-    await axios
-      .get(`http://${apiUrl}/users/check`, {
-        headers: {
-          Authorization: `Bearer ${el}`,
-        },
-      })
-      .then((el) => {
-        dispatch({ type: ActionTypes.Check, payload: { statusCode: el.status } });
-      });
-  });
-};
-
-export const logout = () => async (dispatch: Dispatch<Action>) => {
-  await AsyncStorage.getItem('Access_TOKEN').then(async (el) => {
-    await axios
-      .get(`http://${apiUrl}/users/logout`, {
-        headers: {
-          Authorization: `Bearer ${el}`,
-        },
-      })
-      .then((el) => {
-        dispatch({ type: ActionTypes.Logout, payload: { statusCode: el.status } });
-      });
-  });
-};
-
-export const Clear = () => {
-  return {
-    type: ActionTypes.Clear,
+        })
+        .then((el) => {
+          dispatch({
+            type: ActionTypes.Me,
+            payload: { statusCode: el.status, data: el.data.data, avatar: el.data.avatar },
+          });
+        });
+    });
   };
-};
+
+  public getMyPosts = () => async (dispatch: Dispatch<Action>) => {
+    await this._useToken(async (el: string | null) => {
+      console.log(`http://${apiURL}/posts/me`, 'api url');
+      await axios
+        .get(`http://${apiURL}/posts/me`, {
+          headers: {
+            Authorization: `Bearer ${el}`,
+          },
+        })
+        .then((el) => {
+          dispatch({ type: ActionTypes.MePosts, payload: { statusCode: el.status, counter: el.data.counter, data: el.data.data } });
+        });
+    });
+  };
+
+  public addPost = (caption: string, image: any, type: number) => async (dispatch: Dispatch<Action>) => {
+    console.log(caption, image, type, 'bebra');
+    const formData = new FormData();
+    formData.append('caption', caption);
+    formData.append('type', type);
+    // formData.append('date_of_creation', `2021-12-05`); //TODO реализовать добавление текущей даты
+    for (let i = 0; i < image.length; i++) {
+      formData.append('image', {
+        uri: image[i].uri,
+        name: image[i].fileName,
+        type: image[i].type,
+      });
+    }
+    await this._useToken(async (el: string | null) => {
+      await axios
+        .post(`http://${apiURL}/posts/add`, formData, {
+          headers: {
+            Authorization: `Bearer ${el}`,
+            'Content-type': 'multipart/form-data',
+          },
+        })
+        .then((el) => {
+          dispatch({ type: ActionTypes.AddPost, payload: { statusCode: el.status } });
+        });
+    });
+  };
+
+  public deletePost = (hash: string) => async (dispatch: Dispatch<Action>) => {
+    await this._useToken(async (el: string | null) => {
+      await axios
+        .post(
+          `http://${apiURL}/posts/delete`,
+          { hash },
+          {
+            headers: {
+              Authorization: `Bearer ${el}`,
+            },
+          }
+        )
+        .then((el) => {
+          dispatch({ type: ActionTypes.DeletePost, payload: { statusCode: el.status } });
+        });
+    });
+  };
+
+  public checkForConnection = () => async (dispatch: Dispatch<Action>) => {
+    await this._useToken(async (el: string | null) => {
+      await axios
+        .get(`http://${apiURL}/users/check`, {
+          headers: {
+            Authorization: `Bearer ${el}`,
+          },
+        })
+        .then((el) => {
+          dispatch({ type: ActionTypes.Check, payload: { statusCode: el.status } });
+        });
+    });
+  };
+
+  public logout = () => async (dispatch: Dispatch<Action>) => {
+    await this._useToken(async (el: string | null) => {
+      await axios
+        .get(`http://${apiURL}/users/logout`, {
+          headers: {
+            Authorization: `Bearer ${el}`,
+          },
+        })
+        .then((el) => {
+          dispatch({ type: ActionTypes.Logout, payload: { statusCode: el.status } });
+        });
+    });
+  };
+
+  public getNewsline = (page: number, isRefresh: boolean = false) => async (dispatch: Dispatch<Action>) => {
+    await this._useToken(async (el: string | null) => {
+      await axios
+        .get(
+          `http://${apiURL}/posts/getNewsline?page=${page}`,
+          {
+            headers: {
+              Authorization: `Bearer ${el}`,
+            },
+          }
+        )
+        .then((el) => {
+          dispatch({ type: isRefresh ? ActionTypes.NewsLineRefresh : ActionTypes.NewsLine, payload: el.data });
+        });
+    });
+  };
+}
+
+export const actionImpl = new Actions(apiURL);

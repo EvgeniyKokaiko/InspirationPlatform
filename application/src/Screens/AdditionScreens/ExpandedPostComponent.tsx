@@ -20,13 +20,13 @@ type IProps = {
 } & BaseProps;
 
 
-const CarouselHeight: number = DEVICE_HEIGHT - 300;
+const CarouselHeight: number = DEVICE_HEIGHT;
 const CarouselWidth: number = DEVICE_WIDTH;
 
 const ExpandedPostComponent = (state: IProps) => {
     return (
-    <View style={[StylesOne.screenContainer, MP.ph25]}>
-      <View style={[StylesOne.w100]}>
+    <View style={[StylesOne.screenContainer]}>
+      <View style={[StylesOne.w100, MP.ph25]}>
         <View style={[StylesOne.flex_row, StylesOne.flex_jc_sb, StylesOne.flex_ai_c, MP.mv20]}>
           <TouchableOpacity onPress={state.onBackBtn} style={StylesOne.image24}>
             <Image style={[StylesOne.wh100, StylesOne.rm_c, St.blackArrow]} source={images.arrowLeft} />
@@ -36,21 +36,24 @@ const ExpandedPostComponent = (state: IProps) => {
         </View>
       </View>
         <ScrollView style={St.PhotoList} contentContainerStyle={St.PhotoListhund}>
-            <View style={{}}>
-                <Image source={{uri: state.ownerAvatar}} />
+            <View style={{height: mockupHeightToDP(30), width: '100%', flexDirection: 'row', alignItems: 'center', paddingHorizontal: mockupWidthToDP(20), marginBottom: mockupHeightToDP(15), marginTop: mockupHeightToDP(20)}}>
+                <Image style={[{width: mockupHeightToDP(30), height: mockupHeightToDP(30), borderRadius: 100}]} source={{uri: state.ownerAvatar}} />
+                <Text style={[St.ownerTextWithoutOffsets, MP.ml10]}>{state.postData.owner}</Text>
             </View>
-            <View style={{height: CarouselHeight + 100 }}>
+            <View style={St.horizontalLine} />
+            <View style={{height: CarouselHeight, flexDirection: 'row', justifyContent: 'center', marginLeft: mockupWidthToDP(5)}}>
         <Carousel
             data={state.createList()}
             renderItem={state._renderItem}
-            sliderWidth={mockupWidthToDP(CarouselWidth) - 30}
+            sliderWidth={mockupWidthToDP(CarouselWidth)}
             sliderHeight={mockupHeightToDP(CarouselHeight)}
-            itemWidth={mockupWidthToDP(CarouselWidth) - 50}
+            itemWidth={mockupWidthToDP(CarouselWidth) - 30}
             itemHeight={mockupHeightToDP(CarouselHeight)}
+            maximumZoomScale={0}
             activeAnimationType="spring"
         />
             </View>
-            <View style={[]}>
+            <View style={[MP.ph15]}>
                 <Text style={SThree.post_caption_word}>Caption:</Text>
                 <Text style={[SThree.post_caption_expanded]}>{state.postData.caption}</Text>
             </View>

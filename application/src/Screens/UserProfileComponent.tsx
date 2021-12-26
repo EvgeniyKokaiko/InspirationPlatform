@@ -11,7 +11,7 @@ import Avatar from './segments/Avatar';
 import { mockupHeightToDP } from '../Parts/utils';
 import { useDispatch, useSelector } from 'react-redux';
 import { Reducers } from '../redux/reducers/reducers';
-import { getMe, getMyPosts } from '../redux/actions';
+import {actionImpl} from '../redux/actions';
 import { User } from '../Types/Models';
 import MyPost from './segments/MyPost';
 import FullScreenPreloader from './segments/FullScreenPreloader';
@@ -28,14 +28,14 @@ const UserProfileComponent: React.FC<IProps> = (props: IProps) => {
   noGoBack();
 
   useEffect(() => {
-    dispatch(getMe());
-    dispatch(getMyPosts());
+    dispatch(actionImpl.getMe());
+    dispatch(actionImpl.getMyPosts());
     setRefresh(false);
   }, []);
 
   const makeRequest = useCallback(() => {
-    dispatch(getMe());
-    dispatch(getMyPosts());
+    dispatch(actionImpl.getMe());
+    dispatch(actionImpl.getMyPosts());
   }, []);
 
   useEffect(() => {

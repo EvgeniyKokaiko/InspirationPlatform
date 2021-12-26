@@ -6,7 +6,7 @@ import {MP} from "../Styles/MP";
 import {images} from "../assets/images";
 import {colors} from "../Parts/colors";
 import {Picker} from "@react-native-picker/picker";
-import {Clear, Register, Setup} from "../redux/actions";
+import {actionImpl} from "../redux/actions";
 import {useDispatch, useSelector} from "react-redux";
 import {Reducers} from "../redux/reducers/reducers";
 import {StackScreens} from "./Core/MainNavigationScreen";
@@ -27,7 +27,7 @@ const SetupAccountComponent: React.FC<IProps> = (props): JSX.Element => {
             if (name.length < 2 || location.length < 2 || description.length < 2) {
                 Alert.alert("Something went wrong", "Incorrect data");
             } else {
-                    dispatch(Setup(state.registerReducer.data!, name, location, description, gender))
+                    dispatch(actionImpl.setup(state.registerReducer.data!, name, location, description, gender))
             }
         } catch (ex) {
             console.log('onSendBtnHandler ex', ex);
@@ -38,7 +38,7 @@ const SetupAccountComponent: React.FC<IProps> = (props): JSX.Element => {
     useLayoutEffect(() => {
         console.log(state)
         if (state.setupReducer.statusCode === 200) {
-            dispatch(Clear())
+            dispatch(actionImpl.clear())
             props.navigation.navigate(StackScreens.SignIn)
         } else if (state.statusCode === 208) {
             Alert.alert("Oops", "Something went wrong");

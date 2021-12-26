@@ -36,6 +36,13 @@ export const St = StyleSheet.create({
   avatar: {
     borderRadius: 30,
   },
+
+  horizontalLine: {
+    backgroundColor: colors.inactive_btn,
+    width: '100%',
+    height: 0.4,
+    marginBottom: mockupHeightToDP(15)
+  },
   verticalLine: {
     backgroundColor: colors.WhiteChalk,
     width: 1,
@@ -235,12 +242,21 @@ export const St = StyleSheet.create({
     marginTop: mockupHeightToDP(-12),
   },
 
+  ownerTextWithoutOffsets: {
+    fontSize: fontSizeDP(17),
+    fontFamily: 'SFProDisplay-Regular',
+    fontWeight: '600',
+    color: colors.absoluteBlack,
+    marginBottom: mockupHeightToDP(6),
+  },
+
   image100modal: {
     width: '100%',
     height: '100%',
-    borderRadius: 20,
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
+    borderWidth: 1,
+    borderColor: colors.WhiteChalk,
   },
   PhotoList: {
     height: '80%',

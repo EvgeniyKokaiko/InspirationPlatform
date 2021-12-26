@@ -10,7 +10,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import SignInComponent from "../SignInComponent";
 import {Component} from "../../Types/Types";
 import SignUpComponent from "../SignUpComponent";
-import {BackHandler} from "react-native";
+import {AppState, BackHandler} from "react-native";
 import SetupAccountComponent from "../SetupAccountComponent";
 import UserProfileComponent from "../UserProfileComponent";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -76,7 +76,7 @@ const MainNavigationScreen: React.FC = (props:IProps) => {
     const Tab = createBottomTabNavigator()
     let defaultScreen = "SplashComponent";
     const withoutNavigation = [StackScreens.SignIn, StackScreens.SignUp, StackScreens.SetupAccount];
-    const withoutNavigationIndex = [0,1,2,3,4,5];
+    const withoutNavigationIndex = [0,1,2,3,4,5,6];
     const Screens: { name: string, component: Component, options?: any }[] =
         [
             // Service screens
@@ -105,6 +105,36 @@ const MainNavigationScreen: React.FC = (props:IProps) => {
     //         defaultScreen = StackScreens.SignIn
     //     }
     // }
+
+    useEffect(() => {
+        ApplicationState();
+    }, [AppState])
+
+
+    const ApplicationState = () => {
+       const subscription = AppState.addEventListener("change", (state) => {
+            switch (state) {
+                case "active":
+                    console.log('app active')
+                    break;
+                case "background":
+                    console.log('app background')
+                    break;
+                case "inactive":
+                    console.log('app inactive')
+                    break;
+                case "unknown":
+                    console.log('app unknown')
+                    break;
+                case "extension":
+                    console.log('app extension')
+                    break;
+            }
+        })
+        return () => {
+            subscription.remove();
+        };
+    }
 
 
     return (

@@ -3,7 +3,7 @@ import {Image, Modal, TouchableOpacity, View, Text, StyleSheet, Pressable, Scrol
 import {St} from "../../Styles/StylesTwo";
 import {StylesOne} from "../../Styles/StylesOne";
 import {Post} from "../../Types/Models";
-import {apiUrl, deletePost} from "../../redux/actions";
+import {actionImpl, apiURL} from "../../redux/actions";
 import {images} from "../../assets/images";
 import Carousel, {Pagination} from "react-native-snap-carousel";
 import {mockupHeightToDP} from "../../Parts/utils";
@@ -17,7 +17,7 @@ type myPostProps = {
 
 const MyPost = (props: myPostProps) => {
     const dispatch = useDispatch()
-    const dataPath = `http://${apiUrl}/storage/${props.owner}/posts/${props.image.length > 0 && props.data_count > 0 ? props.image : props.video}/`
+    const dataPath = `http://${apiURL}/storage/${props.owner}/posts/${props.image.length > 0 && props.data_count > 0 ? props.image : props.video}/`
     const [modal, showModal]: [boolean, Function] = useState(false);
     const createList = () => {
         const result = [];
@@ -48,7 +48,7 @@ const MyPost = (props: myPostProps) => {
     }, [])
 
     const onAlertDeletePost = useCallback(() => {
-        dispatch(deletePost(props.image));
+        dispatch(actionImpl.deletePost(props.image));
         showModal(false);
         Alert.alert("Posts", "Post delete");
     }, [])

@@ -14,7 +14,7 @@ import {BaseProps} from "../Types/Types";
 import {useNavigation} from "@react-navigation/native";
 import ListItem from './segments/ListItem';
 import {useDispatch, useSelector} from "react-redux";
-import {logout} from "../redux/actions";
+import {actionImpl} from "../redux/actions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type IProps = {} & BaseProps
@@ -34,7 +34,8 @@ const SettingsComponent: React.FC<IProps> = (props: IProps) => {
 
 
     const onLogoutPress = async () => {
-            dispatch(logout())
+            dispatch(actionImpl.logout)
+            dispatch(actionImpl.clear)
         console.log(state, "STATE")
             await AsyncStorage.setItem("Access_TOKEN", "")
             props.navigation.navigate(StackScreens.SignIn)

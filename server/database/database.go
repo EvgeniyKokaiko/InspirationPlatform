@@ -7,8 +7,10 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"log"
+	"math"
 	models "server/models"
 	"server/utils"
+	"time"
 )
 
 type DB struct {
@@ -99,7 +101,9 @@ func (db *DB) Avatar(username string) string {
 }
 
 
-func (db *DB) AddPost(_ string, data map[string]interface{}) (string, error) {
+func (db *DB) AddPost(username string, data map[string]interface{}) (string, error) {
+	data["date_of_creation"] = time.Now()
+	fmt.Println(data["date_of_creation"])
 	response := db.database.Table("posts").Create(data)
 	if response.Error != nil {
 		return "", errors.New("ERROR! Something went wrong on post creation")
@@ -145,4 +149,20 @@ func (db *DB) CheckToken(username string) (string, error) {
 	}
 
 	return result.Username, nil
+}
+
+func (db *DB) GetNewsLine(_ string, page int) ([]*models.Post, int ,error) {
+	var dbResult []*models.Post
+	var dbPageResult = map[string]interface{}{}
+	const postBunch int = 30
+	dbResponse := db.database.Table("posts").Offset(postBunch * page).Limit(postBunch).Order("date_of_creation desc").Scan(&dbResult)
+	dbPageCount := db.database.Raw("SELECT COUNT(*) FROM posts").Scan(&dbPageResult)
+	pageCount := math.Ceil(float64(dbPageResult["COUNT(*)"].(int64) / 30))
+	fmt.Println(dbPageCount, pageCount)
+	if dbResponse.Error != nil {
+		log.Println("GetNewsLine ex", dbResponse.Error)
+		return []*models.Post{}, 0 ,errors.New("ERROR! You got error on GetNewsLine method in DB")
+	}
+
+	return dbResult, int(pageCount) ,nil
 }

@@ -5,20 +5,24 @@ import { BaseProps } from '../../Types/Types';
 import { StackScreens } from '../Core/MainNavigationScreen';
 import { St } from '../../Styles/StylesTwo';
 import { Post } from '../../Types/Models';
-import { apiUrl } from '../../redux/actions';
+import { apiURL } from '../../redux/actions';
+import {images} from "../../assets/images";
 
 type IProps = {} & BaseProps;
 
 const ExpandedPostContainer: React.FC<IProps> = (props: IProps): JSX.Element => {
-  const postData: Post = props.route.params.postData;
-  const dataPath = `http://${apiUrl}/storage/${postData.owner}/posts/${
+  let postData: Post = props.route.params.postData;
+  const dataPath = `http://${apiURL}/storage/${postData.owner}/posts/${
     postData.image.length > 0 && postData.data_count > 0 ? postData.image : postData.video
   }/`;
-  const ownerAvatar: string = `http://${apiUrl}/storage/${postData.owner}/avatar/avatar.png`;
+  const ownerAvatar: string = `http://${apiURL}/storage/${postData.owner}/avatar/avatar.png`;
   const onBackBtn = () => {
-    props.navigation.navigate(StackScreens.UserProfile);
+    postData = props.route.params.postData;
+    console.log(postData)
+    props.navigation.navigate(StackScreens.Menu);
   };
   useEffect(() => {
+    postData = props.route.params.postData;
     console.log(props, props.route.params);
     console.log(postData, 'POST DATA');
     console.log(dataPath);
@@ -32,10 +36,11 @@ const ExpandedPostContainer: React.FC<IProps> = (props: IProps): JSX.Element => 
     return result;
   };
 
-  const _renderItem = useCallback(({ item, index }) => {
+  const _renderItem = ({ item, index }: {item: number, index: number}) => {
     console.log(item, index);
-    return <Image key={1} style={[St.image100modal]} source={{ uri: `${dataPath}${item}.png` }} />;
-  }, []);
+    return <Image key={1} style={[St.image100modal]} source={{ uri: `${dataPath}${item}.png?${Date.now()}` }} />;
+  }
+
 
   const STATE = {
     onBackBtn,

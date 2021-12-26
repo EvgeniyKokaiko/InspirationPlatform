@@ -5,12 +5,10 @@ import {MP} from "../Styles/MP";
 import {St} from "../Styles/StylesTwo";
 import {images} from "../assets/images";
 import {colors} from "../Parts/colors";
-import {Picker} from "@react-native-picker/picker";
-import {backgrounds} from "../Styles/Backgrounds";
 import {launchImageLibrary} from "react-native-image-picker";
 import {Asset} from "../Types/Models";
 import {useDispatch} from "react-redux";
-import {addPost} from "../redux/actions";
+import {actionImpl} from "../redux/actions";
 import BaseButton from "./segments/BaseButton";
 
 type IProps = {}
@@ -40,11 +38,11 @@ const AddComponent: React.FC<IProps> = (props) => {
         })
     }
 
-    const onPostAdd =  useCallback(() =>  {
-        dispatch(addPost(caption, files as Asset[], type));
+    const onPostAdd = () => {
+        dispatch(actionImpl.addPost(caption, files as Asset[], type));
         setAddBtnDisabled(true);
         setFile([]);
-    }, [])
+    }
 
     return (
         <View style={[StylesOne.screenContainer, MP.ph25]}>

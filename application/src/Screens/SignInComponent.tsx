@@ -11,7 +11,7 @@ import {KeyboardAvoidingComponent} from "./Core/KeyboardAvoidingComponent";
 import {StackScreens} from "./Core/MainNavigationScreen";
 import {BaseProps} from "../Types/Types";
 import { useDispatch, useSelector } from "react-redux";
-import {Authorize, Clear} from "../redux/actions/index"
+import {actionImpl} from "../redux/actions/index"
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
@@ -29,7 +29,7 @@ const SignInComponent = (props: IProps) => {
 
     const Login = () => {
         if (auth.login.length > 2 || auth.password.length > 2) {
-            return  dispatch(Authorize(auth.login, auth.password));
+            return  dispatch(actionImpl.authorize(auth.login, auth.password));
         }
         //зробити красним цветом штуку
     }
@@ -45,7 +45,7 @@ const SignInComponent = (props: IProps) => {
         console.log(state.loginReducer, state.loginReducer.statusCode)
         if (state.loginReducer.statusCode === 200) {
           AsyncStorage.setItem("Access_TOKEN", state.loginReducer.data).then(() => {
-              dispatch(Clear())
+              dispatch(actionImpl.clear())
               setAuth({login: '', password: ''});
               props.navigation.navigate(StackScreens.UserProfile)
           })

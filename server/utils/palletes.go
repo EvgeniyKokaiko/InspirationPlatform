@@ -19,3 +19,7 @@ func DeletePostFS(username string ,hash string) error  {
 		return nil
 	}
  }
+
+ func GetBunch(page int) {
+
+ }

@@ -11,6 +11,7 @@ import (
 	"reflect"
 	"server/database"
 	"server/utils"
+	"strconv"
 )
 
 func Posts(route *gin.Engine, db *database.DB) {
@@ -41,14 +42,19 @@ func Posts(route *gin.Engine, db *database.DB) {
 			name, _, _ := utils.ParseHeader(c)
 			fileIndex := 0
 			//TODO винести це в отдельний файл
+			if _, err := os.Stat("storage/" + name); os.IsNotExist(err) {
+				os.Mkdir("storage/" + name, 777)
+			} else {
+				os.Mkdir("storage/" + name, 777)
+			}
+			if _, err := os.Stat("storage/" + name + "/" + "posts"); os.IsNotExist(err) {
+				os.Mkdir("storage/" + name + "/" + "posts", 777)
+				os.Mkdir("storage/" + name + "/" + "posts/" + postName, 777)
+			} else {
+				os.Mkdir("storage/" + name + "/" + "posts/" + postName, 777)
+			}
 			for _, file := range files {
 				fmt.Println(file, "filess")
-				if _, err := os.Stat("storage/" + name + "/" + "posts"); os.IsNotExist(err) {
-					os.Mkdir("storage/" + name + "/" + "posts", 777)
-					os.Mkdir("storage/" + name + "/" + "posts/" + postName, 777)
-				} else {
-					os.Mkdir("storage/" + name + "/" + "posts/" + postName, 777)
-				}
 				if err := c.SaveUploadedFile(file, fmt.Sprintf("storage/%s/posts/%s/%d%s", name, postName ,fileIndex, ".png")); err != nil {
 					c.String(http.StatusBadRequest, fmt.Sprintf("upload file err: %s", err.Error()))
 					//fmt.Println( fmt.Sprintf("/storage/%s/posts/1/%d%s", name, fileIndex, fileExtension), fileIndex)
@@ -145,4 +151,29 @@ func Posts(route *gin.Engine, db *database.DB) {
 			fmt.Println(requestData)
 		})
 	}
+	router.GET("/getNewsline", func(c *gin.Context) {
+		var pageQuery string = c.Query("page")
+		page, _ := strconv.Atoi(pageQuery)
+			if name, _ , tokenError := utils.ParseHeader(c); tokenError == nil {
+				fmt.Println(page)
+					dbResponse, dbPageCount ,databaseError := db.GetNewsLine(name, page)
+					if databaseError != nil || len(dbResponse) < 1 {
+						c.JSON(http.StatusLocked, map[string]interface{}{
+							"statusMessage": "Range Not Satisfiable",
+							"statusCode": 416,
+						})
+					} else {
+						c.JSON(http.StatusOK, map[string]interface{}{
+							"statusMessage": "Accepted",
+							"statusCode": 200,
+							"data": dbResponse,
+							"pages": dbPageCount,
+						})
+					}
+
+			} else {
+				log.Println("Error! ParseHeader exception", tokenError)
+			}
+
+	})
 }

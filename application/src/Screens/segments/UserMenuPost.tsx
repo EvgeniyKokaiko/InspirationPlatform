@@ -3,6 +3,7 @@ import { Dimensions, Image, TouchableOpacity, View } from 'react-native';
 import { mockupHeightToDP, mockupWidthToDP } from '../../Parts/utils';
 import { StylesOne } from '../../Styles/StylesOne';
 import { Post } from '../../Types/Models';
+import {apiURL} from "../../redux/actions";
 
 type IProps = {
     isExpanded?: boolean;
@@ -15,14 +16,15 @@ const windowWidth = Dimensions.get('window').width - mockupWidthToDP(40);
 let IMAGES_PER_ROW = 3;
 
 const UserMenuPost: React.FC<IProps> = (props: IProps): JSX.Element => {
-    const onPostPress = useCallback(() => {
+    const dataPath = `http://${apiURL}/storage/${props.postData.owner}/posts/${props.postData.image.length > 0 && props.postData.data_count > 0 ? props.postData.image : props.postData.video}/0.png`
+    const onPostPress = () => {
         if (props.onPostPress !== void 0) {
             props.onPostPress(props.postData);
             console.log('bruh');
         } else {
             //Handling
         }
-    }, []);
+    }
 
     const calculatedSize = (): number => {
         const size = windowWidth / IMAGES_PER_ROW;
@@ -40,7 +42,7 @@ const UserMenuPost: React.FC<IProps> = (props: IProps): JSX.Element => {
         >
             <Image
                 style={[StylesOne.wh100]}
-                source={{ uri: 'https://medialeaks.ru/wp-content/uploads/2020/11/fb_img_1596591789564.jpg' }}
+                source={{ uri: `${dataPath}?${new Date().getHours()}` }}
             />
         </TouchableOpacity>
     );

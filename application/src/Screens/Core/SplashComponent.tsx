@@ -6,7 +6,7 @@ import {backgrounds} from "../../Styles/Backgrounds";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {useDispatch, useSelector} from "react-redux";
 import {BaseProps} from "../../Types/Types";
-import {checkForConnection} from "../../redux/actions";
+import {actionImpl} from "../../redux/actions";
 import {StackScreens} from "./MainNavigationScreen";
 
 type IProps = {} & BaseProps
@@ -19,7 +19,7 @@ const SplashComponent: React.FC<IProps> = (props: IProps) => {
         AsyncStorage.getItem("Access_TOKEN").then(token => {
              if (typeof token !== "undefined" && token?.length! > 10) {
                  //TODO тут робити проверку чи є інтернет, і якщо нема тоді кажді 20 секунд слати запрос, якщо появився, тоді сразу кидати реквест
-                dispatch(checkForConnection)
+                dispatch(actionImpl.checkForConnection)
                  if (state.checkForConnectionReducer.status === 200) {
                      props.navigation.navigate(StackScreens.UserProfile)
                  } else {
