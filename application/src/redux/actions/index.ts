@@ -30,7 +30,7 @@ class Actions {
 
   public register = (username: string, email: string, password: string) => async (dispatch: Dispatch<Action>) => {
     try {
-      await axios
+      axios
         .post(`http://${apiURL}/auth/register`, {
           username,
           email,
@@ -48,7 +48,7 @@ class Actions {
 
   public setup =
     (username: { data: string }, full_name: string, location: string, description: string, gender: string) => async (dispatch: Dispatch<Action>) => {
-      await axios
+    axios
         .post(`http://${apiURL}/auth/setup`, {
           username: username.data,
           full_name: full_name,
@@ -64,7 +64,7 @@ class Actions {
 
   public authorize = (username: string, password: string) => async (dispatch: Dispatch<Action>) => {
     console.log('asdas');
-    await axios
+    axios
       .post(`http://${apiURL}/auth/login`, {
         username: username,
         password: password,
@@ -77,7 +77,7 @@ class Actions {
 
   public getMe = () => async (dispatch: Dispatch<Action>) => {
     await this._useToken(async (el: string | null) => {
-      await axios
+      axios
         .get(`http://${apiURL}/users/me`, {
           headers: {
             Authorization: `Bearer ${el}`,
@@ -95,7 +95,7 @@ class Actions {
   public getMyPosts = () => async (dispatch: Dispatch<Action>) => {
     await this._useToken(async (el: string | null) => {
       console.log(`http://${apiURL}/posts/me`, 'api url');
-      await axios
+      axios
         .get(`http://${apiURL}/posts/me`, {
           headers: {
             Authorization: `Bearer ${el}`,
@@ -121,7 +121,7 @@ class Actions {
       });
     }
     await this._useToken(async (el: string | null) => {
-      await axios
+      axios
         .post(`http://${apiURL}/posts/add`, formData, {
           headers: {
             Authorization: `Bearer ${el}`,
@@ -136,7 +136,7 @@ class Actions {
 
   public deletePost = (hash: string) => async (dispatch: Dispatch<Action>) => {
     await this._useToken(async (el: string | null) => {
-      await axios
+      axios
         .post(
           `http://${apiURL}/posts/delete`,
           { hash },
@@ -154,7 +154,7 @@ class Actions {
 
   public checkForConnection = () => async (dispatch: Dispatch<Action>) => {
     await this._useToken(async (el: string | null) => {
-      await axios
+      axios
         .get(`http://${apiURL}/users/check`, {
           headers: {
             Authorization: `Bearer ${el}`,
@@ -168,7 +168,7 @@ class Actions {
 
   public logout = () => async (dispatch: Dispatch<Action>) => {
     await this._useToken(async (el: string | null) => {
-      await axios
+      axios
         .get(`http://${apiURL}/users/logout`, {
           headers: {
             Authorization: `Bearer ${el}`,
@@ -182,7 +182,7 @@ class Actions {
 
   public getNewsline = (page: number, isRefresh: boolean = false) => async (dispatch: Dispatch<Action>) => {
     await this._useToken(async (el: string | null) => {
-      await axios
+      axios
         .get(
           `http://${apiURL}/posts/getNewsline?page=${page}`,
           {
