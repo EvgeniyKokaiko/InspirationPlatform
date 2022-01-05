@@ -58,8 +58,6 @@ class ReducersImpl {
 
     public GetNewsLineReducer(state = [], action: Action) {
         if (action.type === ActionTypes.NewsLine) {
-            return [...state, action.payload]
-        } if (action.type === ActionTypes.NewsLineRefresh) {
             return [action.payload]
         }
         return state

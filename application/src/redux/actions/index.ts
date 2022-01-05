@@ -192,7 +192,7 @@ class Actions {
           }
         )
         .then((el) => {
-          dispatch({ type: isRefresh ? ActionTypes.NewsLineRefresh : ActionTypes.NewsLine, payload: el.data });
+          dispatch({ type: ActionTypes.NewsLine, payload: el.data });
         });
     });
   };
