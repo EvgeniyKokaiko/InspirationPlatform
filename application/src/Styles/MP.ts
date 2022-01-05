@@ -70,6 +70,6 @@ export const MP = StyleSheet.create({
         marginTop: mockupHeightToDP(5),
     },
     mh15: {
-        marginHorizontal: mockupWidthToDP(15),
+        marginHorizontal: mockupWidthToDP(10),
     }
 })

@@ -1,6 +1,7 @@
 import {Dimensions, Image, NativeModules, PixelRatio, Platform, StatusBar} from "react-native";
 import {images} from "../assets/images";
 import React from "react";
+import axios from "axios";
 
 const { StatusBarManager } = NativeModules;
 export const DEVICE_WIDTH = Dimensions.get('window').width;
@@ -56,4 +57,18 @@ export function fontSizeDP(fontSize: number, standardScreenHeight = 812) {
     const deviceHeight = isIphoneX() || Platform.OS === 'android' ? standardLength - offset! : standardLength;
     const heightPercent = (fontSize * deviceHeight) / standardScreenHeight;
     return Math.round(heightPercent);
+}
+
+
+export async function checkForAvatar(avatarUrl: string): Promise<number> {
+    try {
+        if (avatarUrl !== void 0) {
+            const response = await axios.get(avatarUrl)
+            return response.status !== 200 ? 999 : response.status
+        }
+        return 999
+    } catch (e) {
+        console.log(e)
+        return 999
+    }
 }

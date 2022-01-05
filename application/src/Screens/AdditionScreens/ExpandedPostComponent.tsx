@@ -17,13 +17,15 @@ type IProps = {
   createList(): number[];
   postData: Post;
   ownerAvatar: string;
+  postState: number
 } & BaseProps;
 
 
-const CarouselHeight: number = DEVICE_HEIGHT;
-const CarouselWidth: number = DEVICE_WIDTH;
+const CarouselHeight: number = DEVICE_HEIGHT / 1.2;
+const CarouselWidth: number = DEVICE_WIDTH / 1.08;
 
 const ExpandedPostComponent = (state: IProps) => {
+    console.log('width:' , CarouselWidth, 'height:', CarouselHeight)
     return (
     <View style={[StylesOne.screenContainer]}>
       <View style={[StylesOne.w100, MP.ph25]}>
@@ -37,7 +39,7 @@ const ExpandedPostComponent = (state: IProps) => {
       </View>
         <ScrollView style={St.PhotoList} contentContainerStyle={St.PhotoListhund}>
             <View style={{height: mockupHeightToDP(30), width: '100%', flexDirection: 'row', alignItems: 'center', paddingHorizontal: mockupWidthToDP(20), marginBottom: mockupHeightToDP(15), marginTop: mockupHeightToDP(20)}}>
-                <Image style={[{width: mockupHeightToDP(30), height: mockupHeightToDP(30), borderRadius: 100}]} source={{uri: state.ownerAvatar}} />
+                <Image style={[{width: mockupHeightToDP(30), height: mockupHeightToDP(30), borderRadius: 100}]} source={state.postState === 999 ? images.standardAvatar : {uri: state.ownerAvatar}} />
                 <Text style={[St.ownerTextWithoutOffsets, MP.ml10]}>{state.postData.owner}</Text>
             </View>
             <View style={St.horizontalLine} />
@@ -47,7 +49,7 @@ const ExpandedPostComponent = (state: IProps) => {
             renderItem={state._renderItem}
             sliderWidth={mockupWidthToDP(CarouselWidth)}
             sliderHeight={mockupHeightToDP(CarouselHeight)}
-            itemWidth={mockupWidthToDP(CarouselWidth) - 30}
+            itemWidth={mockupWidthToDP(CarouselWidth)}
             itemHeight={mockupHeightToDP(CarouselHeight)}
             maximumZoomScale={0}
             activeAnimationType="spring"

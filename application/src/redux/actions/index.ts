@@ -180,7 +180,7 @@ class Actions {
     });
   };
 
-  public getNewsline = (page: number, isRefresh: boolean = false) => async (dispatch: Dispatch<Action>) => {
+  public getNewsline = (page: number) => async (dispatch: Dispatch<Action>) => {
     await this._useToken(async (el: string | null) => {
       axios
         .get(

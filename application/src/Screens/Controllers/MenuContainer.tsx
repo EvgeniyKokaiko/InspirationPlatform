@@ -41,8 +41,8 @@ const MenuContainer: React.FC<IProps> = (props: IProps): JSX.Element => {
   const onRefresh = useCallback(() => {
     console.log()
     setMenuState({...menuState, page: 0, refresh: true})
-    dispatch(actionImpl.getNewsline(0, true));
-    setMenuState({...menuState, refresh: false, isRequested: false})
+    dispatch(actionImpl.getNewsline(0));
+    setMenuState({...menuState, refresh: false})
   }, [])
 
 
@@ -53,8 +53,7 @@ const MenuContainer: React.FC<IProps> = (props: IProps): JSX.Element => {
     if (offsetY > (nEv.contentSize.height - nEv.layoutMeasurement.height - 600)) {
       if (!isRequested && menuState.page !== state[0].pages) {
         setMenuState({...menuState, page: menuState.page += 1})
-        console.log(menuState.page, "PAGE")
-        dispatch(actionImpl.getNewsline(menuState.page, false));
+        dispatch(actionImpl.getNewsline(menuState.page));
         setIsRequested(true);
       }
     }
@@ -70,21 +69,6 @@ const MenuContainer: React.FC<IProps> = (props: IProps): JSX.Element => {
     onScroll,
   };
 
-  // useEffect(() => {
-  //   console.log(state)
-  //   try {
-  //     if (state.length > 1) {
-  //       for (let i=0;i< state.length;i++) {
-  //        setMenuState({...menuState, data: [...menuState.data, ...state[i].data]})
-  //         console.log(menuState.data, 'MENUSTATE')
-  //       }
-  //       setIsRequested(false)
-  //     }
-  //     console.log(menuState.data)
-  //   } catch (e) {
-  //     console.log('foreach ex', e)
-  //   }
-  // }, [state])
 
   useEffect(() => {
     if (menuState.page === 0) {
@@ -97,17 +81,9 @@ const MenuContainer: React.FC<IProps> = (props: IProps): JSX.Element => {
     try {
     if (state.length > 0 && typeof state !== "undefined") {
       if (state[0].statusCode === 200) {
-        if (!isRequested) {
-          setMenuState({...menuState, data: [menuState.data.length > 0 && menuState.data, state[0].data]})
-        } else {
-          if (state.length > 1 && menuState.data.length !== 0) {
-              for (let i=0;i< state.length;i++) {
-                setMenuState({...menuState, data: [...menuState.data, ...state[i].data]})
+                setMenuState({...menuState, data: [...menuState.data, ...state[0].data]})
                 console.log(menuState.data, 'MENUSTATE')
-              }
               setIsRequested(false)
-          }
-        }
       } else {
         Alert.alert('Error!', 'Something went wrong');
       }
@@ -118,7 +94,7 @@ const MenuContainer: React.FC<IProps> = (props: IProps): JSX.Element => {
     }
   }, [state]);
 
-  return <MenuComponent {...STATE} />;
+  return <><MenuComponent {...STATE} /></>;
 };
 
 export default MenuContainer;
