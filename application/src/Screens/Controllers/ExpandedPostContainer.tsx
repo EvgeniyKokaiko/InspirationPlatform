@@ -27,15 +27,19 @@ const ExpandedPostContainer: React.FC<IProps> = (props: IProps): JSX.Element => 
   }, []);
 
   const createList = () => {
-    const result = [];
-    for (let i = 0; i < postData.data_count; i++) {
-      result.push(i);
-    }
+    const result: null[] = new Array(postData.data_count); for (let i=0; i<postData.data_count; ++i) result[i] = null;
+    console.log(result.length, result, postData.data_count)
     return result;
   };
 
   const _renderItem = ({ item, index }: {item: number, index: number}) => {
-    return <Image key={1} style={[St.image100modal]} source={{ uri: `${dataPath}${item}.png?${Date.now()}` }} />;
+    return <Image key={1} style={[St.image100modal]} source={{ uri: `${dataPath}${index}.png?${Date.now()}` }} />;
+  }
+
+  const onPostOwnerPress = (): void => {
+    if (postData.owner !== void 0) {
+      props.navigation.navigate(StackScreens.UserProfile, {ownerId: postData.owner})
+    }
   }
 
 
@@ -46,7 +50,8 @@ const ExpandedPostContainer: React.FC<IProps> = (props: IProps): JSX.Element => 
     createList,
     postData,
     ownerAvatar,
-    postState
+    postState,
+    onPostOwnerPress
   };
 
 

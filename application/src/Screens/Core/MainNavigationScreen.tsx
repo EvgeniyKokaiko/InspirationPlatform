@@ -12,7 +12,7 @@ import {Component} from "../../Types/Types";
 import SignUpComponent from "../SignUpComponent";
 import {AppState, BackHandler} from "react-native";
 import SetupAccountComponent from "../SetupAccountComponent";
-import UserProfileComponent from "../UserProfileComponent";
+import MyProfileComponent from "../MyProfileComponent";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import HomeComponent from "../HomeComponent";
 import MenuComponent from "../MenuComponent";
@@ -25,6 +25,7 @@ import EditProfileComponent from "../EditProfileComponent";
 import SettingsComponent from "../SettingsComponent";
 import MenuContainer from "../Controllers/MenuContainer";
 import ExpandedPostContainer from "../Controllers/ExpandedPostContainer";
+import UserProfileContainer from "../Controllers/UserProfileContainer";
 
 
 interface IProps {}
@@ -34,6 +35,7 @@ export enum StackScreens {
     SignIn = "SignInComponent",
     SignUp = "SignUpComponent",
     SetupAccount = "SetupAccountComponent",
+    MyProfile = "MyProfileComponent",
     UserProfile = "UserProfileComponent",
     Home = "HomeComponent",
     Menu = "MenuComponent",
@@ -65,7 +67,7 @@ export const goBackOnBottomButton = (navProps: NavigationProp<any>) => {
 
 export const goToUserProfileScreenOnBottomButton = (navProps: any) => {
     BackHandler.addEventListener('hardwareBackPress', () => {
-        navProps.navigate(StackScreens.UserProfile)
+        navProps.navigate(StackScreens.MyProfile)
         return false;
     })
 }
@@ -90,7 +92,8 @@ const MainNavigationScreen: React.FC = (props:IProps) => {
 
             //Main screens
             {name: StackScreens.PostDetails, component: ExpandedPostContainer, options: {headerShown: false}},
-            {name: StackScreens.UserProfile, component: UserProfileComponent, options: {headerShown: false}},
+            {name: StackScreens.UserProfile, component: UserProfileContainer, options: {headerShown: false}},
+            {name: StackScreens.MyProfile, component: MyProfileComponent, options: {headerShown: false}},
             {name: StackScreens.Home, component: HomeComponent, options: {headerShown: false}},
             {name: StackScreens.Menu, component: MenuContainer, options: {headerShown: false}},
             {name: StackScreens.Add, component: AddComponent, options: {headerShown: false}},

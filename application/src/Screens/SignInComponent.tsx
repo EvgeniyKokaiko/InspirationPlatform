@@ -47,7 +47,7 @@ const SignInComponent = (props: IProps) => {
           AsyncStorage.setItem("Access_TOKEN", state.loginReducer.data).then(() => {
               dispatch(actionImpl.clear())
               setAuth({login: '', password: ''});
-              props.navigation.navigate(StackScreens.UserProfile)
+              props.navigation.navigate(StackScreens.MyProfile)
           })
         } else if (state.loginReducer.statusCode === 208) {
            //тоже зробити красним подсветку

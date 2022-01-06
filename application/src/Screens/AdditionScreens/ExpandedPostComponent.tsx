@@ -14,10 +14,11 @@ import {SThree} from "../../Styles/StylesThree";
 type IProps = {
   onBackBtn?(): void;
   _renderItem: ({item, index}: any) => JSX.Element
-  createList(): number[];
+  createList(): null[];
   postData: Post;
   ownerAvatar: string;
   postState: number
+  onPostOwnerPress(): void;
 } & BaseProps;
 
 
@@ -38,10 +39,12 @@ const ExpandedPostComponent = (state: IProps) => {
         </View>
       </View>
         <ScrollView style={St.PhotoList} contentContainerStyle={St.PhotoListhund}>
-            <View style={{height: mockupHeightToDP(30), width: '100%', flexDirection: 'row', alignItems: 'center', paddingHorizontal: mockupWidthToDP(20), marginBottom: mockupHeightToDP(15), marginTop: mockupHeightToDP(20)}}>
+            <View style={{height: mockupHeightToDP(30), width: '100%', paddingHorizontal: mockupWidthToDP(20), marginBottom: mockupHeightToDP(15), marginTop: mockupHeightToDP(20)}}>
+                <TouchableOpacity onPress={state.onPostOwnerPress} style={{flexDirection: 'row', alignItems: 'center'}}>
                 <Image style={[{width: mockupHeightToDP(30), height: mockupHeightToDP(30), borderRadius: 100}]} source={state.postState === 999 ? images.standardAvatar : {uri: state.ownerAvatar}} />
                 <Text style={[St.ownerTextWithoutOffsets, MP.ml10]}>{state.postData.owner}</Text>
-            </View>
+                </TouchableOpacity>
+                </View>
             <View style={St.horizontalLine} />
             <View style={{height: CarouselHeight, flexDirection: 'row', justifyContent: 'center', marginLeft: mockupWidthToDP(5)}}>
         <Carousel
