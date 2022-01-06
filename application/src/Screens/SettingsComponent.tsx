@@ -25,7 +25,7 @@ const SettingsComponent: React.FC<IProps> = (props: IProps) => {
         //TODO протипизировать юзСелектор
         const state: any = useSelector<any>(state => state)
     const onBackBtn = () => {
-            props.navigation.navigate(StackScreens.UserProfile)
+            props.navigation.navigate(StackScreens.MyProfile)
     }
 
     const routes: {[key: string]: string} = {

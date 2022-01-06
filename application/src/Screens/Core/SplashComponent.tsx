@@ -21,9 +21,9 @@ const SplashComponent: React.FC<IProps> = (props: IProps) => {
                  //TODO тут робити проверку чи є інтернет, і якщо нема тоді кажді 20 секунд слати запрос, якщо появився, тоді сразу кидати реквест
                 dispatch(actionImpl.checkForConnection)
                  if (state.checkForConnectionReducer.status === 200) {
-                     props.navigation.navigate(StackScreens.UserProfile)
+                     props.navigation.navigate(StackScreens.MyProfile)
                  } else {
-                     props.navigation.navigate(StackScreens.UserProfile)
+                     props.navigation.navigate(StackScreens.MyProfile)
                  }
              }
              if (token === null) {

@@ -31,7 +31,7 @@ export const images: {[key: string]: ImageSourcePropType} = {
     plus: require("./images/plus.png"),
     burger: require("./images/brgr.png"),
     avatar_mini: require("./images/user_avatar.png"),
-
+    standardAvatar: require('./images/defaultAvatar.jpg'),
 
 
     logout: require("./images/Settings/logout.png"),
@@ -41,4 +41,5 @@ export const images: {[key: string]: ImageSourcePropType} = {
     about: require("./images/Settings/about.png"),
 
     search: require("./images/searchPane.png"),
+
 }

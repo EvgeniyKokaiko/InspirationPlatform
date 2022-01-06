@@ -6,7 +6,7 @@ import {Post} from "../../Types/Models";
 import {actionImpl, apiURL} from "../../redux/actions";
 import {images} from "../../assets/images";
 import Carousel, {Pagination} from "react-native-snap-carousel";
-import {mockupHeightToDP} from "../../Parts/utils";
+import {DEVICE_WIDTH, mockupHeightToDP} from "../../Parts/utils";
 import {useDispatch} from "react-redux";
 import {SThree} from "../../Styles/StylesThree";
 
@@ -52,7 +52,7 @@ const MyPost = (props: myPostProps) => {
         showModal(false);
         Alert.alert("Posts", "Post delete");
     }, [])
-
+    const CarouselWidth = DEVICE_WIDTH / 80 * 100;
     return (
         <View key={props.id} style={[St.postListItem, St.zIndex2]}>
             <TouchableOpacity onLongPress={() => showModal(true)} onPressOut={() => showModal(false)} onPress={() => showModal(true)} key={props.id} style={St.image100}>
@@ -77,8 +77,8 @@ const MyPost = (props: myPostProps) => {
                                     <Carousel
                                         data={createList()}
                                         renderItem={_renderItem}
-                                        sliderWidth={mockupHeightToDP(400)}
-                                        itemWidth={mockupHeightToDP(390)}
+                                        sliderWidth={mockupHeightToDP(320)}
+                                        itemWidth={mockupHeightToDP(320)}
                                         activeAnimationType="spring"
                                     />
                                     </View>

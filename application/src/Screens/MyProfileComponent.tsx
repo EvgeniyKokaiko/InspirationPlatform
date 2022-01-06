@@ -18,7 +18,7 @@ import FullScreenPreloader from './segments/FullScreenPreloader';
 
 type IProps = BaseProps & {};
 
-const UserProfileComponent: React.FC<IProps> = (props: IProps) => {
+const MyProfileComponent: React.FC<IProps> = (props: IProps) => {
   const [user, setUser]: [User | null, Function] = useState(null);
   const [avatar, setAvatar] = useState('');
   const [refresh, setRefresh] = useState(false);
@@ -117,7 +117,6 @@ const UserProfileComponent: React.FC<IProps> = (props: IProps) => {
       {/*        <Image source={} />*/}
       {/*    </TouchableOpacity>*/}
       {/*    <TouchableOpacity>*/}
-
       {/*    </TouchableOpacity>*/}
       {/*</View>*/}
       <ScrollView showsVerticalScrollIndicator={false} style={[St.postListStyles]} contentContainerStyle={St.listContainer}>
@@ -146,4 +145,4 @@ const UserProfileComponent: React.FC<IProps> = (props: IProps) => {
   );
 };
 
-export default UserProfileComponent;
+export default MyProfileComponent;
