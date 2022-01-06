@@ -22,14 +22,14 @@ func Users(route *gin.Engine, db *database.DB) {
 					})
 				} else {
 					c.JSON(http.StatusOK, map[string]interface{}{
-						"me":   true,
-						"data": data,
-						"avatar" : "http://" + c.Request.Host + "/storage/" + name + "/avatar/avatar.png",
+						"me":     true,
+						"data":   data,
+						"avatar": "http://" + c.Request.Host + "/storage/" + name + "/avatar/avatar.png",
 					})
 				}
 			}
 		})
-		router.GET("/check", func (c *gin.Context) {
+		router.GET("/check", func(c *gin.Context) {
 			if len(c.Request.Header.Get("Authorization")) > 10 {
 				name, _, err := utils.ParseHeader(c)
 				if err != nil {
@@ -44,14 +44,14 @@ func Users(route *gin.Engine, db *database.DB) {
 						})
 					} else {
 						c.JSON(http.StatusOK, map[string]interface{}{
-							"message": "Accepted!",
+							"message":     "Accepted!",
 							"currentUser": user,
 						})
 					}
 				}
 			}
 		})
-		router.GET("/logout", func (c *gin.Context) {
+		router.GET("/logout", func(c *gin.Context) {
 			if tokenHeader := c.Request.Header.Get("Authorization"); len(tokenHeader) > 20 {
 				name, _, err := utils.ParseHeader(c)
 				if err != nil {
@@ -66,10 +66,28 @@ func Users(route *gin.Engine, db *database.DB) {
 					})
 				} else {
 					c.JSON(http.StatusOK, map[string]interface{}{
-						"statusCode": http.StatusOK,
+						"statusCode":    http.StatusOK,
 						"statusMessage": "accepted",
 					})
 				}
+			}
+		})
+		router.GET("/:userId", func(c *gin.Context) {
+			var usernameFromParam string = c.Param("userId")
+			if len(usernameFromParam) < 0 {
+				c.JSON(http.StatusBadRequest, map[string]interface{}{
+					"statusCode":    http.StatusBadRequest,
+					"statusMessage": "Bad request",
+				})
+			} else {
+				c.JSON(http.StatusOK, gin.H{
+					"statusCode":    http.StatusOK,
+					"statusMessage": "Accepted",
+					"data": map[string]interface{}{
+						"userData":  "some data",
+						"userPosts": "some posts",
+					},
+				})
 			}
 		})
 	}
