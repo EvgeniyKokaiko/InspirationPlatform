@@ -18,9 +18,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 type IProps = {} & BaseProps
 
 const SignInComponent = (props: IProps) => {
-    const [auth, setAuth]: [{login: string, password: string}, Function] = useState({
+    const [auth, setAuth]: [{login: string, password: string, currentTry: string}, Function] = useState({
         login: '',
         password: '',
+        currentTry: '',
     });
     const dispatch = useDispatch();
     const state: any = useSelector<Reducers>(state => state)
@@ -29,6 +30,7 @@ const SignInComponent = (props: IProps) => {
 
     const Login = () => {
         if (auth.login.length > 2 || auth.password.length > 2) {
+            setAuth({...auth, currentTry: auth.login})
             return  dispatch(actionImpl.authorize(auth.login, auth.password));
         }
         //зробити красним цветом штуку
@@ -46,7 +48,8 @@ const SignInComponent = (props: IProps) => {
         if (state.loginReducer.statusCode === 200) {
           AsyncStorage.setItem("Access_TOKEN", state.loginReducer.data).then(() => {
               dispatch(actionImpl.clear())
-              setAuth({login: '', password: ''});
+              AsyncStorage.setItem("currentUserId", auth.currentTry).then()
+              setAuth({login: '', password: '', currentTry: ''});
               props.navigation.navigate(StackScreens.MyProfile)
           })
         } else if (state.loginReducer.statusCode === 208) {

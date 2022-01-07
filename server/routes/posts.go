@@ -124,7 +124,7 @@ func Posts(route *gin.Engine, db *database.DB) {
 					"statusMessage": "Troubles on token parsing",
 				})
 			} else {
-				result, error2 := db.DeletePost(name, request["hash"])
+				result, error2 := db.DeletePost(name, request["hash"], request["username"])
 				if error2 != nil {
 					c.JSON(http.StatusLocked, map[string]interface{}{
 						"statusCode": http.StatusLocked,

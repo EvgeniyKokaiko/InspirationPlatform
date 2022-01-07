@@ -5,13 +5,16 @@ import { BaseProps } from '../../Types/Types';
 import { StackScreens } from '../Core/MainNavigationScreen';
 import { St } from '../../Styles/StylesTwo';
 import { Post } from '../../Types/Models';
-import { apiURL } from '../../redux/actions';
+import {actionImpl, apiURL} from '../../redux/actions';
 import {checkForAvatar} from "../../Parts/utils";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {useDispatch} from "react-redux";
 
 type IProps = {} & BaseProps;
 //source={state.isAvatarIncluded === 999 ? images.standardAvatar : {uri: state.ownerAvatar}}
 const ExpandedPostContainer: React.FC<IProps> = (props: IProps): JSX.Element => {
   const [postState, setPostState] = useState(0)
+  const dispatch = useDispatch()
   let postData: Post = props.route.params.postData;
   const dataPath = `http://${apiURL}/storage/${postData.owner}/posts/${
     postData.image.length > 0 && postData.data_count > 0 ? postData.image : postData.video
@@ -38,7 +41,19 @@ const ExpandedPostContainer: React.FC<IProps> = (props: IProps): JSX.Element => 
 
   const onPostOwnerPress = (): void => {
     if (postData.owner !== void 0) {
-      props.navigation.navigate(StackScreens.UserProfile, {ownerId: postData.owner})
+      AsyncStorage.getItem("currentUserId").then((el) => {
+          if (el !== null || el !== void 0) {
+              if (el === postData.owner) {
+                  props.navigation.navigate(StackScreens.MyProfile)
+              } else {
+                props.navigation.navigate(StackScreens.UserProfile, {ownerId: postData.owner})
+              }
+          } else {
+              dispatch(actionImpl.logout())
+              dispatch(actionImpl.clear())
+              props.navigation.navigate(StackScreens.SignIn)
+          }
+      })
     }
   }
 

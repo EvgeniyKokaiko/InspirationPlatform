@@ -63,14 +63,26 @@ class ReducersImpl {
         return state
     }
 
-    public StatelessReducers(state = [], action: Action) {
+    public GetUserData(state = {}, action: Action) {
+        if (action.type === ActionTypes.User) {
+            return {...action.payload}
+        }
+        return state;
+    }
+
+    public StatelessReducers(state = {}, action: Action) {
         if (action.type === ActionTypes.Check) {
             return action.payload
         } if (action.type === ActionTypes.AddPost) {
             return action.payload
-        } if (action.type === ActionTypes.DeletePost) {
-            return action.payload
         } if (action.type === ActionTypes.Logout) {
+            return action.payload
+        }
+        return state
+    }
+
+    public PostDelete(state = {statusCode: 0}, action: Action) {
+        if (action.type === ActionTypes.DeletePost) {
             return action.payload
         }
         return state
@@ -85,6 +97,8 @@ class ReducersImpl {
             mePostsReducer: this.MePostsReducer,
             checkForConnectionReducer: this.StatelessReducers,
             getNewsLineReducer: this.GetNewsLineReducer,
+            getUserDataReducer: this.GetUserData,
+            postDelete: this.PostDelete
         })
     }
 }

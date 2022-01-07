@@ -112,9 +112,9 @@ func (db *DB) AddPost(username string, data map[string]interface{}) (string, err
 	return "Good", nil
 }
 
-func (db *DB) DeletePost(username string, hash string) (string, error) {
+func (db *DB) DeletePost(username string, hash string, owner string) (string, error) {
 	result := db.database.Table(typedDB.TABLES.POSTS).Where("owner = ? AND image = ?", username, hash).Delete(&models.Post{})
-	if result.Error != nil {
+	if result.Error != nil || owner != username {
 		return "", errors.New("ERROR! Something went wrong")
 	}
 	return "Accept", nil

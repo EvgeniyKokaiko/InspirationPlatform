@@ -12,10 +12,11 @@ interface ActionMethods {
   getMe():(dispatch: Dispatch<Action>) => {};
   getMyPosts(): (dispatch: Dispatch<Action>) => {};
   addPost(caption: string, image: any, type: number): (dispatch: Dispatch<Action>) => {};
-  deletePost(hash: string): (dispatch: Dispatch<Action>) => {};
+  deletePost(hash: string, username: string): (dispatch: Dispatch<Action>) => {};
   checkForConnection(): (dispatch: Dispatch<Action>) => {};
   logout(): (dispatch: Dispatch<Action>) => {};
   getNewsline(page: number): (dispatch: Dispatch<Action>) => {};
+  getUser(username: string): (dispatch: Dispatch<Action>) => {};
 }
 
 class Actions implements ActionMethods {
@@ -147,12 +148,12 @@ class Actions implements ActionMethods {
     });
   };
 
-  public deletePost = (hash: string) => async (dispatch: Dispatch<Action>) => {
+  public deletePost = (hash: string, username: string) => async (dispatch: Dispatch<Action>) => {
     await this._useToken(async (el: string | null) => {
       axios
         .post(
           `http://${apiURL}/posts/delete`,
-          { hash },
+          { hash, username },
           {
             headers: {
               Authorization: `Bearer ${el}`,
@@ -161,7 +162,7 @@ class Actions implements ActionMethods {
         )
         .then((el) => {
           dispatch({ type: ActionTypes.DeletePost, payload: { statusCode: el.status } });
-        });
+        }).catch((el) => {dispatch({ type: ActionTypes.DeletePost, payload: { statusCode: 423 } })});
     });
   };
 
@@ -209,6 +210,22 @@ class Actions implements ActionMethods {
         });
     });
   };
+  public getUser = (username: string) => async (dispatch: Dispatch<Action>) => {
+    await this._useToken(async (el: string | null) => {
+      axios
+          .get(
+              `http://${apiURL}/users/${username}`,
+              {
+                headers: {
+                  Authorization: `Bearer ${el}`,
+                },
+              }
+          )
+          .then((el) => {
+            dispatch({ type: ActionTypes.User, payload: el.data });
+          });
+    });
+  }
 }
 
 export const actionImpl = new Actions(apiURL);
