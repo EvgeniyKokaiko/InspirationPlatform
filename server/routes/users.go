@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"server/database"
+	typedDB "server/types"
 	"server/utils"
 )
 
@@ -75,22 +76,16 @@ func Users(route *gin.Engine, db *database.DB) {
 		router.GET("/:userId", func(c *gin.Context) {
 			var usernameFromParam string = c.Param("userId")
 			if len(usernameFromParam) < 0 {
-				c.JSON(http.StatusBadRequest, map[string]interface{}{
-					"statusCode":    http.StatusBadRequest,
-					"statusMessage": "Bad request",
-				})
+				c.JSON(http.StatusBadRequest, typedDB.GiveResponse(http.StatusBadRequest, "Bad Request"))
 			} else {
-				c.JSON(http.StatusOK, gin.H{
-					"statusCode":    http.StatusOK,
-					"statusMessage": "Accepted",
-					"data": map[string]interface{}{
-						"userData":  "some data",
-						"userPosts": "some posts",
-					},
-				})
+				if dbResult, error := db.GetUserDataWithPosts(usernameFromParam, 0); error == nil {
+					c.JSON(http.StatusOK, typedDB.GiveOKResponseWithData(dbResult))
+				} else {
+					c.JSON(http.StatusBadRequest, typedDB.GiveResponse(http.StatusBadRequest, "Bad Request"))
+				}
 			}
 		})
 	}
 }
-
+//dbResult, error := db.GetUserDataWithPosts("evgeniy", 0)
 //fmt.Println(c.Request.Host+c.Request.URL.Path)

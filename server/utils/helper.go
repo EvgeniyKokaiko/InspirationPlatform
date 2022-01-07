@@ -7,6 +7,9 @@ import (
 	"strings"
 )
 
+
+type StandardMap map[string]interface{}
+
 func ParseHeader(c *gin.Context) (string, string, error) {
 	authorizationHeader := strings.Split(c.Request.Header.Get("Authorization"), " ")
 	token := authorizationHeader[1]
@@ -34,4 +37,8 @@ func RandStringBytesRmndr(n int) string {
 		b[i] = letterBytes[rand.Int63() % int64(len(letterBytes))]
 	}
 	return string(b)
+}
+
+func (c StandardMap) AddToMap(key string, item interface{}) {
+	c[key] = item
 }

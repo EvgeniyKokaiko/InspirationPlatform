@@ -9,6 +9,7 @@ import (
 	"log"
 	"math"
 	models "server/models"
+	typedDB "server/types"
 	"server/utils"
 	"time"
 )
@@ -51,7 +52,7 @@ func (db *DB) CreateEmptyUser(item *models.EmptyUser) error {
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(item.Password), 8)
 	item.Password = string(hashedPassword)
 	fmt.Println(item)
-	err := db.database.Table("users").Create(&item)
+	err := db.database.Table(typedDB.TABLES.USERS).Create(&item)
 	if err != nil {
 		fmt.Println("Something went wrong", err)
 	}
@@ -60,7 +61,7 @@ func (db *DB) CreateEmptyUser(item *models.EmptyUser) error {
 
 
 func (db *DB) SetupAccount(item *models.User) error {
-	err := db.database.Table("users").Where("username = ?", item.Username).Updates(&item)
+	err := db.database.Table(typedDB.TABLES.USERS).Where("username = ?", item.Username).Updates(&item)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -86,7 +87,7 @@ func (db *DB) Login(item *models.EmptyUser) (models.EmptyUser, string) {
 func (db *DB) Me(username string) *models.User {
 	var result *models.User
 	var resultPointer = &result
-	db.database.Table("users").Where("username = ?", username).Take(&result).Scan(&result)
+	db.database.Table(typedDB.TABLES.USERS).Where("username = ?", username).Take(&result).Scan(&result)
 	(*resultPointer).Token = ""
 	(*resultPointer).Password = ""
 	return result
@@ -95,7 +96,7 @@ func (db *DB) Me(username string) *models.User {
 
 func (db *DB) Avatar(username string) string {
 	var result *models.User
-	db.database.Table("users").Where("username = ?", username).Take(&result).Scan(&result)
+	db.database.Table(typedDB.TABLES.USERS).Where("username = ?", username).Take(&result).Scan(&result)
 	fmt.Println(result.Avatar, "5454")
 	return result.Avatar
 }
@@ -104,7 +105,7 @@ func (db *DB) Avatar(username string) string {
 func (db *DB) AddPost(username string, data map[string]interface{}) (string, error) {
 	data["date_of_creation"] = time.Now()
 	fmt.Println(data["date_of_creation"])
-	response := db.database.Table("posts").Create(data)
+	response := db.database.Table(typedDB.TABLES.POSTS).Create(data)
 	if response.Error != nil {
 		return "", errors.New("ERROR! Something went wrong on post creation")
 	}
@@ -112,7 +113,7 @@ func (db *DB) AddPost(username string, data map[string]interface{}) (string, err
 }
 
 func (db *DB) DeletePost(username string, hash string) (string, error) {
-	result := db.database.Table("posts").Where("owner = ? AND image = ?", username, hash).Delete(&models.Post{})
+	result := db.database.Table(typedDB.TABLES.POSTS).Where("owner = ? AND image = ?", username, hash).Delete(&models.Post{})
 	if result.Error != nil {
 		return "", errors.New("ERROR! Something went wrong")
 	}
@@ -122,13 +123,13 @@ func (db *DB) DeletePost(username string, hash string) (string, error) {
 
 func (db *DB) GetMyPosts(username string) ([]*models.Post, error) {
 	var result []*models.Post
-	db.database.Table("posts").Where("owner = ?", username).Find(&result).Scan(&result)
+	db.database.Table(typedDB.TABLES.POSTS).Where("owner = ?", username).Find(&result).Scan(&result)
 	return result, nil
 }
 
 
 func (db *DB) Logout(username string) error {
-	result := db.database.Table("users").Where("username = ?", username).Update("token", "")
+	result := db.database.Table(typedDB.TABLES.USERS).Where("username = ?", username).Update("token", "")
 	if result.Error != nil {
 		return errors.New("ERROR! Something went wrong on database")
 	}
@@ -138,7 +139,7 @@ func (db *DB) Logout(username string) error {
 
 func (db *DB) CheckToken(username string) (string, error) {
 	var result *models.EmptyUser
-	err := db.database.Table("users").Where("username = ?", username).Find(&result).Scan(&result)
+	err := db.database.Table(typedDB.TABLES.USERS).Where("username = ?", username).Find(&result).Scan(&result)
 	if err.Error != nil && len(result.Token) < 10 {
 		fmt.Println(result)
 		return "", err.Error
@@ -155,7 +156,7 @@ func (db *DB) GetNewsLine(_ string, page int) ([]*models.Post, int ,error) {
 	var dbResult []*models.Post
 	var dbPageResult = map[string]interface{}{}
 	const postBunch int = 30
-	dbResponse := db.database.Table("posts").Offset(postBunch * page).Limit(postBunch).Order("date_of_creation desc").Scan(&dbResult)
+	dbResponse := db.database.Table(typedDB.TABLES.POSTS).Offset(postBunch * page).Limit(postBunch).Order("date_of_creation desc").Scan(&dbResult)
 	dbPageCount := db.database.Raw("SELECT COUNT(*) FROM posts").Scan(&dbPageResult)
 	pageCount := math.Ceil(float64(dbPageResult["COUNT(*)"].(int64) / 30))
 	fmt.Println(dbPageCount, pageCount)
@@ -166,3 +167,25 @@ func (db *DB) GetNewsLine(_ string, page int) ([]*models.Post, int ,error) {
 
 	return dbResult, int(pageCount) ,nil
 }
+
+
+func (db *DB) GetUserDataWithPosts(username string, page int) (map[string]interface{}, error) {
+	var userData *models.User
+	var userPosts *[]models.Post
+	dbResult :=  utils.StandardMap{}
+
+	dbUserDataResponse := db.database.Table(typedDB.TABLES.USERS).Where("username = ?", username).Take(&userData)
+	dbUserPostsResponse := db.database.Table(typedDB.TABLES.POSTS).Where("owner = ?", username).Scan(&userPosts)
+	if dbUserDataResponse.Error != nil || dbUserPostsResponse.Error != nil {
+		return map[string]interface{}{}, errors.New("ERROR! You got an error on database catching")
+	}
+		if userData.Password != "" {
+	userData.Password = ""
+	}
+	dbResult.AddToMap("userData", userData)
+	dbResult.AddToMap("userPosts", userPosts)
+	return dbResult, nil
+}
+
+
+//TODO сделать на флаг isLock, ed если да, и есть доступ(новая таблица user_permissions) тогда возращать и посты пользователя, а если нет тогда возращать только данные пользователя
