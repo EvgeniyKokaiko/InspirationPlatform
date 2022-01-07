@@ -5,8 +5,21 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const apiURL = '192.168.1.80:8080';
 
-class Actions {
-  private readonly _serverURL: string;
+interface ActionMethods {
+  register(username: string, email: string, password: string): (dispatch: Dispatch<Action>) => {};
+  setup(username: { data: string }, full_name: string, location: string, description: string, gender: string): (dispatch: Dispatch<Action>) => {};
+  authorize(username: string, password: string): (dispatch: Dispatch<Action>) => {};
+  getMe():(dispatch: Dispatch<Action>) => {};
+  getMyPosts(): (dispatch: Dispatch<Action>) => {};
+  addPost(caption: string, image: any, type: number): (dispatch: Dispatch<Action>) => {};
+  deletePost(hash: string): (dispatch: Dispatch<Action>) => {};
+  checkForConnection(): (dispatch: Dispatch<Action>) => {};
+  logout(): (dispatch: Dispatch<Action>) => {};
+  getNewsline(page: number): (dispatch: Dispatch<Action>) => {};
+}
+
+class Actions implements ActionMethods {
+ private readonly _serverURL: string;
   constructor(serverURL: string) {
     this._serverURL = serverURL;
   }
