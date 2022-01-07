@@ -97,6 +97,9 @@ export const StylesOne = StyleSheet.create({
   flex_jc_fs: {
     justifyContent: 'flex-start',
   },
+  flex_jc_fe: {
+    justifyContent: 'flex-end',
+  },
 
   flex_jc_sb: {
     justifyContent: 'space-between',
@@ -111,6 +114,12 @@ export const StylesOne = StyleSheet.create({
   image20: {
     width: mockupWidthToDP(20),
     height: mockupWidthToDP(20),
+    resizeMode: 'contain',
+  },
+
+  image25: {
+    width: mockupWidthToDP(25),
+    height: mockupWidthToDP(25),
     resizeMode: 'contain',
   },
 

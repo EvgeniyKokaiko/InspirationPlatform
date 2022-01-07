@@ -7,12 +7,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import {StackScreens} from "../Core/MainNavigationScreen";
 import {Linking} from "react-native";
 import {User} from "../../Types/Models";
+import {checkForAvatar} from "../../Parts/utils";
 
 type IProps = {} & BaseProps
 
 type userDataProps = {
-    userData: any,
-    refresh: boolean
+    userData: any;
+    refresh: boolean;
+    avatarStatus: number;
 }
 
 const UserProfileContainer = (props: IProps) => {
@@ -23,6 +25,7 @@ const UserProfileContainer = (props: IProps) => {
     const [userState, setUserState] = useState<userDataProps>({
         userData: {},
         refresh: false,
+        avatarStatus: -1,
     });
 
     const makeRequest = useCallback(() => {
@@ -38,6 +41,9 @@ const UserProfileContainer = (props: IProps) => {
         props.navigation.navigate(StackScreens.Menu);
     };
 
+
+
+
     const STATE = {
         ownerId,
         makeRequest,
@@ -45,12 +51,19 @@ const UserProfileContainer = (props: IProps) => {
         refresh: userState.refresh,
         onPersonalSitePress,
         ownerAvatar,
-        onBackBtn
+        onBackBtn,
+        avatarStatus: userState.avatarStatus
     }
 
 
     useEffect(() => {
         dispatch(actionImpl.getUser(ownerId))
+    }, [ownerId])
+
+    useEffect(() => {
+        checkForAvatar(ownerAvatar).then((el) => {
+            setUserState({...userState, avatarStatus: el})
+        })
     }, [ownerId])
 
 

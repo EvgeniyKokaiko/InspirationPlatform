@@ -72,7 +72,7 @@ const MyPost = (props: myPostProps) => {
     const CarouselWidth = DEVICE_WIDTH / 80 * 100;
     return (
         <View key={props.id} style={[St.postListItem, St.zIndex2]}>
-            <TouchableOpacity onLongPress={() => showModal(true)} onPressOut={() => showModal(false)} onPress={() => {showModal(true), setIndex(props.index)}} key={props.id} style={St.image100}>
+            <TouchableOpacity onLongPress={() => {showModal(true); setIndex(props.index)}} onPressOut={() => {showModal(false); setIndex(-1)}} onPress={() => {showModal(true); setIndex(props.index)}} key={props.id} style={St.image100}>
                 <Image style={[StylesOne.wh100, St.borderImage]} source={{uri: `${dataPath}0.png`}} />
             </TouchableOpacity>
                     <Modal
@@ -83,7 +83,7 @@ const MyPost = (props: myPostProps) => {
                         <View style={St.modalWidth}>
                             <View style={[St.centeredView, St.zIndex999]}>
                                 <View style={St.modalView}>
-                                    <TouchableOpacity onPress={() => showModal(false)} style={[St.deletePost]}>
+                                    <TouchableOpacity onPress={() => {showModal(false); setIndex(-1)}} style={[St.deletePost]}>
                                         <Image source={images.shrink} style={St.image100} />
                                     </TouchableOpacity>
                                      <TouchableOpacity onPress={onPostDelete} style={[St.exitButton]}>

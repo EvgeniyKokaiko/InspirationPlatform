@@ -250,6 +250,7 @@ export const St = StyleSheet.create({
     marginBottom: mockupHeightToDP(6),
   },
 
+
   image100modal: {
     width: '100%',
     height: '100%',

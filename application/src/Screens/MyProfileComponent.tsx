@@ -8,10 +8,10 @@ import { images } from '../assets/images';
 import { St } from '../Styles/StylesTwo';
 import { backgrounds } from '../Styles/Backgrounds';
 import Avatar from './segments/Avatar';
-import { mockupHeightToDP } from '../Parts/utils';
+import {checkForAvatar, mockupHeightToDP} from '../Parts/utils';
 import { useDispatch, useSelector } from 'react-redux';
 import { Reducers } from '../redux/reducers/reducers';
-import {actionImpl} from '../redux/actions';
+import {actionImpl, apiURL} from '../redux/actions';
 import { User } from '../Types/Models';
 import MyPost from './segments/MyPost';
 import FullScreenPreloader from './segments/FullScreenPreloader';
@@ -19,13 +19,15 @@ import FullScreenPreloader from './segments/FullScreenPreloader';
 type IProps = BaseProps & {};
 
 const MyProfileComponent: React.FC<IProps> = (props: IProps) => {
-  const [user, setUser]: [User | null, Function] = useState(null);
-  const [avatar, setAvatar] = useState('');
+  const [user, setUser] = useState<any>({});
   const [refresh, setRefresh] = useState(false);
+  const [avatar, setAvatar] = useState(-1)
   const [posts, setPosts] = useState([]);
   const dispatch = useDispatch();
   const state: any = useSelector<Reducers>((state) => state);
   noGoBack();
+
+
 
   useEffect(() => {
     dispatch(actionImpl.getMe());
@@ -40,7 +42,6 @@ const MyProfileComponent: React.FC<IProps> = (props: IProps) => {
 
   useEffect(() => {
     setUser(state.meReducer.data);
-    setAvatar(state.meReducer.avatar);
     setPosts(state.mePostsReducer.data);
   }, [state]);
 
@@ -50,6 +51,14 @@ const MyProfileComponent: React.FC<IProps> = (props: IProps) => {
     });
   };
 
+  useEffect(() => {
+    if (user !== void 0) {
+      checkForAvatar(`http://${apiURL}/storage/${user!.username}/avatar/avatar.png?ab=${Date.now()}`).then((el) => {
+        setAvatar(el)
+      })
+    }
+  }, [refresh , user])
+
   async function onPersonalSitePress() {
     await Linking.openURL((user as unknown as User).personal_site);
   }
@@ -58,7 +67,7 @@ const MyProfileComponent: React.FC<IProps> = (props: IProps) => {
     props.navigation.navigate(StackScreens.Settings);
   }
 
-  return user && avatar && posts ? (
+  return user && posts ? (
     <ScrollView style={[StylesOne.screenContainer, MP.ph25]} refreshControl={<RefreshControl refreshing={refresh} onRefresh={makeRequest} />}>
       <View style={[StylesOne.w100]}>
         <View style={[StylesOne.flex_row, StylesOne.flex_jc_sb, StylesOne.flex_ai_c, MP.mv20]}>
@@ -70,7 +79,7 @@ const MyProfileComponent: React.FC<IProps> = (props: IProps) => {
       <View style={[MP.mt20, StylesOne.w100, St.h190, St.borderRadius30, backgrounds.myProfileBlocks, MP.pv20, MP.ph20]}>
         <View style={[StylesOne.flex_row]}>
           <View style={[MP.mb20]}>
-            <Avatar icon={avatar} size={60} />
+            <Avatar icon={avatar === 999 ? images.standardAvatar : {uri: `http://${apiURL}/storage/${user!.username}/avatar/avatar.png`}} size={60} />
           </View>
           <View style={[StylesOne.flex_row, StylesOne.flex_ai_c, { height: mockupHeightToDP(75) }]}>
             <TouchableOpacity style={[MP.mh15, StylesOne.flex_column, StylesOne.flex_ai_c]}>

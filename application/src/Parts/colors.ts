@@ -22,4 +22,5 @@ export const colors = {
     fontDarkness: "#3A3A3A",
     blurWhite: "#DADADA",
     classicBlack: "#000000",
+    mintGreen: "#5024bf",
 }

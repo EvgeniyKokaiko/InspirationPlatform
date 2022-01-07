@@ -7,13 +7,13 @@ import {backgrounds} from "../../Styles/Backgrounds";
 
 type IProps = {
     size: number
-    icon: string
+    icon: any
 }
 
 const Avatar: React.FC<IProps> = (props: IProps) => {
     return (
         <View style={[props.size ? {width: mockupWidthToDP(props.size), height: mockupWidthToDP(props.size)} : {}, St.avatar]}>
-             <Image style={[StylesOne.wh100, StylesOne.rm_c,St.borderRadius30]} source={{uri: props.icon}} />
+             <Image style={[StylesOne.wh100, StylesOne.rm_c,St.borderRadius30]} source={props.icon} />
         </View>
     )
 }
