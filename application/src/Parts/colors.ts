@@ -23,4 +23,5 @@ export const colors = {
     blurWhite: "#DADADA",
     classicBlack: "#000000",
     mintGreen: "#5024bf",
+    Chalise: '#4556d9',
 }

@@ -5,13 +5,15 @@ import (
 )
 
 type Tables struct {
-	USERS string
-	POSTS string
+	USERS 		  string
+	POSTS  		  string
+	SUBSCRIPTIONS string
 }
 
 var TABLES = Tables{
-	USERS: "users",
-	POSTS: "posts",
+	USERS: 			"users",
+	POSTS: 			"posts",
+	SUBSCRIPTIONS: 	"user_subscription",
 }
 
 
@@ -28,4 +30,5 @@ type DBMethods interface {
 	CheckToken(string) (string, error)
 	GetNewsLine(string, int) ([]*models.Post, int ,error)
 	GetUserDataWithPosts(string, int) (map[string]interface{}, error)
+    SubscribeUser(owner string, subscriber string, ) (bool, error)
 }

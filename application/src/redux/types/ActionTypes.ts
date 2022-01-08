@@ -11,6 +11,7 @@ export enum ActionTypes {
     Logout = "LOGOUT_ME",
     NewsLine = "GET_NEWSLINE",
     User = "GET_USER_DATA",
+    Subscribe = "MAKE_SUBSCRIBE",
 }
 
 

@@ -51,6 +51,7 @@ func CreateDB() *DB {
 func (db *DB) CreateEmptyUser(item *models.EmptyUser) error {
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(item.Password), 8)
 	item.Password = string(hashedPassword)
+	item.IsPrivate = false
 	fmt.Println(item)
 	err := db.database.Table(typedDB.TABLES.USERS).Create(&item)
 	if err != nil {
@@ -59,6 +60,7 @@ func (db *DB) CreateEmptyUser(item *models.EmptyUser) error {
 	return err.Error
 }
 
+//при тому коли ми создали емпті юзера і вишли з аппки, при заході назад дивитись чи він сетапнувся, якщо ні, тоді перекидувати на скрін сетапа!
 
 func (db *DB) SetupAccount(item *models.User) error {
 	err := db.database.Table(typedDB.TABLES.USERS).Where("username = ?", item.Username).Updates(&item)
@@ -169,22 +171,74 @@ func (db *DB) GetNewsLine(_ string, page int) ([]*models.Post, int ,error) {
 }
 
 
-func (db *DB) GetUserDataWithPosts(username string, page int) (map[string]interface{}, error) {
+func (db *DB) GetUserDataWithPosts(username string, name string ,page int) (map[string]interface{}, error) {
 	var userData *models.User
 	var userPosts *[]models.Post
+	var userSubscription *models.Subscriptions
+	var userCounts = map[string]interface{}{}
 	dbResult :=  utils.StandardMap{}
-
 	dbUserDataResponse := db.database.Table(typedDB.TABLES.USERS).Where("username = ?", username).Take(&userData)
-	dbUserPostsResponse := db.database.Table(typedDB.TABLES.POSTS).Where("owner = ?", username).Scan(&userPosts)
-	if dbUserDataResponse.Error != nil || dbUserPostsResponse.Error != nil {
+	dbSubscription := db.database.Table(typedDB.TABLES.SUBSCRIPTIONS).Where("owner = ? AND subscriber = ?", username, name).Find(&userSubscription)
+	dbCounter := db.database.Table(typedDB.TABLES.SUBSCRIPTIONS).Raw("SELECT x.owner_count, y.subscriber_count FROM (SELECT COUNT(*) AS owner_count from user_subscription WHERE OWNER = ?) AS x, (SELECT COUNT(*) AS subscriber_count FROM user_subscription WHERE subscriber = ?) as y", username, username).Scan(&userCounts)
+	if (userData.IsPrivate == 1 && userSubscription.Status == 2) || userData.IsPrivate == 0 {
+		dbUserPostsResponse := db.database.Table(typedDB.TABLES.POSTS).Where("owner = ?", username).Scan(&userPosts)
+		if  dbUserPostsResponse.Error != nil {
+			return map[string]interface{}{}, errors.New("ERROR! You got an error on database catching")
+		}
+		dbResult.AddToMap("userPosts", userPosts)
+		dbResult.AddToMap("isPrivate", false)
+	} else {
+		dbResult.AddToMap("userPosts", map[string]interface{}{
+			"status": "Locked.User doesn't give permission",
+			"statusCode": 1,
+		})
+		dbResult.AddToMap("isPrivate", true)
+	}
+	dbResult.AddToMap("counts", userCounts)
+
+	if userSubscription.Owner == "" && userSubscription.Subscriber == "" {
+		dbResult.AddToMap("isSubscribe", false)
+	} else {
+		dbResult.AddToMap("isSubscribe", true)
+	}
+
+
+	if dbUserDataResponse.Error != nil || dbSubscription.Error != nil || dbCounter.Error != nil {
 		return map[string]interface{}{}, errors.New("ERROR! You got an error on database catching")
 	}
 		if userData.Password != "" {
 	userData.Password = ""
 	}
+	dbResult.AddToMap("isSubscribed", userSubscription)
 	dbResult.AddToMap("userData", userData)
-	dbResult.AddToMap("userPosts", userPosts)
 	return dbResult, nil
+}
+
+
+func (db *DB) SubscribeUser(owner string, subscriber string) (bool, error) {
+	subscription :=  models.Subscriptions{}
+	subscription.Subscriber = subscriber
+	subscription.Owner = owner
+	subscription.CreatedAt = time.Now()
+	subscription.UpdatedAt = time.Now()
+	ownerUser := models.User{}
+	var countOfResponses int = 0
+
+	dbUserResponse := db.database.Table(typedDB.TABLES.USERS).Where("username = ?", owner).Take(&ownerUser)
+	dbSubscriptionResponse := db.database.Raw("Select COUNT(*) FROM user_subscription WHERE owner = ? AND subscriber = ?", owner, subscriber).Scan(&countOfResponses)
+
+	if dbUserResponse.Error != nil || countOfResponses != 0 || dbSubscriptionResponse.Error != nil || owner == subscriber {
+		return false, errors.New("ERROR!This user doesnt exists")
+	}
+	if ownerUser.IsPrivate == 1 {
+		subscription.Status = 1
+	} else {
+		subscription.Status = 2
+	}
+	if dbSubscriptionResponse := db.database.Table(typedDB.TABLES.SUBSCRIPTIONS).Create(&subscription); dbSubscriptionResponse.Error != nil {
+		return false, errors.New("ERROR!Something went wrong")
+	}
+	return true, nil
 }
 
 

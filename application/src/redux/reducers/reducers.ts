@@ -81,8 +81,15 @@ class ReducersImpl {
         return state
     }
 
-    public PostDelete(state = {statusCode: 0}, action: Action) {
+    public PostDeleteReducer(state = {statusCode: 0}, action: Action) {
         if (action.type === ActionTypes.DeletePost) {
+            return action.payload
+        }
+        return state
+    }
+
+    public MakeSubscribeReducer(state = {statusCode: 0}, action: Action) {
+        if (action.type === ActionTypes.Subscribe) {
             return action.payload
         }
         return state
@@ -98,7 +105,8 @@ class ReducersImpl {
             checkForConnectionReducer: this.StatelessReducers,
             getNewsLineReducer: this.GetNewsLineReducer,
             getUserDataReducer: this.GetUserData,
-            postDelete: this.PostDelete
+            postDelete: this.PostDeleteReducer,
+            subscribeReducer: this.MakeSubscribeReducer,
         })
     }
 }

@@ -3,11 +3,12 @@ package models
 
 
 type EmptyUser struct {
-	Username 	string  `json:"username"`
-	Email 	 	string  `json:"email"`
-	Password 	string  `json:"password,omitempty"`
-	Token 		string  `json:"token"`
-	CreatedAt 	  string `json:"created_at"`
+	Username 		string  `json:"username"`
+	Email 	 		string  `json:"email"`
+	Password 		string  `json:"password,omitempty"`
+	Token 			string  `json:"token"`
+	IsPrivate 	 	bool 	 `json:"is_private"`
+	CreatedAt 	  	string `json:"created_at"`
 }
 
 type User struct {
@@ -21,9 +22,12 @@ type User struct {
 	FullName      string `json:"full_name"`
 	Location      string `json:"location"`
 	DateOfBirth   string `json:"date_of_birth"`
+	IsPrivate 	  int 	 `json:"is_private"`
 	Token         string `json:"-"`
 	CreatedAt 	  string `json:"created_at"`
 }
+
+
 
 
 

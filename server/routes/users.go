@@ -75,15 +75,32 @@ func Users(route *gin.Engine, db *database.DB) {
 		})
 		router.GET("/:userId", func(c *gin.Context) {
 			var usernameFromParam string = c.Param("userId")
-			if len(usernameFromParam) < 0 {
+			var name, _, err = utils.ParseHeader(c)
+			if len(usernameFromParam) < 0 || err != nil {
 				c.JSON(http.StatusBadRequest, typedDB.GiveResponse(http.StatusBadRequest, "Bad Request"))
 			} else {
-				if dbResult, error := db.GetUserDataWithPosts(usernameFromParam, 0); error == nil {
+				if dbResult, error := db.GetUserDataWithPosts(usernameFromParam, name ,0); error == nil {
 					c.JSON(http.StatusOK, typedDB.GiveOKResponseWithData(dbResult))
 				} else {
 					c.JSON(http.StatusBadRequest, typedDB.GiveResponse(http.StatusBadRequest, "Bad Request"))
 				}
 			}
+		})
+		router.GET("/:userId/subscribe", func (c *gin.Context) {
+			var usernameFromParam string = c.Param("userId")
+			 if username, _, err := utils.ParseHeader(c); len(c.GetHeader("Authorization")) > 15 || err == nil {
+				if response, err := db.SubscribeUser(usernameFromParam, username); err == nil && response == true {
+					c.JSON(http.StatusOK, typedDB.GiveOKResponseWithData(map[string]interface{}{
+						"owner": usernameFromParam,
+						"subscriber": username,
+					}))
+				} else {
+					c.JSON(http.StatusOK, typedDB.GiveResponse(http.StatusBadRequest, "Bad Request"))
+				}
+			 } else {
+				 c.JSON(http.StatusOK, typedDB.GiveResponse(http.StatusBadRequest, "Bad Request"))
+			 }
+
 		})
 	}
 }

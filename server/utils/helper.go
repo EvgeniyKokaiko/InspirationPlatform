@@ -3,12 +3,15 @@ package utils
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"math/rand"
+	"server/models"
 	"strings"
 )
 
 
 type StandardMap map[string]interface{}
+type Subscriptions models.Subscriptions
 
 func ParseHeader(c *gin.Context) (string, string, error) {
 	authorizationHeader := strings.Split(c.Request.Header.Get("Authorization"), " ")
@@ -41,4 +44,23 @@ func RandStringBytesRmndr(n int) string {
 
 func (c StandardMap) AddToMap(key string, item interface{}) {
 	c[key] = item
+}
+
+//func (c *Subscriptions) AddToStruct (key string, value interface{}, typed string) {
+//	switch typed {
+//	case "int":
+//		reflect.ValueOf(c).FieldByName(key).SetInt(int64(value.(int)))
+//	case "string":
+//		reflect.ValueOf(c).FieldByName(key).SetString(value.(string))
+//	case "bool":
+//		reflect.ValueOf(c).FieldByName(key).SetBool(value.(bool))
+//	}
+//}
+
+
+func HandleDBError (ctx *gorm.DB, errorMessage string, result interface{} ,values... interface{}) (interface{}, error) {
+	if ctx.Error != nil {
+		return values, errors.New(errorMessage)
+	}
+	return result, nil
 }

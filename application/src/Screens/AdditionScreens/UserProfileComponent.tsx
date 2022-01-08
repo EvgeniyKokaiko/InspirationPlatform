@@ -21,6 +21,8 @@ type IProps = {
     ownerAvatar: string;
     onBackBtn():void;
     avatarStatus: number;
+    onSubscribePress(): void;
+    onUnfollowPress(): void;
 }
 
 const UserProfileComponent = (state: IProps) => {
@@ -28,7 +30,10 @@ const UserProfileComponent = (state: IProps) => {
 
     const renderPosts = () => {
         console.log(state.avatarStatus)
-        return state.user.userPosts.map((el: Post, index: number) => {
+        if (!Array.isArray(state.user.userPosts) || state.user.isPrivate) {
+            return
+        }
+        return state.user.userPosts?.map((el: Post, index: number) => {
             return <MyPost {...el} index={index} key={index} />;
         });
     };
@@ -62,7 +67,7 @@ const UserProfileComponent = (state: IProps) => {
                         </TouchableOpacity>
                         <View style={[St.verticalLine]} />
                         <View style={[MP.mh15, StylesOne.flex_column, StylesOne.flex_ai_c]}>
-                            <Text style={St.myAccButtonsHeader}>{state.user.userPosts.length}</Text>
+                            <Text style={St.myAccButtonsHeader}>{state.user.isPrivate ? "###" : state.user.userPosts.length}</Text>
                             <Text style={St.myAccButtonsDescr}>Posts</Text>
                         </View>
                     </View>
@@ -80,16 +85,16 @@ const UserProfileComponent = (state: IProps) => {
                             </Text>
                         </View>
                     </View>
-                    <View style={[StylesOne.flex_row]}>
-                        <TouchableOpacity onPress={state.onPersonalSitePress}>
-                            <Image style={St.imgIcon} source={images.personalSite} />
-                        </TouchableOpacity>
-                    </View>
                 </View>
-                <View style={[StylesOne.flex_row, StylesOne.flex_jc_fe]}>
-                    <TouchableOpacity style={[StylesOne.flex_row, StylesOne.flex_ai_c, StylesOne.flex_jc_c, {backgroundColor: colors.mintGreen, borderRadius: 30, width: mockupWidthToDP(120), height: mockupHeightToDP(40)}]}>
-                        <Image style={[StylesOne.image25, MP.mr5, {tintColor: colors.blurWhite}]} source={images.addSub} />
-                        <Text style={[St.ownerTextWithoutOffsets, {marginBottom: 2, color: colors.blurWhite, fontWeight: "600"}]}>Subscribe</Text>
+                <View style={[StylesOne.flex_row, StylesOne.flex_jc_sb, StylesOne.flex_ai_c]}>
+                <View style={[StylesOne.flex_row]}>
+                    <TouchableOpacity onPress={state.onPersonalSitePress}>
+                        <Image style={St.imgIcon} source={images.personalSite} />
+                    </TouchableOpacity>
+                </View>
+                    <TouchableOpacity onPress={state.user.isSubscribe ? state.onUnfollowPress : state.onSubscribePress} activeOpacity={0.7} style={[StylesOne.flex_row, StylesOne.flex_ai_c, StylesOne.flex_jc_c, {backgroundColor: state.user.isSubscribe ? colors.WhiteChalk : colors.Chalise , borderRadius: 8, width: "40%", height: mockupHeightToDP(40)}]}>
+                        {!state.user.isSubscribe && <Image style={[StylesOne.image25, MP.mr5, {tintColor: colors.blurWhite}]} source={images.addSub} />}
+                        <Text style={[St.ownerTextWithoutOffsets, {marginBottom: 2, color: colors.blurWhite, fontWeight: "600"}]}>{state.user.isSubscribe ? "Unfollow" : "Subscribe"}</Text>
                     </TouchableOpacity>
                 </View>
             </View>

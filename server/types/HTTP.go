@@ -24,3 +24,10 @@ func GiveOKResponseWithData (data interface{}) map[string]interface{} {
 		"data": data,
 	}
 }
+
+func GiveOKResponse () map[string]interface{} {
+	return map[string]interface{}{
+		"statusCode": http.StatusOK,
+		"statusMessage": "Accepted",
+	}
+}

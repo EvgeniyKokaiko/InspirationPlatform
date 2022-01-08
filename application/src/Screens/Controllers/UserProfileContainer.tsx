@@ -41,7 +41,13 @@ const UserProfileContainer = (props: IProps) => {
         props.navigation.navigate(StackScreens.Menu);
     };
 
+    const onUnfollowPress = useCallback(() => {
+        console.log('unfollow')
+    }, [ownerId])
 
+    const onSubscribePress = useCallback(() => {
+        dispatch(actionImpl.makeSubscribe(ownerId))
+    }, [ownerId])
 
 
     const STATE = {
@@ -52,7 +58,9 @@ const UserProfileContainer = (props: IProps) => {
         onPersonalSitePress,
         ownerAvatar,
         onBackBtn,
-        avatarStatus: userState.avatarStatus
+        avatarStatus: userState.avatarStatus,
+        onSubscribePress,
+        onUnfollowPress
     }
 
 

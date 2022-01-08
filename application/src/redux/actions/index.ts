@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Action, ActionTypes } from '../types/ActionTypes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export const apiURL = '192.168.1.80:8080';
+export const apiURL = '192.168.1.90:8080';
 
 interface ActionMethods {
   register(username: string, email: string, password: string): (dispatch: Dispatch<Action>) => {};
@@ -225,6 +225,22 @@ class Actions implements ActionMethods {
             dispatch({ type: ActionTypes.User, payload: el.data });
           });
     });
+  }
+  public makeSubscribe = (ownerId: string) => async (dispatch: Dispatch<Action>) => {
+        await this._useToken( async (el: string | null) => {
+            axios
+                .get(
+                    `http://${apiURL}/users/${ownerId}/subscribe`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${el}`,
+                        },
+                    }
+                )
+                .then((el) => {
+                    dispatch({ type: ActionTypes.Subscribe, payload: el.data });
+                });
+        });
   }
 }
 
