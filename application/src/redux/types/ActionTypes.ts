@@ -13,6 +13,7 @@ export enum ActionTypes {
     User = "GET_USER_DATA",
     Subscribe = "MAKE_SUBSCRIBE",
     Unfollow = "MAKE_UNFOLLOW",
+    RequestList = "GET_REQUEST_LIST",
 }
 
 

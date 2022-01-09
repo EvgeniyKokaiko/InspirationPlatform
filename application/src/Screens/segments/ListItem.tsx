@@ -13,18 +13,17 @@ type IProps = {
     counter?: number;
     route?: string;
     onPress?(): void;
+    isDisabled?: boolean;
 } & BaseProps;
 
 
 const ListItem: React.FC<IProps> = (props: IProps) => {
-
-
     function onItemPress() {
         props.navigation.navigate(props.route)
     }
 
     return (
-        <TouchableOpacity onPress={props.route ? onItemPress : props.onPress} style={[StylesOne.flex_row, StylesOne.flex_jc_sb, StylesOne.flex_ai_c, MP.mt20]}>
+        <TouchableOpacity disabled={props.isDisabled} onPress={props.route ? onItemPress : props.onPress} style={[StylesOne.flex_row, StylesOne.flex_jc_sb, StylesOne.flex_ai_c, MP.mt20]}>
                 <View style={[StylesOne.flex_row, StylesOne.flex_ai_c]}>
                     <Image style={[StylesOne.image20, {tintColor: colors.Dark}]} source={props.icon} />
                     <Text style={SThree.ListItemText}>{props.title}</Text>

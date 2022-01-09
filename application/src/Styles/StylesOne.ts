@@ -74,6 +74,10 @@ export const StylesOne = StyleSheet.create({
     height: '100%',
   },
 
+  h80: {
+     height : "90%",
+  },
+
   wh100: {
     width: '100%',
     height: '100%',

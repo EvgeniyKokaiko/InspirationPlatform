@@ -26,6 +26,7 @@ import SettingsComponent from "../SettingsComponent";
 import MenuContainer from "../Controllers/MenuContainer";
 import ExpandedPostContainer from "../Controllers/ExpandedPostContainer";
 import UserProfileContainer from "../Controllers/UserProfileContainer";
+import RequestListContainer from "../Controllers/RequestListContainer";
 
 
 interface IProps {}
@@ -44,6 +45,7 @@ export enum StackScreens {
     Settings = "SettingsComponent",
     EditProfile = "EditProfileComponent",
     PostDetails = "ExpandedPostComponent",
+    RequestList = "RequestListComponent",
 }
 
 export const noGoBack = () => {
@@ -78,7 +80,7 @@ const MainNavigationScreen: React.FC = (props:IProps) => {
     const Tab = createBottomTabNavigator()
     let defaultScreen = "SplashComponent";
     const withoutNavigation = [StackScreens.SignIn, StackScreens.SignUp, StackScreens.SetupAccount];
-    const withoutNavigationIndex = [0,1,2,3,4,5,6];
+    const withoutNavigationIndex = [0,1,2,3,4,5,6,7];
     const Screens: { name: string, component: Component, options?: any }[] =
         [
             // Service screens
@@ -92,6 +94,7 @@ const MainNavigationScreen: React.FC = (props:IProps) => {
 
             //Main screens
             {name: StackScreens.PostDetails, component: ExpandedPostContainer, options: {headerShown: false}},
+            {name: StackScreens.RequestList, component: RequestListContainer, options: {headerShown: false}},
             {name: StackScreens.UserProfile, component: UserProfileContainer, options: {headerShown: false}},
             {name: StackScreens.MyProfile, component: MyProfileComponent, options: {headerShown: false}},
             {name: StackScreens.Home, component: HomeComponent, options: {headerShown: false}},

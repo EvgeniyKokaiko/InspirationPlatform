@@ -70,7 +70,7 @@ const MyProfileComponent: React.FC<IProps> = (props: IProps) => {
   }
 
   function onSettingsPress() {
-    props.navigation.navigate(StackScreens.Settings);
+    props.navigation.navigate(StackScreens.Settings, {isPrivate: user.is_private});
   }
 
   return user && posts ? (

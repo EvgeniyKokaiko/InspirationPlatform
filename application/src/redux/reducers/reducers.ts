@@ -104,6 +104,14 @@ class ReducersImpl {
         return state
     }
 
+    public RequestListReducer(state = {}, action: Action) {
+        if (action.type === ActionTypes.RequestList) {
+            console.log(action.payload, "PAYLOAD")
+            return action.payload
+        }
+        return state
+    }
+
     public getAllReducers = () => {
         return combineReducers({
             registerReducer: this.RegisterReducer,
@@ -117,6 +125,7 @@ class ReducersImpl {
             postDelete: this.PostDeleteReducer,
             subscribeReducer: this.MakeSubscribeReducer,
             unfollowReducer: this.MakeUnfollowReducer,
+            requestListReducer: this.RequestListReducer
         })
     }
 }

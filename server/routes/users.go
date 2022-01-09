@@ -117,6 +117,38 @@ func Users(route *gin.Engine, db *database.DB) {
 				c.JSON(http.StatusOK, typedDB.GiveResponse(http.StatusBadRequest, "Bad Request"))
 			}
 		})
+		router.POST("/:userId/acceptRequest", func(c *gin.Context) {
+			var usernameFromParam string = c.Param("userId")
+			var requestBody = map[string]interface{}{}
+			err := c.BindJSON(&requestBody)
+			if err != nil {
+				fmt.Println(err)
+				c.JSON(http.StatusOK, typedDB.GiveResponse(http.StatusBadRequest, "Bad Request"))
+			}
+			if username, _, err := utils.ParseHeader(c); len(c.GetHeader("Authorization")) > 15 || err == nil {
+				if response, err := db.AcceptRequestOnSubscription(username,usernameFromParam , requestBody["status"].(bool)); err == nil && response == true {
+					c.JSON(http.StatusOK, typedDB.GiveOKResponseWithData(map[string]interface{}{
+						"owner": usernameFromParam,
+						"subscriber": username,
+					}))
+				} else {
+					c.JSON(http.StatusOK, typedDB.GiveResponse(http.StatusBadRequest, "Bad Request"))
+				}
+			} else {
+				c.JSON(http.StatusOK, typedDB.GiveResponse(http.StatusBadRequest, "Bad Request"))
+			}
+		})
+		router.GET("/requestList", func(c *gin.Context) {
+			if username, _, err := utils.ParseHeader(c); len(c.GetHeader("Authorization")) > 15 || err == nil {
+				if response, err := db.GetRequestList(username); err == nil {
+					c.JSON(http.StatusOK, typedDB.GiveOKResponseWithData(response))
+				} else {
+					c.JSON(http.StatusOK, typedDB.GiveResponse(http.StatusBadRequest, "Bad Request"))
+				}
+			} else {
+				c.JSON(http.StatusOK, typedDB.GiveResponse(http.StatusBadRequest, "Bad Request"))
+			}
+		})
 	}
 }
 //dbResult, error := db.GetUserDataWithPosts("evgeniy", 0)

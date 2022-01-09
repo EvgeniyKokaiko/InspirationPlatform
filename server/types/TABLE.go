@@ -32,4 +32,5 @@ type DBMethods interface {
 	GetUserDataWithPosts(string, int) (map[string]interface{}, error)
     SubscribeUser(owner string, subscriber string, ) (bool, error)
 	UnfollowUser(owner string, subscriber string) (bool, error)
+	AcceptRequestOnSubscription (owner string, username string) (bool, error)
 }

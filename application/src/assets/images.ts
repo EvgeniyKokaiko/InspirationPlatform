@@ -43,5 +43,6 @@ export const images: {[key: string]: ImageSourcePropType} = {
     search: require("./images/searchPane.png"),
     addSub: require("./images/add_friend.png"),
     unfollow: require("./images/user_close.png"),
+    circleArrow: require("./images/circle_chevron_up.png"),
 
 }

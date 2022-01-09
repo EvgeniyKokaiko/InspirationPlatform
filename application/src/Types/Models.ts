@@ -30,3 +30,17 @@ export interface Asset {
     fileName?: string;
     duration?: number;
 }
+
+
+export interface Requests {
+    created_at: string,
+    description: string,
+    email: string,
+    full_name: string,
+    id: number,
+    owner: string,
+    status: number,
+    subscriber: string,
+    updated_at: string,
+    username: string
+}

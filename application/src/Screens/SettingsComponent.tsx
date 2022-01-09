@@ -22,6 +22,7 @@ type IProps = {} & BaseProps
 const SettingsComponent: React.FC<IProps> = (props: IProps) => {
         const nav = useNavigation()
         const dispatch = useDispatch();
+        const isPrivate = props.route?.params?.isPrivate;
         //TODO протипизировать юзСелектор
         const state: any = useSelector<any>(state => state)
     const onBackBtn = () => {
@@ -30,7 +31,18 @@ const SettingsComponent: React.FC<IProps> = (props: IProps) => {
 
     const routes: {[key: string]: string} = {
             ManageAccount: StackScreens.EditProfile,
+            RequestList: StackScreens.RequestList
     }
+
+
+    const checkIsPrivate = () => {
+            if (isPrivate === 0) {
+                return true
+            } else {
+                return false
+            }
+    }
+    console.log(isPrivate)
 
 
     const onLogoutPress = async () => {
@@ -53,7 +65,8 @@ const SettingsComponent: React.FC<IProps> = (props: IProps) => {
                     <View></View>
                 </View>
             </View>
-            <View style={MP.mt5}>
+            <View style={[StylesOne.flex_column, StylesOne.flex_jc_sb, MP.pb15, StylesOne.h80]}>
+            <View>
                 {/*Смена картинки, имени(но не юзернейма, он несменный), дескрипшина,*/}
                 <ListItem navigation={props.navigation} title={"Manage account"} icon={images.avatar_mini} route={routes.ManageAccount} />
                 {/*Управление уведомлениями*/}
@@ -64,12 +77,15 @@ const SettingsComponent: React.FC<IProps> = (props: IProps) => {
                 <ListItem navigation={props.navigation} title={"Invitation"} icon={images.invite} route={routes.ManageAccount} />
                 {/*Про приложение*/}
                 <ListItem navigation={props.navigation} title={"About"} icon={images.about} route={routes.ManageAccount} />
+
+                <ListItem isDisabled={checkIsPrivate()} navigation={props.navigation} title={"Requests"} icon={images.circleArrow} route={routes.RequestList} />
             </View>
-            <View style={[MP.mt30pc]}>
+            <View>
                 {/*Удаление аккаунта*/}
                 <ListItem navigation={props.navigation} title={"Hazard"} icon={images.hazard} route={routes.ManageAccount} />
                 {/*Выход*/}
                 <ListItem title={"Log Out"} icon={images.logout} onPress={onLogoutPress} />
+            </View>
             </View>
         </View>
     );

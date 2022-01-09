@@ -259,6 +259,23 @@ class Actions implements ActionMethods {
               });
       });
   }
+  public getRequestList = () => async (dispatch: Dispatch<Action>) => {
+      await this._useToken( async (el: string | null) => {
+          axios
+              .get(
+                  `http://${apiURL}/users/requestList`,
+                  {
+                      headers: {
+                          Authorization: `Bearer ${el}`,
+                      },
+                  }
+              )
+              .then((el) => {
+                  console.log(el.data, "RESPONSE")
+                  dispatch({ type: ActionTypes.RequestList, payload: el.data });
+              });
+      });
+  }
 }
 
 export const actionImpl = new Actions(apiURL);

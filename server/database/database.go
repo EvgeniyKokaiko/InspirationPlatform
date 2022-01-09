@@ -74,7 +74,9 @@ func (db *DB) SetupAccount(item *models.User) error {
 func (db *DB) Login(item *models.EmptyUser) (models.EmptyUser, string) {
 	var result models.User
 	var tokenModel models.EmptyUser
-	db.database.Raw("SELECT username, email, password, token FROM users WHERE username= ? ;", item.Username).Scan(&result)
+	db.database.
+		Raw("SELECT username, email, password, token FROM users WHERE username= ? ;", item.Username).
+		Scan(&result)
 	err := bcrypt.CompareHashAndPassword([]byte(result.Password), []byte(item.Password))
 	if err != nil {
 		return models.EmptyUser{}, "Denied"
@@ -91,8 +93,17 @@ func (db *DB) Me(username string) (utils.StandardMap, error) {
 	var resultPointer = &result
 	var userCounts = map[string]interface{}{}
 	var dbResult = utils.StandardMap{}
-	dbUserResponse := db.database.Table(typedDB.TABLES.USERS).Where("username = ?", username).Take(&result).Scan(&result)
-	dbCounter := db.database.Table(typedDB.TABLES.SUBSCRIPTIONS).Raw("SELECT x.owner_count, y.subscriber_count FROM (SELECT COUNT(*) AS owner_count from user_subscription WHERE OWNER = ?) AS x, (SELECT COUNT(*) AS subscriber_count FROM user_subscription WHERE subscriber = ?) as y", username, username).Scan(&userCounts)
+	dbUserResponse := db.database.
+		Table(typedDB.TABLES.USERS).
+		Where("username = ?", username).
+		Take(&result).
+		Scan(&result)
+	dbCounter := db.database.
+		Table(typedDB.TABLES.SUBSCRIPTIONS).
+		Raw(`SELECT x.owner_count, y.subscriber_count FROM
+		(SELECT COUNT(*) AS owner_count from user_subscription WHERE OWNER = ?) AS x, 
+		(SELECT COUNT(*) AS subscriber_count FROM user_subscription WHERE subscriber = ?) as y`, username, username).
+		Scan(&userCounts)
 	dbResult.AddToMap("userData", result)
 	dbResult.AddToMap("counts", userCounts)
 	if dbUserResponse.Error != nil || dbCounter.Error != nil {
@@ -185,11 +196,25 @@ func (db *DB) GetUserDataWithPosts(username string, name string ,page int) (map[
 	var userSubscription *models.Subscriptions
 	var userCounts = map[string]interface{}{}
 	dbResult :=  utils.StandardMap{}
-	dbUserDataResponse := db.database.Table(typedDB.TABLES.USERS).Where("username = ?", username).Take(&userData)
-	dbSubscription := db.database.Table(typedDB.TABLES.SUBSCRIPTIONS).Where("owner = ? AND subscriber = ?", username, name).Find(&userSubscription)
-	dbCounter := db.database.Table(typedDB.TABLES.SUBSCRIPTIONS).Raw("SELECT x.owner_count, y.subscriber_count FROM (SELECT COUNT(*) AS owner_count from user_subscription WHERE OWNER = ?) AS x, (SELECT COUNT(*) AS subscriber_count FROM user_subscription WHERE subscriber = ?) as y", username, username).Scan(&userCounts)
+	dbUserDataResponse := db.database.
+		Table(typedDB.TABLES.USERS).
+		Where("username = ?", username).
+		Take(&userData)
+	dbSubscription := db.database.
+		Table(typedDB.TABLES.SUBSCRIPTIONS).
+		Where("owner = ? AND subscriber = ?", username, name).
+		Find(&userSubscription)
+	dbCounter := db.database.
+		Table(typedDB.TABLES.SUBSCRIPTIONS).
+		Raw(`SELECT x.owner_count, y.subscriber_count FROM
+		(SELECT COUNT(*) AS owner_count from user_subscription WHERE OWNER = ?) AS x, 
+		(SELECT COUNT(*) AS subscriber_count FROM user_subscription WHERE subscriber = ?) as y`, username, username).
+		Scan(&userCounts)
 	if (userData.IsPrivate == 1 && userSubscription.Status == 2) || userData.IsPrivate == 0 {
-		dbUserPostsResponse := db.database.Table(typedDB.TABLES.POSTS).Where("owner = ?", username).Scan(&userPosts)
+		dbUserPostsResponse := db.database.
+			Table(typedDB.TABLES.POSTS).
+			Where("owner = ?", username).
+			Scan(&userPosts)
 		if  dbUserPostsResponse.Error != nil {
 			return map[string]interface{}{}, errors.New("ERROR! You got an error on database catching")
 		}
@@ -232,8 +257,13 @@ func (db *DB) SubscribeUser(owner string, subscriber string) (bool, error) {
 	ownerUser := models.User{}
 	var countOfResponses int = 0
 
-	dbUserResponse := db.database.Table(typedDB.TABLES.USERS).Where("username = ?", owner).Take(&ownerUser)
-	dbSubscriptionResponse := db.database.Raw("Select COUNT(*) FROM user_subscription WHERE owner = ? AND subscriber = ?", owner, subscriber).Scan(&countOfResponses)
+	dbUserResponse := db.database.
+		Table(typedDB.TABLES.USERS).
+		Where("username = ?", owner).
+		Take(&ownerUser)
+	dbSubscriptionResponse := db.database.
+		Raw("Select COUNT(*) FROM user_subscription WHERE owner = ? AND subscriber = ?", owner, subscriber).
+		Scan(&countOfResponses)
 
 	if dbUserResponse.Error != nil || countOfResponses != 0 || dbSubscriptionResponse.Error != nil || owner == subscriber {
 		return false, errors.New("ERROR!This user doesnt exists")
@@ -243,7 +273,10 @@ func (db *DB) SubscribeUser(owner string, subscriber string) (bool, error) {
 	} else {
 		subscription.Status = 2
 	}
-	if dbSubscriptionResponse := db.database.Table(typedDB.TABLES.SUBSCRIPTIONS).Create(&subscription); dbSubscriptionResponse.Error != nil {
+	if dbSubscriptionResponse := db.database.
+		Table(typedDB.TABLES.SUBSCRIPTIONS).
+		Create(&subscription);
+		dbSubscriptionResponse.Error != nil {
 		return false, errors.New("ERROR!Something went wrong")
 	}
 	return true, nil
@@ -252,12 +285,62 @@ func (db *DB) SubscribeUser(owner string, subscriber string) (bool, error) {
 
 func (db *DB) UnfollowUser(owner string, subscriber string) (bool, error) {
 	subscription := models.Subscriptions{}
-	dbUnfollowResponse := db.database.Table(typedDB.TABLES.SUBSCRIPTIONS).Where("owner = ? AND subscriber = ?", owner, subscriber).Delete(&subscription)
+	dbUnfollowResponse := db.database.
+		Table(typedDB.TABLES.SUBSCRIPTIONS).
+		Where("owner = ? AND subscriber = ?", owner, subscriber).
+		Delete(&subscription)
 	if dbUnfollowResponse.Error != nil || dbUnfollowResponse.RowsAffected == 0 {
 		return false, errors.New("ERROR! Something went wrong")
 	}
 	return true, nil
 }
+
+
+
+func (db *DB) AcceptRequestOnSubscription (owner string, username string, accepted bool) (bool, error) {
+	subscription := models.Subscriptions{}
+	if accepted {
+		if dbAcceptRequestResponse := db.database.
+			Table(typedDB.TABLES.SUBSCRIPTIONS).
+			Where("owner = ? AND subscriber = ?", owner, username).
+			Update("status", 2);
+			dbAcceptRequestResponse.Error != nil || dbAcceptRequestResponse.RowsAffected == 0 {
+			fmt.Println(dbAcceptRequestResponse.Error, dbAcceptRequestResponse.RowsAffected, true)
+			return false, errors.New("ERROR! Something went wrong")
+		}
+	} else {
+		if dbDeclineRequestResponse := db.database.
+			Table(typedDB.TABLES.SUBSCRIPTIONS).
+			Where("owner = ? AND subscriber = ?", owner, username).
+			Delete(&subscription);
+			dbDeclineRequestResponse.Error != nil || dbDeclineRequestResponse.RowsAffected == 0 {
+				fmt.Println(dbDeclineRequestResponse.Error, dbDeclineRequestResponse.RowsAffected, false, owner, username, accepted)
+			return false, errors.New("ERROR! Something went wrong")
+		}
+	}
+
+	return true, nil
+}
+
+//SELECT * FROM user_subscription INNER JOIN (SELECT full_name, username, email, description FROM users) AS user_rows ON user_subscription.owner = user_rows.username AND user_subscription.owner = 'kek54'
+
+func (db *DB) GetRequestList (owner string) ([]map[string]interface{}, error) {
+	var subscriptionList []map[string]interface{}
+
+	if dbGetRequestListResponse := db.database.Raw(`
+		SELECT * FROM user_subscription
+		INNER JOIN (SELECT full_name, username, email, description FROM users)
+		AS user_rows ON user_subscription.subscriber = user_rows.username
+		AND user_subscription.owner = ? AND user_subscription.status = 1`, owner).Take(&subscriptionList);
+		dbGetRequestListResponse.Error != nil || dbGetRequestListResponse.RowsAffected == 0 {
+		return []map[string]interface{}{}, errors.New("ERROR! Something went wrong")
+	}
+	fmt.Println(subscriptionList)
+	return subscriptionList, nil
+}
+
+
+//TODO сделать изменение статуса.
 
 
 //TODO сделать на флаг isLock, ed если да, и есть доступ(новая таблица user_permissions) тогда возращать и посты пользователя, а если нет тогда возращать только данные пользователя
