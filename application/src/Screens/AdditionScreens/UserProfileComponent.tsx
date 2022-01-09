@@ -94,8 +94,8 @@ const UserProfileComponent = (state: IProps) => {
                     </TouchableOpacity>
                 </View>
                     <TouchableOpacity onPress={state.isFollowed ? state.onUnfollowPress : state.onSubscribePress} activeOpacity={0.7} style={[StylesOne.flex_row, StylesOne.flex_ai_c, StylesOne.flex_jc_c, {backgroundColor: state.isFollowed ? colors.WhiteChalk : colors.Chalise , borderRadius: 8, width: "40%", height: mockupHeightToDP(40)}]}>
-                        {!state.isFollowed && <Image style={[StylesOne.image25, MP.mr5, {tintColor: colors.blurWhite}]} source={images.addSub} />}
-                        <Text style={[St.ownerTextWithoutOffsets, {marginBottom: 2, color: colors.blurWhite, fontWeight: "600"}]}>{state.isFollowed ? "Unfollow" : "Subscribe"}</Text>
+                        {!state.isFollowed ? <Image style={[StylesOne.image25, MP.mr5, {tintColor: colors.blurWhite}]} source={images.addSub} /> : <Image style={[StylesOne.image25, MP.mr5, {tintColor: colors.blurWhite}]} source={images.unfollow} />}
+                        <Text style={[St.ownerTextWithoutOffsets, {marginBottom: 2, color: colors.blurWhite, fontWeight: "600"}]}>{state.isFollowed ? "Unfollow" :  "Subscribe"}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
