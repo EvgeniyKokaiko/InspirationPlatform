@@ -16,8 +16,8 @@ func Users(route *gin.Engine, db *database.DB) {
 			if len(c.Request.Header.Get("Authorization")) > 10 {
 				name, email, err := utils.ParseHeader(c)
 				fmt.Println(name, email, 5427)
-				data := db.Me(name)
-				if err != nil {
+				data, error := db.Me(name)
+				if err != nil || error != nil {
 					c.JSON(http.StatusLocked, map[string]interface{}{
 						"message": "Bad Token!",
 					})
@@ -101,6 +101,21 @@ func Users(route *gin.Engine, db *database.DB) {
 				 c.JSON(http.StatusOK, typedDB.GiveResponse(http.StatusBadRequest, "Bad Request"))
 			 }
 
+		})
+		router.GET("/:userId/unfollow", func (c *gin.Context) {
+			var usernameFromParam string = c.Param("userId")
+			if username, _, err := utils.ParseHeader(c); len(c.GetHeader("Authorization")) > 15 || err == nil {
+				if response, err := db.UnfollowUser(usernameFromParam, username); err == nil && response == true {
+					c.JSON(http.StatusOK, typedDB.GiveOKResponseWithData(map[string]interface{}{
+						"owner": usernameFromParam,
+						"subscriber": username,
+					}))
+				} else {
+					c.JSON(http.StatusOK, typedDB.GiveResponse(http.StatusBadRequest, "Bad Request"))
+				}
+			} else {
+				c.JSON(http.StatusOK, typedDB.GiveResponse(http.StatusBadRequest, "Bad Request"))
+			}
 		})
 	}
 }

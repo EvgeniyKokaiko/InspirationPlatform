@@ -12,6 +12,7 @@ export enum ActionTypes {
     NewsLine = "GET_NEWSLINE",
     User = "GET_USER_DATA",
     Subscribe = "MAKE_SUBSCRIBE",
+    Unfollow = "MAKE_UNFOLLOW",
 }
 
 

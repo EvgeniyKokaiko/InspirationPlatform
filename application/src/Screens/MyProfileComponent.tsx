@@ -23,6 +23,10 @@ const MyProfileComponent: React.FC<IProps> = (props: IProps) => {
   const [refresh, setRefresh] = useState(false);
   const [avatar, setAvatar] = useState(-1)
   const [posts, setPosts] = useState([]);
+  const [counts, setCounts] = useState({
+    owner_count: 0,
+    subscriber_count: 0
+  })
   const dispatch = useDispatch();
   const state: any = useSelector<Reducers>((state) => state);
   noGoBack();
@@ -41,8 +45,10 @@ const MyProfileComponent: React.FC<IProps> = (props: IProps) => {
   }, []);
 
   useEffect(() => {
-    setUser(state.meReducer.data);
-    setPosts(state.mePostsReducer.data);
+    console.log(state.meReducer?.data)
+    setUser(state.meReducer.data?.userData);
+    setPosts(state.mePostsReducer?.data);
+    setCounts(state.meReducer.data?.counts)
   }, [state]);
 
   const renderPosts = () => {
@@ -72,7 +78,7 @@ const MyProfileComponent: React.FC<IProps> = (props: IProps) => {
       <View style={[StylesOne.w100]}>
         <View style={[StylesOne.flex_row, StylesOne.flex_jc_sb, StylesOne.flex_ai_c, MP.mv20]}>
           <View />
-          <Image source={images.logo} style={[StylesOne.image40, { tintColor: 'black' }]} />
+          <View><Image source={images.logo} style={[StylesOne.image40, { tintColor: 'black' }]} /><Text style={St.ownerTextWithoutOffsets}>{user!.username}</Text></View>
           <View />
         </View>
       </View>
@@ -83,13 +89,13 @@ const MyProfileComponent: React.FC<IProps> = (props: IProps) => {
           </View>
           <View style={[StylesOne.flex_row, StylesOne.flex_ai_c, { height: mockupHeightToDP(75) }]}>
             <TouchableOpacity style={[MP.mh15, StylesOne.flex_column, StylesOne.flex_ai_c]}>
-              <Text style={St.myAccButtonsHeader}>0</Text>
-              <Text style={St.myAccButtonsDescr}>Followers</Text>
+              <Text style={St.myAccButtonsHeader}>{counts.subscriber_count}</Text>
+              <Text style={St.myAccButtonsDescr}>Following</Text>
             </TouchableOpacity>
             <View style={[St.verticalLine]} />
             <TouchableOpacity style={[MP.mh15, StylesOne.flex_column, StylesOne.flex_ai_c]}>
-              <Text style={St.myAccButtonsHeader}>0</Text>
-              <Text style={St.myAccButtonsDescr}>Following</Text>
+              <Text style={St.myAccButtonsHeader}>{counts.owner_count}</Text>
+              <Text style={St.myAccButtonsDescr}>Followers</Text>
             </TouchableOpacity>
             <View style={[St.verticalLine]} />
             <View style={[MP.mh15, StylesOne.flex_column, StylesOne.flex_ai_c]}>

@@ -86,13 +86,21 @@ func (db *DB) Login(item *models.EmptyUser) (models.EmptyUser, string) {
 }
 
 
-func (db *DB) Me(username string) *models.User {
+func (db *DB) Me(username string) (utils.StandardMap, error) {
 	var result *models.User
 	var resultPointer = &result
-	db.database.Table(typedDB.TABLES.USERS).Where("username = ?", username).Take(&result).Scan(&result)
+	var userCounts = map[string]interface{}{}
+	var dbResult = utils.StandardMap{}
+	dbUserResponse := db.database.Table(typedDB.TABLES.USERS).Where("username = ?", username).Take(&result).Scan(&result)
+	dbCounter := db.database.Table(typedDB.TABLES.SUBSCRIPTIONS).Raw("SELECT x.owner_count, y.subscriber_count FROM (SELECT COUNT(*) AS owner_count from user_subscription WHERE OWNER = ?) AS x, (SELECT COUNT(*) AS subscriber_count FROM user_subscription WHERE subscriber = ?) as y", username, username).Scan(&userCounts)
+	dbResult.AddToMap("userData", result)
+	dbResult.AddToMap("counts", userCounts)
+	if dbUserResponse.Error != nil || dbCounter.Error != nil {
+		return utils.StandardMap{}, errors.New("ERROR! DB error")
+	}
 	(*resultPointer).Token = ""
 	(*resultPointer).Password = ""
-	return result
+	return dbResult, nil
 }
 
 
@@ -237,6 +245,16 @@ func (db *DB) SubscribeUser(owner string, subscriber string) (bool, error) {
 	}
 	if dbSubscriptionResponse := db.database.Table(typedDB.TABLES.SUBSCRIPTIONS).Create(&subscription); dbSubscriptionResponse.Error != nil {
 		return false, errors.New("ERROR!Something went wrong")
+	}
+	return true, nil
+}
+
+
+func (db *DB) UnfollowUser(owner string, subscriber string) (bool, error) {
+	subscription := models.Subscriptions{}
+	dbUnfollowResponse := db.database.Table(typedDB.TABLES.SUBSCRIPTIONS).Where("owner = ? AND subscriber = ?", owner, subscriber).Delete(&subscription)
+	if dbUnfollowResponse.Error != nil || dbUnfollowResponse.RowsAffected == 0 {
+		return false, errors.New("ERROR! Something went wrong")
 	}
 	return true, nil
 }

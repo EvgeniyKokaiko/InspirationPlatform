@@ -31,4 +31,5 @@ type DBMethods interface {
 	GetNewsLine(string, int) ([]*models.Post, int ,error)
 	GetUserDataWithPosts(string, int) (map[string]interface{}, error)
     SubscribeUser(owner string, subscriber string, ) (bool, error)
+	UnfollowUser(owner string, subscriber string) (bool, error)
 }

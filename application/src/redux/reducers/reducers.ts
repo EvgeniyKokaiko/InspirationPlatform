@@ -91,6 +91,15 @@ class ReducersImpl {
     public MakeSubscribeReducer(state = {statusCode: 0}, action: Action) {
         if (action.type === ActionTypes.Subscribe) {
             return action.payload
+        } if (action.type === ActionTypes.Clear) {
+            return {statusCode: 0}
+        }
+        return state
+    }
+
+    public MakeUnfollowReducer(state = {statusCode: 0}, action: Action) {
+        if (action.type === ActionTypes.Unfollow) {
+            return action.payload
         }
         return state
     }
@@ -107,6 +116,7 @@ class ReducersImpl {
             getUserDataReducer: this.GetUserData,
             postDelete: this.PostDeleteReducer,
             subscribeReducer: this.MakeSubscribeReducer,
+            unfollowReducer: this.MakeUnfollowReducer,
         })
     }
 }

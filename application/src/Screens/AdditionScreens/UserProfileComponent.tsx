@@ -23,6 +23,7 @@ type IProps = {
     avatarStatus: number;
     onSubscribePress(): void;
     onUnfollowPress(): void;
+    isFollowed: boolean;
 }
 
 const UserProfileComponent = (state: IProps) => {
@@ -46,7 +47,7 @@ const UserProfileComponent = (state: IProps) => {
                     <TouchableOpacity onPress={state.onBackBtn} style={StylesOne.image24}>
                         <Image style={[StylesOne.wh100, StylesOne.rm_c, St.blackArrow]} source={images.arrowLeft} />
                     </TouchableOpacity>
-                    <Image source={images.logo} style={[StylesOne.image40, { tintColor: 'black' }]} />
+                    <View><Image source={images.logo} style={[StylesOne.image40, { tintColor: 'black' }]} /><Text style={St.ownerTextWithoutOffsets}>{state.user.userData?.username}</Text></View>
                     <View />
                 </View>
             </View>
@@ -57,13 +58,13 @@ const UserProfileComponent = (state: IProps) => {
                     </View>
                     <View style={[StylesOne.flex_row, StylesOne.flex_ai_c, { height: mockupHeightToDP(75) }]}>
                         <TouchableOpacity style={[MP.mh15, StylesOne.flex_column, StylesOne.flex_ai_c]}>
-                            <Text style={St.myAccButtonsHeader}>0</Text>
-                            <Text style={St.myAccButtonsDescr}>Followers</Text>
+                            <Text style={St.myAccButtonsHeader}>{state.user.counts.subscriber_count || 0}</Text>
+                            <Text style={St.myAccButtonsDescr}>Following</Text>
                         </TouchableOpacity>
                         <View style={[St.verticalLine]} />
                         <TouchableOpacity style={[MP.mh15, StylesOne.flex_column, StylesOne.flex_ai_c]}>
-                            <Text style={St.myAccButtonsHeader}>0</Text>
-                            <Text style={St.myAccButtonsDescr}>Following</Text>
+                            <Text style={St.myAccButtonsHeader}>{state.user.counts.owner_count || 0}</Text>
+                            <Text style={St.myAccButtonsDescr}>Followers</Text>
                         </TouchableOpacity>
                         <View style={[St.verticalLine]} />
                         <View style={[MP.mh15, StylesOne.flex_column, StylesOne.flex_ai_c]}>
@@ -92,9 +93,9 @@ const UserProfileComponent = (state: IProps) => {
                         <Image style={St.imgIcon} source={images.personalSite} />
                     </TouchableOpacity>
                 </View>
-                    <TouchableOpacity onPress={state.user.isSubscribe ? state.onUnfollowPress : state.onSubscribePress} activeOpacity={0.7} style={[StylesOne.flex_row, StylesOne.flex_ai_c, StylesOne.flex_jc_c, {backgroundColor: state.user.isSubscribe ? colors.WhiteChalk : colors.Chalise , borderRadius: 8, width: "40%", height: mockupHeightToDP(40)}]}>
-                        {!state.user.isSubscribe && <Image style={[StylesOne.image25, MP.mr5, {tintColor: colors.blurWhite}]} source={images.addSub} />}
-                        <Text style={[St.ownerTextWithoutOffsets, {marginBottom: 2, color: colors.blurWhite, fontWeight: "600"}]}>{state.user.isSubscribe ? "Unfollow" : "Subscribe"}</Text>
+                    <TouchableOpacity onPress={state.isFollowed ? state.onUnfollowPress : state.onSubscribePress} activeOpacity={0.7} style={[StylesOne.flex_row, StylesOne.flex_ai_c, StylesOne.flex_jc_c, {backgroundColor: state.isFollowed ? colors.WhiteChalk : colors.Chalise , borderRadius: 8, width: "40%", height: mockupHeightToDP(40)}]}>
+                        {!state.isFollowed && <Image style={[StylesOne.image25, MP.mr5, {tintColor: colors.blurWhite}]} source={images.addSub} />}
+                        <Text style={[St.ownerTextWithoutOffsets, {marginBottom: 2, color: colors.blurWhite, fontWeight: "600"}]}>{state.isFollowed ? "Unfollow" : "Subscribe"}</Text>
                     </TouchableOpacity>
                 </View>
             </View>

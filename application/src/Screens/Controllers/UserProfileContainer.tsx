@@ -15,17 +15,20 @@ type userDataProps = {
     userData: any;
     refresh: boolean;
     avatarStatus: number;
+    isFollowed: boolean;
 }
+
 
 const UserProfileContainer = (props: IProps) => {
     const ownerId: string = props.route.params.ownerId
     const dispatch = useDispatch()
     const ownerAvatar: string = `http://${apiURL}/storage/${ownerId}/avatar/avatar.png`;
-    const store: any = useSelector<any>(state => state.getUserDataReducer)
+    const store: any = useSelector<any>(state => state)
     const [userState, setUserState] = useState<userDataProps>({
         userData: {},
         refresh: false,
         avatarStatus: -1,
+        isFollowed: false,
     });
 
     const makeRequest = useCallback(() => {
@@ -42,7 +45,7 @@ const UserProfileContainer = (props: IProps) => {
     };
 
     const onUnfollowPress = useCallback(() => {
-        console.log('unfollow')
+        dispatch(actionImpl.makeUnfollow(ownerId))
     }, [ownerId])
 
     const onSubscribePress = useCallback(() => {
@@ -55,6 +58,7 @@ const UserProfileContainer = (props: IProps) => {
         makeRequest,
         user: userState.userData,
         refresh: userState.refresh,
+        isFollowed: userState.isFollowed,
         onPersonalSitePress,
         ownerAvatar,
         onBackBtn,
@@ -64,11 +68,27 @@ const UserProfileContainer = (props: IProps) => {
     }
 
 
-    useEffect(() => {
-        dispatch(actionImpl.getUser(ownerId))
-    }, [ownerId])
 
     useEffect(() => {
+        if (!userState.userData?.isSubscribe) {
+            setUserState({...userState, isFollowed: false})
+        }
+    }, [userState.userData])
+
+    useEffect(() => {
+        if (store.unfollowReducer.statusCode === 200) {
+            setUserState({...userState, isFollowed: false})
+        }
+    }, [store.unfollowReducer])
+
+    useEffect(() => {
+        if (store.subscribeReducer.statusCode === 200) {
+            setUserState({...userState, isFollowed: true})
+        }
+    }, [store.subscribeReducer])
+
+    useEffect(() => {
+        dispatch(actionImpl.getUser(ownerId))
         checkForAvatar(ownerAvatar).then((el) => {
             setUserState({...userState, avatarStatus: el})
         })
@@ -76,9 +96,9 @@ const UserProfileContainer = (props: IProps) => {
 
 
     useEffect(() => {
-        setUserState({...userState, userData: store.data})
+        setUserState({...userState, userData: store.getUserDataReducer.data, isFollowed: store.getUserDataReducer.data?.isSubscribe})
         console.log(store, userState.userData, "DATA")
-    }, [store])
+    }, [store.getUserDataReducer])
 
     return <UserProfileComponent {...STATE} />
 };

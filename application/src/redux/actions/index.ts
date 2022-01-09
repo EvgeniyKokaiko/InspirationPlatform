@@ -242,6 +242,23 @@ class Actions implements ActionMethods {
                 });
         });
   }
+
+  public makeUnfollow = (ownerId: string) => async (dispatch: Dispatch<Action>) => {
+      await this._useToken( async (el: string | null) => {
+          axios
+              .get(
+                  `http://${apiURL}/users/${ownerId}/unfollow`,
+                  {
+                      headers: {
+                          Authorization: `Bearer ${el}`,
+                      },
+                  }
+              )
+              .then((el) => {
+                  dispatch({ type: ActionTypes.Unfollow, payload: el.data });
+              });
+      });
+  }
 }
 
 export const actionImpl = new Actions(apiURL);
