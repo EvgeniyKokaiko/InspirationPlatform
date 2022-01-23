@@ -34,7 +34,7 @@ const MyPost = (props: myPostProps) => {
    const _renderItem = useCallback(({item, index}) => {
        console.log(`${dataPath}${item}.png`, 545)
        return (
-           <Image key={1} style={[St.image100modal]} source={{uri: `${dataPath}${item}.png`}} />
+           <Image key={1} style={[St.image100modal]} source={{uri: `${dataPath}${item}.png?ab=${props.image}`}} />
        );
    },[])
 
@@ -74,7 +74,7 @@ const MyPost = (props: myPostProps) => {
     const CarouselWidth = DEVICE_WIDTH / 80 * 100;
     return (
         <View key={props.id} style={[St.postListItem, St.zIndex2]}>
-            <TouchableOpacity onPress={() => {setLongPressed(false); showModal(true); setIndex(props.index)}} key={props.id} style={St.image100}>
+            <TouchableOpacity onPress={() => {showModal(true); setIndex(props.index)}} key={props.id} style={St.image100}>
                 <Image style={[StylesOne.wh100, St.borderImage]} source={{uri: `${dataPath}0.png`}} />
             </TouchableOpacity>
                     <Modal

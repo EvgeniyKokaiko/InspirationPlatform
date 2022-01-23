@@ -12,7 +12,8 @@ interface IProps extends BaseProps {
 }
 type IState = {
     requestList: Requests[];
-    refresh: boolean
+    refresh: boolean;
+    currentIndex: number;
 }
 
 const RequestListContainer: React.FC<IProps> = (props) => {
@@ -21,14 +22,16 @@ const RequestListContainer: React.FC<IProps> = (props) => {
     const [getState, setState] = useState<IState>({
         requestList: [],
         refresh: false,
+        currentIndex: -1,
     })
 
     const onBackBtn = () => {
         props.navigation.navigate(StackScreens.Settings);
     };
 
-    const onAcceptOrDeclinePress = (subscriber: string, status: boolean) => {
+    const onAcceptOrDeclinePress = (subscriber: string, status: boolean, index: number) => {
         dispatch(actionImpl.acceptOrDeclineRequest(status, subscriber))
+        setState({...getState, currentIndex: index})
     }
 
     const onRefresh = useCallback(() => {
@@ -52,6 +55,9 @@ const RequestListContainer: React.FC<IProps> = (props) => {
     useEffect(() => {
         let currentStatus = store.currentRequestStatus
         if (currentStatus !== void 0 && currentStatus.statusCode === 200) {
+                let currentList = getState.requestList
+                setState({...getState, requestList: currentList.filter((el , index)=> index !== getState.currentIndex), currentIndex: -1})
+
         }
     }, [store.currentRequestStatus])
 
@@ -59,8 +65,10 @@ const RequestListContainer: React.FC<IProps> = (props) => {
         if (store.requestListReducer?.statusCode === 200) {
             setState({...getState, requestList: store.requestListReducer.data})
             console.log(getState.requestList, store.requestListReducer, 'requests')
+        } else {
+            setState({...getState, requestList: []})
         }
-    }, [store.requestListReducer])
+    }, [store.requestListReducer, onRefresh])
 
     return <RequestListComponent {...STATE} />
 }

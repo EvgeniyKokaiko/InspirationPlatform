@@ -13,7 +13,7 @@ type IProps = {
     refresh: boolean;
     onBackBtn():void;
     data: Requests[];
-    onAcceptOrDeclinePress(subscriber: string, status: boolean): void;
+    onAcceptOrDeclinePress(subscriber: string, status: boolean, index: number): void;
 }
 
 const RequestListComponent: React.FC<IProps> = (state) => {
@@ -33,10 +33,10 @@ const RequestListComponent: React.FC<IProps> = (state) => {
                     <Text numberOfLines={1} style={[StylesOne.requests_fullName]}>{el.full_name}</Text>
                     </View>
                     <View style={[StylesOne.flex_row,{justifyContent: "flex-end", alignItems: 'center'}]}>
-                        <TouchableOpacity style={[MP.mr5, StylesOne.requests_accept]} onPress={() => {state.onAcceptOrDeclinePress(el.subscriber, true)}}>
+                        <TouchableOpacity style={[MP.mr5, StylesOne.requests_accept]} onPress={() => {state.onAcceptOrDeclinePress(el.subscriber, true, index)}}>
                             <Text style={[StylesOne.requests_username, {fontSize: fontSizeDP(12),color: 'white'}]}>Accept</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={[StylesOne.requests_decline]} onPress={() => {state.onAcceptOrDeclinePress(el.subscriber, true)}}>
+                        <TouchableOpacity style={[StylesOne.requests_decline]} onPress={() => {state.onAcceptOrDeclinePress(el.subscriber, false, index)}}>
                             <Text style={[StylesOne.requests_username, {fontSize: fontSizeDP(12), color: 'white'}]}>Decline</Text>
                         </TouchableOpacity>
                     </View>
