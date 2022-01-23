@@ -14,6 +14,7 @@ export enum ActionTypes {
     Subscribe = "MAKE_SUBSCRIBE",
     Unfollow = "MAKE_UNFOLLOW",
     RequestList = "GET_REQUEST_LIST",
+    AcceptOrDeclineRequest = "ACCEPT_OR_DECLINE_REQUEST",
 }
 
 

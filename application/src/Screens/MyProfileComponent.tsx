@@ -23,6 +23,7 @@ const MyProfileComponent: React.FC<IProps> = (props: IProps) => {
   const [refresh, setRefresh] = useState(false);
   const [avatar, setAvatar] = useState(-1)
   const [posts, setPosts] = useState([]);
+  const isMe = true;
   const [counts, setCounts] = useState({
     owner_count: 0,
     subscriber_count: 0
@@ -53,7 +54,7 @@ const MyProfileComponent: React.FC<IProps> = (props: IProps) => {
 
   const renderPosts = () => {
     return posts.map((el, index) => {
-      return <MyPost {...el} key={index} />;
+      return <MyPost isMe={isMe} {...el} key={index} />;
     });
   };
 

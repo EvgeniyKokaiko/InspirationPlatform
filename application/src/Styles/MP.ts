@@ -6,6 +6,9 @@ export const MP = StyleSheet.create({
     mv40: {
         marginVertical: mockupHeightToDP(40),
     },
+    mv10: {
+        marginVertical: mockupHeightToDP(10),
+    },
     mv20: {
         marginVertical: mockupHeightToDP(20),
     },

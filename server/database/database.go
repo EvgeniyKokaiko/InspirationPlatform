@@ -52,6 +52,7 @@ func (db *DB) CreateEmptyUser(item *models.EmptyUser) error {
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(item.Password), 8)
 	item.Password = string(hashedPassword)
 	item.IsPrivate = false
+	item.CreatedAt = time.Now().Format(time.RFC3339)
 	fmt.Println(item)
 	err := db.database.Table(typedDB.TABLES.USERS).Create(&item)
 	if err != nil {

@@ -115,6 +115,13 @@ export const St = StyleSheet.create({
     resizeMode: 'contain',
   },
 
+  round100image40: {
+    width: mockupWidthToDP(50),
+    height: mockupWidthToDP(50),
+    borderRadius: 999,
+    resizeMode: 'contain',
+  },
+
   image15: {
     width: mockupWidthToDP(24),
     height: mockupWidthToDP(24),

@@ -24,6 +24,7 @@ const UserProfileContainer = (props: IProps) => {
     const dispatch = useDispatch()
     const ownerAvatar: string = `http://${apiURL}/storage/${ownerId}/avatar/avatar.png`;
     const store: any = useSelector<any>(state => state)
+    const isMe = false;
     const [userState, setUserState] = useState<userDataProps>({
         userData: {},
         refresh: false,
@@ -64,7 +65,8 @@ const UserProfileContainer = (props: IProps) => {
         onBackBtn,
         avatarStatus: userState.avatarStatus,
         onSubscribePress,
-        onUnfollowPress
+        onUnfollowPress,
+        isMe
     }
 
 

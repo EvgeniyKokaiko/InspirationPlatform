@@ -24,4 +24,6 @@ export const colors = {
     classicBlack: "#000000",
     mintGreen: "#5024bf",
     Chalise: '#4556d9',
+    declineColor: '#F14C26',
+    acceptColor: '#22BC40',
 }

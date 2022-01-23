@@ -6,13 +6,14 @@ import {Post} from "../../Types/Models";
 import {actionImpl, apiURL} from "../../redux/actions";
 import {images} from "../../assets/images";
 import Carousel, {Pagination} from "react-native-snap-carousel";
-import {DEVICE_WIDTH, mockupHeightToDP} from "../../Parts/utils";
+import {DEVICE_WIDTH, mockupHeightToDP, mockupWidthToDP} from "../../Parts/utils";
 import {useDispatch, useSelector} from "react-redux";
 import {SThree} from "../../Styles/StylesThree";
 
 
 type myPostProps = {
     index: number
+    isMe: boolean;
 } & Post
 
 
@@ -21,6 +22,7 @@ const MyPost = (props: myPostProps) => {
     const dataPath = `http://${apiURL}/storage/${props.owner}/posts/${props.image.length > 0 && props.data_count > 0 ? props.image : props.video}/`
     const [modal, showModal]: [boolean, Function] = useState(false);
     const [index, setIndex] = useState(-1);
+    const [longPressed, setLongPressed] = useState(false);
     const state: any = useSelector<any>(state => state.postDelete)
     const createList = () => {
         const result = [];
@@ -72,7 +74,7 @@ const MyPost = (props: myPostProps) => {
     const CarouselWidth = DEVICE_WIDTH / 80 * 100;
     return (
         <View key={props.id} style={[St.postListItem, St.zIndex2]}>
-            <TouchableOpacity onLongPress={() => {showModal(true); setIndex(props.index)}} onPressOut={() => {showModal(false); setIndex(-1)}} onPress={() => {showModal(true); setIndex(props.index)}} key={props.id} style={St.image100}>
+            <TouchableOpacity onPress={() => {setLongPressed(false); showModal(true); setIndex(props.index)}} key={props.id} style={St.image100}>
                 <Image style={[StylesOne.wh100, St.borderImage]} source={{uri: `${dataPath}0.png`}} />
             </TouchableOpacity>
                     <Modal
@@ -83,12 +85,12 @@ const MyPost = (props: myPostProps) => {
                         <View style={St.modalWidth}>
                             <View style={[St.centeredView, St.zIndex999]}>
                                 <View style={St.modalView}>
-                                    <TouchableOpacity onPress={() => {showModal(false); setIndex(-1)}} style={[St.deletePost]}>
+                                    <TouchableOpacity onPress={() => {showModal(false); setIndex(-1)}} style={[St.deletePost, props.isMe ? {} : {right: mockupWidthToDP(10)}]}>
                                         <Image source={images.shrink} style={St.image100} />
                                     </TouchableOpacity>
-                                     <TouchableOpacity onPress={onPostDelete} style={[St.exitButton]}>
+                                    {props.isMe && <TouchableOpacity onPress={onPostDelete} style={[St.exitButton]}>
                                          <Image source={images.burger} style={St.image100} />
-                                     </TouchableOpacity>
+                                     </TouchableOpacity>}
                                     <Text style={St.ownerText}><Image style={St.image15} source={images.userImg} /> {props.owner}</Text>
                                     <View style={[St.PhotoList]}>
                                     <Carousel

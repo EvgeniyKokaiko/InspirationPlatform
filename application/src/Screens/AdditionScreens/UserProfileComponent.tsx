@@ -24,6 +24,7 @@ type IProps = {
     onSubscribePress(): void;
     onUnfollowPress(): void;
     isFollowed: boolean;
+    isMe: boolean;
 }
 
 const UserProfileComponent = (state: IProps) => {
@@ -35,7 +36,7 @@ const UserProfileComponent = (state: IProps) => {
             return
         }
         return state.user.userPosts?.map((el: Post, index: number) => {
-            return <MyPost {...el} index={index} key={index} />;
+            return <MyPost isMe={state.isMe} {...el} index={index} key={index} />;
         });
     };
 

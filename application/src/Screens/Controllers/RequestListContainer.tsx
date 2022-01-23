@@ -27,6 +27,10 @@ const RequestListContainer: React.FC<IProps> = (props) => {
         props.navigation.navigate(StackScreens.Settings);
     };
 
+    const onAcceptOrDeclinePress = (subscriber: string, status: boolean) => {
+        dispatch(actionImpl.acceptOrDeclineRequest(status, subscriber))
+    }
+
     const onRefresh = useCallback(() => {
         dispatch(actionImpl.getRequestList())
         console.log(getState.requestList)
@@ -36,15 +40,25 @@ const RequestListContainer: React.FC<IProps> = (props) => {
         onRefresh,
         refresh:getState.refresh,
         onBackBtn,
+        data: getState.requestList,
+        onAcceptOrDeclinePress,
     }
+
 
     useEffect(() => {
         dispatch(actionImpl.getRequestList())
     }, [])
 
     useEffect(() => {
+        let currentStatus = store.currentRequestStatus
+        if (currentStatus !== void 0 && currentStatus.statusCode === 200) {
+        }
+    }, [store.currentRequestStatus])
+
+    useEffect(() => {
         if (store.requestListReducer?.statusCode === 200) {
             setState({...getState, requestList: store.requestListReducer.data})
+            console.log(getState.requestList, store.requestListReducer, 'requests')
         }
     }, [store.requestListReducer])
 

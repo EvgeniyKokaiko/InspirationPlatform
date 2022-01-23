@@ -108,6 +108,16 @@ class ReducersImpl {
         if (action.type === ActionTypes.RequestList) {
             console.log(action.payload, "PAYLOAD")
             return action.payload
+        } else if (action.type === ActionTypes.Clear) {
+            return {};
+        }
+        return state
+    }
+
+    public CurrentRequestStatus(state = {}, action: Action) {
+        if (action.type === ActionTypes.AcceptOrDeclineRequest) {
+            console.log(action.payload, "PAYLOAD")
+            return action.payload
         }
         return state
     }
@@ -125,7 +135,8 @@ class ReducersImpl {
             postDelete: this.PostDeleteReducer,
             subscribeReducer: this.MakeSubscribeReducer,
             unfollowReducer: this.MakeUnfollowReducer,
-            requestListReducer: this.RequestListReducer
+            requestListReducer: this.RequestListReducer,
+            currentRequestStatus: this.CurrentRequestStatus,
         })
     }
 }

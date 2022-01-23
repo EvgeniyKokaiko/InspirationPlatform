@@ -246,4 +246,33 @@ export const StylesOne = StyleSheet.create({
   cInactive: {
     color: colors.Placeholder,
   },
+
+  requests_username: {
+    fontSize: fontSizeDP(15),
+    color: colors.SignIn_BG,
+    fontWeight: '600',
+  },
+  requests_fullName: {
+    fontSize: fontSizeDP(13),
+    color: colors.Dark,
+    fontWeight: '400',
+  },
+  requests_accept: {
+   borderRadius: mockupWidthToDP(5),
+    width: mockupWidthToDP(80),
+    height: mockupHeightToDP(30),
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.acceptColor
+  },
+  requests_decline: {
+    borderRadius: mockupWidthToDP(5),
+    width: mockupWidthToDP(80),
+    height: mockupHeightToDP(30),
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.declineColor
+  },
 });

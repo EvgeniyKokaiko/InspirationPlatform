@@ -276,6 +276,25 @@ class Actions implements ActionMethods {
               });
       });
   }
+
+  public acceptOrDeclineRequest = (status: boolean, owner: string) => async (dispatch: Dispatch<Action>) => {
+      await this._useToken( async (el: string | null) => {
+          axios
+              .post(
+                  `http://${apiURL}/users/${owner}/acceptRequest`,
+                  {status},
+                  {
+                      headers: {
+                          Authorization: `Bearer ${el}`,
+                      },
+                  }
+              )
+              .then((el) => {
+                  console.log(el.data, "RESPONSE")
+                  dispatch({ type: ActionTypes.AcceptOrDeclineRequest, payload: el.data });
+              });
+      });
+  }
 }
 
 export const actionImpl = new Actions(apiURL);

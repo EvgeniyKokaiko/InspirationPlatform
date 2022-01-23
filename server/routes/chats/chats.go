@@ -16,7 +16,7 @@ var upgrader = websocket.Upgrader{
 }
 
 func Chats(route *gin.Engine, db *database.DB) {
-	route.Group("/chatEngine")
+	route.Group("/messaging")
 	{
 
 	}
