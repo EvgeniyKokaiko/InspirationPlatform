@@ -16,37 +16,34 @@ import (
 
 type DB struct {
 	database *gorm.DB
-	config struct {
-		dsn 	 string
-		ip  	 string
-		username string
+	config   struct {
+		dsn          string
+		ip           string
+		username     string
 		databaseName string
 	}
 }
 
-
 func CreateDB() *DB {
 	Data := DB{
 		config: struct {
-			dsn      	 string
-			ip       	 string
-			username 	 string
+			dsn          string
+			ip           string
+			username     string
 			databaseName string
 		}{
-			dsn: "root:@tcp(127.0.0.1:3306)/valhalla?charset=utf8mb4&parseTime=True&loc=Local",
-			ip: "127.0.0.1:3306",
-			username: "evgeniykokaiko",
+			dsn:          "root:@tcp(127.0.0.1:3306)/valhalla?charset=utf8mb4&parseTime=True&loc=Local",
+			ip:           "127.0.0.1:3306",
+			username:     "evgeniykokaiko",
 			databaseName: "valhalla",
 		},
 	}
-	Data.database, _ = gorm.Open(mysql.Open(Data.config.dsn),  &gorm.Config{})
+	Data.database, _ = gorm.Open(mysql.Open(Data.config.dsn), &gorm.Config{})
 	if Data.database.Error != nil {
 		log.Fatal("something went wrong with db")
 	}
 	return &Data
 }
-
-
 
 func (db *DB) CreateEmptyUser(item *models.EmptyUser) error {
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(item.Password), 8)
@@ -71,7 +68,6 @@ func (db *DB) SetupAccount(item *models.User) error {
 	return err.Error
 }
 
-
 func (db *DB) Login(item *models.EmptyUser) (models.EmptyUser, string) {
 	var result models.User
 	var tokenModel models.EmptyUser
@@ -87,7 +83,6 @@ func (db *DB) Login(item *models.EmptyUser) (models.EmptyUser, string) {
 		return tokenModel, "Accepted"
 	}
 }
-
 
 func (db *DB) Me(username string) (utils.StandardMap, error) {
 	var result *models.User
@@ -115,14 +110,12 @@ func (db *DB) Me(username string) (utils.StandardMap, error) {
 	return dbResult, nil
 }
 
-
 func (db *DB) Avatar(username string) string {
 	var result *models.User
 	db.database.Table(typedDB.TABLES.USERS).Where("username = ?", username).Take(&result).Scan(&result)
 	fmt.Println(result.Avatar, "5454")
 	return result.Avatar
 }
-
 
 func (db *DB) AddPost(username string, data map[string]interface{}) (string, error) {
 	data["date_of_creation"] = time.Now()
@@ -142,13 +135,11 @@ func (db *DB) DeletePost(username string, hash string, owner string) (string, er
 	return "Accept", nil
 }
 
-
 func (db *DB) GetMyPosts(username string) ([]*models.Post, error) {
 	var result []*models.Post
 	db.database.Table(typedDB.TABLES.POSTS).Where("owner = ?", username).Find(&result).Scan(&result)
 	return result, nil
 }
-
 
 func (db *DB) Logout(username string) error {
 	result := db.database.Table(typedDB.TABLES.USERS).Where("username = ?", username).Update("token", "")
@@ -157,7 +148,6 @@ func (db *DB) Logout(username string) error {
 	}
 	return nil
 }
-
 
 func (db *DB) CheckToken(username string) (string, error) {
 	var result *models.EmptyUser
@@ -168,13 +158,13 @@ func (db *DB) CheckToken(username string) (string, error) {
 	}
 	name, _, error := utils.ParseToken(result.Token)
 	if error != nil && username != name {
-	return "", error
+		return "", error
 	}
 
 	return result.Username, nil
 }
 
-func (db *DB) GetNewsLine(_ string, page int) ([]*models.Post, int ,error) {
+func (db *DB) GetNewsLine(_ string, page int) ([]*models.Post, int, error) {
 	var dbResult []*models.Post
 	var dbPageResult = map[string]interface{}{}
 	const postBunch int = 30
@@ -184,19 +174,18 @@ func (db *DB) GetNewsLine(_ string, page int) ([]*models.Post, int ,error) {
 	fmt.Println(dbPageCount, pageCount)
 	if dbResponse.Error != nil {
 		log.Println("GetNewsLine ex", dbResponse.Error)
-		return []*models.Post{}, 0 ,errors.New("ERROR! You got error on GetNewsLine method in DB")
+		return []*models.Post{}, 0, errors.New("ERROR! You got error on GetNewsLine method in DB")
 	}
 
-	return dbResult, int(pageCount) ,nil
+	return dbResult, int(pageCount), nil
 }
 
-
-func (db *DB) GetUserDataWithPosts(username string, name string ,page int) (map[string]interface{}, error) {
+func (db *DB) GetUserDataWithPosts(username string, name string, page int) (map[string]interface{}, error) {
 	var userData *models.User
 	var userPosts *[]models.Post
 	var userSubscription *models.Subscriptions
 	var userCounts = map[string]interface{}{}
-	dbResult :=  utils.StandardMap{}
+	dbResult := utils.StandardMap{}
 	dbUserDataResponse := db.database.
 		Table(typedDB.TABLES.USERS).
 		Where("username = ?", username).
@@ -216,14 +205,14 @@ func (db *DB) GetUserDataWithPosts(username string, name string ,page int) (map[
 			Table(typedDB.TABLES.POSTS).
 			Where("owner = ?", username).
 			Scan(&userPosts)
-		if  dbUserPostsResponse.Error != nil {
+		if dbUserPostsResponse.Error != nil {
 			return map[string]interface{}{}, errors.New("ERROR! You got an error on database catching")
 		}
 		dbResult.AddToMap("userPosts", userPosts)
 		dbResult.AddToMap("isPrivate", false)
 	} else {
 		dbResult.AddToMap("userPosts", map[string]interface{}{
-			"status": "Locked.User doesn't give permission",
+			"status":     "Locked.User doesn't give permission",
 			"statusCode": 1,
 		})
 		dbResult.AddToMap("isPrivate", true)
@@ -236,21 +225,19 @@ func (db *DB) GetUserDataWithPosts(username string, name string ,page int) (map[
 		dbResult.AddToMap("isSubscribe", true)
 	}
 
-
 	if dbUserDataResponse.Error != nil || dbSubscription.Error != nil || dbCounter.Error != nil {
 		return map[string]interface{}{}, errors.New("ERROR! You got an error on database catching")
 	}
-		if userData.Password != "" {
-	userData.Password = ""
+	if userData.Password != "" {
+		userData.Password = ""
 	}
 	dbResult.AddToMap("isSubscribed", userSubscription)
 	dbResult.AddToMap("userData", userData)
 	return dbResult, nil
 }
 
-
 func (db *DB) SubscribeUser(owner string, subscriber string) (bool, error) {
-	subscription :=  models.Subscriptions{}
+	subscription := models.Subscriptions{}
 	subscription.Subscriber = subscriber
 	subscription.Owner = owner
 	subscription.CreatedAt = time.Now()
@@ -276,13 +263,11 @@ func (db *DB) SubscribeUser(owner string, subscriber string) (bool, error) {
 	}
 	if dbSubscriptionResponse := db.database.
 		Table(typedDB.TABLES.SUBSCRIPTIONS).
-		Create(&subscription);
-		dbSubscriptionResponse.Error != nil {
+		Create(&subscription); dbSubscriptionResponse.Error != nil {
 		return false, errors.New("ERROR!Something went wrong")
 	}
 	return true, nil
 }
-
 
 func (db *DB) UnfollowUser(owner string, subscriber string) (bool, error) {
 	subscription := models.Subscriptions{}
@@ -296,16 +281,13 @@ func (db *DB) UnfollowUser(owner string, subscriber string) (bool, error) {
 	return true, nil
 }
 
-
-
-func (db *DB) AcceptRequestOnSubscription (owner string, username string, accepted bool) (bool, error) {
+func (db *DB) AcceptRequestOnSubscription(owner string, username string, accepted bool) (bool, error) {
 	subscription := models.Subscriptions{}
 	if accepted {
 		if dbAcceptRequestResponse := db.database.
 			Table(typedDB.TABLES.SUBSCRIPTIONS).
 			Where("owner = ? AND subscriber = ?", owner, username).
-			Update("status", 2);
-			dbAcceptRequestResponse.Error != nil || dbAcceptRequestResponse.RowsAffected == 0 {
+			Update("status", 2); dbAcceptRequestResponse.Error != nil || dbAcceptRequestResponse.RowsAffected == 0 {
 			fmt.Println(dbAcceptRequestResponse.Error, dbAcceptRequestResponse.RowsAffected, true)
 			return false, errors.New("ERROR! Something went wrong")
 		}
@@ -313,9 +295,8 @@ func (db *DB) AcceptRequestOnSubscription (owner string, username string, accept
 		if dbDeclineRequestResponse := db.database.
 			Table(typedDB.TABLES.SUBSCRIPTIONS).
 			Where("owner = ? AND subscriber = ?", owner, username).
-			Delete(&subscription);
-			dbDeclineRequestResponse.Error != nil || dbDeclineRequestResponse.RowsAffected == 0 {
-				fmt.Println(dbDeclineRequestResponse.Error, dbDeclineRequestResponse.RowsAffected, false, owner, username, accepted)
+			Delete(&subscription); dbDeclineRequestResponse.Error != nil || dbDeclineRequestResponse.RowsAffected == 0 {
+			fmt.Println(dbDeclineRequestResponse.Error, dbDeclineRequestResponse.RowsAffected, false, owner, username, accepted)
 			return false, errors.New("ERROR! Something went wrong")
 		}
 	}
@@ -325,15 +306,15 @@ func (db *DB) AcceptRequestOnSubscription (owner string, username string, accept
 
 //SELECT * FROM user_subscription INNER JOIN (SELECT full_name, username, email, description FROM users) AS user_rows ON user_subscription.owner = user_rows.username AND user_subscription.owner = 'kek54'
 
-func (db *DB) GetRequestList (owner string) ([]map[string]interface{}, error) {
+func (db *DB) GetRequestList(owner string) ([]map[string]interface{}, error) {
 	var subscriptionList []map[string]interface{}
 
 	if dbGetRequestListResponse := db.database.Raw(`
 		SELECT * FROM user_subscription
 		INNER JOIN (SELECT full_name, username, email, description FROM users)
 		AS user_rows ON user_subscription.subscriber = user_rows.username
-		AND user_subscription.owner = ? AND user_subscription.status = 1`, owner).Take(&subscriptionList);
-		dbGetRequestListResponse.Error != nil || dbGetRequestListResponse.RowsAffected == 0 {
+		AND user_subscription.owner = ? AND user_subscription.status = 1`, owner).
+		Take(&subscriptionList); dbGetRequestListResponse.Error != nil || dbGetRequestListResponse.RowsAffected == 0 {
 		return []map[string]interface{}{}, errors.New("ERROR! Something went wrong")
 	}
 	fmt.Println(subscriptionList)
@@ -341,7 +322,42 @@ func (db *DB) GetRequestList (owner string) ([]map[string]interface{}, error) {
 }
 
 
-//TODO сделать изменение статуса.
+func (db *DB) GetMyNewsLine(subscriber string, page int) ([]map[string]interface{}, error) {
+		var myNewsLine =  []map[string]interface{}{}
+		if dbGetMyNewsLineResponse := db.database.Raw(`
+		SELECT * FROM posts INNER JOIN
+		(SELECT owner, subscriber, status FROM user_subscription 
+		WHERE STATUS = 2 AND subscriber = ?)
+		AS subs ON (posts.owner = subs.owner)
+ 		ORDER BY posts.date_of_creation DESC
+		`, subscriber).Scan(&myNewsLine); dbGetMyNewsLineResponse.Error != nil && dbGetMyNewsLineResponse.Error != gorm.ErrRecordNotFound {
+			return []map[string]interface{}{}, errors.New("ERROR! On GetMyNewsLine reading")
+		}
+		return myNewsLine, nil
+}
 
+//SELECT * FROM posts INNER JOIN (SELECT owner, subscriber, status FROM user_subscription WHERE STATUS = 2 AND subscriber = 'evgeniy') AS subs ON (posts.owner = subs.owner)
+
+func Da (base typedDB.DBMethods, a string) {
+	var b = 'A'
+	fmt.Println(base.Me(a))
+	fmt.Println(b)
+}
+
+func MessageToDB(username string) {
+
+}
+
+//func (db *DB) GetSocketURL (user string, otherUser string) {
+//	var socketData map[string]interface{}
+//	if dbGetSocketURLResponse := db.database.
+//		Table(typedDB.TABLES.SUBSCRIPTIONS).
+//
+//		; dbGetSocketURLResponse != nil {
+//		if dbGetSocketURLResponse.Error == gorm.ErrRecordNotFound {
+//
+//		}
+//	}
+//}
 
 //TODO сделать на флаг isLock, ed если да, и есть доступ(новая таблица user_permissions) тогда возращать и посты пользователя, а если нет тогда возращать только данные пользователя

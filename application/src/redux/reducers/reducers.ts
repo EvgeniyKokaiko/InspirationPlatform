@@ -63,6 +63,16 @@ class ReducersImpl {
         return state
     }
 
+    public GetMyNewsLineReducer(state = {}, action: Action) {
+        if (action.type === ActionTypes.MyNewsLine) {
+            return action.payload
+        } else if (action.type === ActionTypes.Clear) {
+            return []
+        }
+        return state
+    }
+
+
     public GetUserData(state = {}, action: Action) {
         if (action.type === ActionTypes.User) {
             return {...action.payload}
@@ -122,6 +132,8 @@ class ReducersImpl {
         return state
     }
 
+
+
     public getAllReducers = () => {
         return combineReducers({
             registerReducer: this.RegisterReducer,
@@ -131,6 +143,7 @@ class ReducersImpl {
             mePostsReducer: this.MePostsReducer,
             checkForConnectionReducer: this.StatelessReducers,
             getNewsLineReducer: this.GetNewsLineReducer,
+            GetMyNewsLineReducer: this.GetMyNewsLineReducer,
             getUserDataReducer: this.GetUserData,
             postDelete: this.PostDeleteReducer,
             subscribeReducer: this.MakeSubscribeReducer,

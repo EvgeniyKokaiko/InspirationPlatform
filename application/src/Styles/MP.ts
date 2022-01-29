@@ -15,11 +15,17 @@ export const MP = StyleSheet.create({
     mr15: {
         marginRight: mockupWidthToDP(15),
     },
+    ml5: {
+        marginLeft: mockupWidthToDP(5),
+    },
     ml10: {
         marginLeft: mockupWidthToDP(10),
     },
     pb15: {
         paddingBottom: mockupHeightToDP(15),
+    },
+    mb100: {
+        marginBottom: mockupHeightToDP(100),
     },
     ml20: {
       marginLeft: mockupWidthToDP(20),
@@ -51,6 +57,9 @@ export const MP = StyleSheet.create({
     ph15: {
         paddingHorizontal: mockupWidthToDP(15),
     },
+    mt10: {
+        marginTop: mockupHeightToDP(10),
+    },
     mt20: {
         marginTop: mockupHeightToDP(20),
     },
@@ -59,6 +68,9 @@ export const MP = StyleSheet.create({
     },
     pv20: {
         paddingVertical: mockupWidthToDP(20),
+    },
+    mb10: {
+        marginBottom: mockupHeightToDP(10),
     },
     mb20: {
         marginBottom: mockupHeightToDP(20),

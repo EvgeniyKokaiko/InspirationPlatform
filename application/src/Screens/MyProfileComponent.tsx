@@ -145,14 +145,7 @@ const MyProfileComponent: React.FC<IProps> = (props: IProps) => {
       refreshControl={<RefreshControl refreshing={refresh} onRefresh={makeRequest} />}
     >
       <View style={[StylesOne.flex_row, StylesOne.flex_jc_sb, StylesOne.flex_ai_c, MP.mv20, St.zIndex999]}>
-        <TouchableOpacity
-          onPress={() => {
-            /*goBack(props.navigation)*/
-          }}
-          style={StylesOne.image24}
-        >
-          <Image style={[StylesOne.wh100, StylesOne.rm_c, St.blackArrow]} source={images.arrowLeft} />
-        </TouchableOpacity>
+
         <Image source={images.logo} style={[StylesOne.image40, { tintColor: 'black' }]} />
         <View style={[StylesOne.image24]}></View>
       </View>
@@ -160,5 +153,15 @@ const MyProfileComponent: React.FC<IProps> = (props: IProps) => {
     </ScrollView>
   );
 };
+
+//
+// <TouchableOpacity
+//     onPress={() => {
+//       /*goBack(props.navigation)*/
+//     }}
+//     style={StylesOne.image24}
+// >
+//   <Image style={[StylesOne.wh100, StylesOne.rm_c, St.blackArrow]} source={images.arrowLeft} />
+// </TouchableOpacity>
 
 export default MyProfileComponent;

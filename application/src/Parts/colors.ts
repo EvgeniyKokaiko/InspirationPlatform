@@ -26,4 +26,6 @@ export const colors = {
     Chalise: '#4556d9',
     declineColor: '#F14C26',
     acceptColor: '#22BC40',
+    ownerDark: '#1D1D28',
+    dateGray: '#A4A4B2',
 }

@@ -3,6 +3,7 @@ package utils
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 	"gorm.io/gorm"
 	"math/rand"
 	"server/models"
@@ -56,6 +57,19 @@ func (c StandardMap) AddToMap(key string, item interface{}) {
 //		reflect.ValueOf(c).FieldByName(key).SetBool(value.(bool))
 //	}
 //}
+
+func RemoveConnection(slice []*websocket.Conn, s int) []*websocket.Conn {
+	return append(slice[:s], slice[s+1:]...)
+}
+
+func FindIndex(a []*websocket.Conn, x *websocket.Conn) int {
+	for index, n := range a {
+		if x == n {
+			return index
+		}
+	}
+	return -1
+}
 
 
 func HandleDBError (ctx *gorm.DB, errorMessage string, result interface{} ,values... interface{}) (interface{}, error) {

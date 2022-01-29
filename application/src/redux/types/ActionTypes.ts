@@ -10,6 +10,7 @@ export enum ActionTypes {
     Check = "CHECK_FOR_CONNECTION",
     Logout = "LOGOUT_ME",
     NewsLine = "GET_NEWSLINE",
+    MyNewsLine = "GET_MY_OWN_NEWSLINE",
     User = "GET_USER_DATA",
     Subscribe = "MAKE_SUBSCRIBE",
     Unfollow = "MAKE_UNFOLLOW",

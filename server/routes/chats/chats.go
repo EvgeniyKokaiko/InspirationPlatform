@@ -2,22 +2,31 @@ package chats
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
 	"net/http"
 	"server/database"
+	typedDB "server/types"
+	"server/utils"
 )
 
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
-	CheckOrigin: func(r *http.Request) bool {
-		return true
-	},
-}
 
 func Chats(route *gin.Engine, db *database.DB) {
-	route.Group("/messaging")
+	router := route.Group("/messaging")
 	{
+		router.GET("/userId/getUrl", func(c *gin.Context) {
+
+
+		})
+
+
+		router.GET("/:cHash", func(c *gin.Context) {
+			var cHash = c.Param("cHash")
+ 			if username, _, err := utils.ParseHeader(c); len(c.GetHeader("Authorization")) > 15 || err == nil {
+				 handleWS(c.Writer, *c.Request, nil, cHash ,username)
+			} else {
+				c.JSON(http.StatusConflict, typedDB.GiveResponse(http.StatusConflict, "Socket Conflicts"))
+			}
+		})
+
 
 	}
 }

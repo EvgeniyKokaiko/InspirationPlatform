@@ -12,6 +12,10 @@ export const backgrounds = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.5)',
   },
 
+  newsLine: {
+    backgroundColor: '#EFF3F5',
+  },
+
   addPost: {
     backgroundColor: colors.darkPurple,
   },

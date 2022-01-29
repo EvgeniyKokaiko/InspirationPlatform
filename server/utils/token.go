@@ -15,6 +15,15 @@ type Claims struct {
 	Email 	 string
 }
 
+const (
+	A = iota
+	B
+	C
+	D
+	E
+	F
+)
+
 const secret = "VaLhAlLa"
 
 func CreateToken(username string, email string) string {

@@ -9,7 +9,7 @@ interface ActionMethods {
   register(username: string, email: string, password: string): (dispatch: Dispatch<Action>) => {};
   setup(username: { data: string }, full_name: string, location: string, description: string, gender: string): (dispatch: Dispatch<Action>) => {};
   authorize(username: string, password: string): (dispatch: Dispatch<Action>) => {};
-  getMe():(dispatch: Dispatch<Action>) => {};
+  getMe(): (dispatch: Dispatch<Action>) => {};
   getMyPosts(): (dispatch: Dispatch<Action>) => {};
   addPost(caption: string, image: any, type: number): (dispatch: Dispatch<Action>) => {};
   deletePost(hash: string, username: string): (dispatch: Dispatch<Action>) => {};
@@ -20,7 +20,7 @@ interface ActionMethods {
 }
 
 class Actions implements ActionMethods {
- private readonly _serverURL: string;
+  private readonly _serverURL: string;
   constructor(serverURL: string) {
     this._serverURL = serverURL;
   }
@@ -53,7 +53,9 @@ class Actions implements ActionMethods {
         .then((el) => {
           console.log(el.status, el.data, 1444);
           dispatch({ type: ActionTypes.Register, payload: { statusCode: el.status, data: el.data } });
-        });
+        }).catch(() => {
+        dispatch({ type: ActionTypes.DeletePost, payload: { statusCode: 423 } });
+      });
       console.log('Register', `${apiURL}/register`);
     } catch (ex) {
       console.log('register ex', ex);
@@ -62,7 +64,7 @@ class Actions implements ActionMethods {
 
   public setup =
     (username: { data: string }, full_name: string, location: string, description: string, gender: string) => async (dispatch: Dispatch<Action>) => {
-    axios
+      axios
         .post(`http://${apiURL}/auth/setup`, {
           username: username.data,
           full_name: full_name,
@@ -73,7 +75,9 @@ class Actions implements ActionMethods {
         .then((el) => {
           console.log(el.status, el.data, 1444);
           dispatch({ type: ActionTypes.Setup, payload: { statusCode: el.status, data: el.data.data } });
-        });
+        }).catch(() => {
+        dispatch({ type: ActionTypes.DeletePost, payload: { statusCode: 423 } });
+      });
     };
 
   public authorize = (username: string, password: string) => async (dispatch: Dispatch<Action>) => {
@@ -86,7 +90,9 @@ class Actions implements ActionMethods {
       .then((el) => {
         console.log({ statusCode: el.status, data: el.data.data }, 'login');
         dispatch({ type: ActionTypes.Login, payload: { statusCode: el.status, data: el.data.data } });
-      });
+      }).catch(() => {
+      dispatch({ type: ActionTypes.DeletePost, payload: { statusCode: 423 } });
+    });
   };
 
   public getMe = () => async (dispatch: Dispatch<Action>) => {
@@ -102,7 +108,9 @@ class Actions implements ActionMethods {
             type: ActionTypes.Me,
             payload: { statusCode: el.status, data: el.data.data, avatar: el.data.avatar },
           });
-        });
+        }).catch((el) => {
+        dispatch({ type: ActionTypes.DeletePost, payload: { statusCode: 423 } });
+      });
     });
   };
 
@@ -117,7 +125,9 @@ class Actions implements ActionMethods {
         })
         .then((el) => {
           dispatch({ type: ActionTypes.MePosts, payload: { statusCode: el.status, counter: el.data.counter, data: el.data.data } });
-        });
+        }).catch((el) => {
+        dispatch({ type: ActionTypes.DeletePost, payload: { statusCode: 423 } });
+      });
     });
   };
 
@@ -144,7 +154,9 @@ class Actions implements ActionMethods {
         })
         .then((el) => {
           dispatch({ type: ActionTypes.AddPost, payload: { statusCode: el.status } });
-        });
+        }).catch((el) => {
+        dispatch({ type: ActionTypes.DeletePost, payload: { statusCode: 423 } });
+      });
     });
   };
 
@@ -162,7 +174,10 @@ class Actions implements ActionMethods {
         )
         .then((el) => {
           dispatch({ type: ActionTypes.DeletePost, payload: { statusCode: el.status } });
-        }).catch((el) => {dispatch({ type: ActionTypes.DeletePost, payload: { statusCode: 423 } })});
+        })
+        .catch(() => {
+          dispatch({ type: ActionTypes.DeletePost, payload: { statusCode: 423 } });
+        });
     });
   };
 
@@ -176,7 +191,9 @@ class Actions implements ActionMethods {
         })
         .then((el) => {
           dispatch({ type: ActionTypes.Check, payload: { statusCode: el.status } });
-        });
+        }).catch(() => {
+        dispatch({ type: ActionTypes.DeletePost, payload: { statusCode: 423 } });
+      });
     });
   };
 
@@ -190,15 +207,112 @@ class Actions implements ActionMethods {
         })
         .then((el) => {
           dispatch({ type: ActionTypes.Logout, payload: { statusCode: el.status } });
-        });
+        }).catch(() => {
+        dispatch({ type: ActionTypes.DeletePost, payload: { statusCode: 423 } });
+      });
     });
   };
 
   public getNewsline = (page: number) => async (dispatch: Dispatch<Action>) => {
     await this._useToken(async (el: string | null) => {
       axios
-        .get(
-          `http://${apiURL}/posts/getNewsline?page=${page}`,
+        .get(`http://${apiURL}/posts/getNewsline?page=${page}`, {
+          headers: {
+            Authorization: `Bearer ${el}`,
+          },
+        })
+        .then((el) => {
+          dispatch({ type: ActionTypes.NewsLine, payload: el.data });
+        }).catch(() => {
+        dispatch({ type: ActionTypes.DeletePost, payload: { statusCode: 423 } });
+      });
+    });
+  };
+  public getMyNewsLine = (page: number) => async (dispatch: Dispatch<Action>) => {
+    await this._useToken(async (el: string | null) => {
+      axios
+          .get(`http://${apiURL}/posts/getMyNewsLine?page=${page}`, {
+            headers: {
+              Authorization: `Bearer ${el}`,
+            },
+          })
+          .then((el) => {
+            dispatch({ type: ActionTypes.MyNewsLine, payload: el.data });
+          }).catch(() => {
+        dispatch({ type: ActionTypes.DeletePost, payload: { statusCode: 423 } });
+      });
+    });
+  };
+
+  public getUser = (username: string) => async (dispatch: Dispatch<Action>) => {
+    await this._useToken(async (el: string | null) => {
+      axios
+        .get(`http://${apiURL}/users/${username}`, {
+          headers: {
+            Authorization: `Bearer ${el}`,
+          },
+        })
+        .then((el) => {
+          dispatch({ type: ActionTypes.User, payload: el.data });
+        }).catch(() => {
+        dispatch({ type: ActionTypes.DeletePost, payload: { statusCode: 423 } });
+      });
+    });
+  };
+  public makeSubscribe = (ownerId: string) => async (dispatch: Dispatch<Action>) => {
+    await this._useToken(async (el: string | null) => {
+      axios
+        .get(`http://${apiURL}/users/${ownerId}/subscribe`, {
+          headers: {
+            Authorization: `Bearer ${el}`,
+          },
+        })
+        .then((el) => {
+          dispatch({ type: ActionTypes.Subscribe, payload: el.data });
+        }).catch(() => {
+        dispatch({ type: ActionTypes.DeletePost, payload: { statusCode: 423 } });
+      });
+    });
+  };
+
+  public makeUnfollow = (ownerId: string) => async (dispatch: Dispatch<Action>) => {
+    await this._useToken(async (el: string | null) => {
+      axios
+        .get(`http://${apiURL}/users/${ownerId}/unfollow`, {
+          headers: {
+            Authorization: `Bearer ${el}`,
+          },
+        })
+        .then((el) => {
+          dispatch({ type: ActionTypes.Unfollow, payload: el.data });
+        }).catch(() => {
+        dispatch({ type: ActionTypes.DeletePost, payload: { statusCode: 423 } });
+      });
+    });
+  };
+  public getRequestList = () => async (dispatch: Dispatch<Action>) => {
+    await this._useToken(async (el: string | null) => {
+      axios
+        .get(`http://${apiURL}/users/requestList`, {
+          headers: {
+            Authorization: `Bearer ${el}`,
+          },
+        })
+        .then((el) => {
+          console.log(el.data, 'RESPONSE');
+          dispatch({ type: ActionTypes.RequestList, payload: el.data });
+        }).catch(() => {
+        dispatch({ type: ActionTypes.DeletePost, payload: { statusCode: 423 } });
+      });
+    });
+  };
+
+  public acceptOrDeclineRequest = (status: boolean, owner: string) => async (dispatch: Dispatch<Action>) => {
+    await this._useToken(async (el: string | null) => {
+      axios
+        .post(
+          `http://${apiURL}/users/${owner}/acceptRequest`,
+          { status },
           {
             headers: {
               Authorization: `Bearer ${el}`,
@@ -206,95 +320,13 @@ class Actions implements ActionMethods {
           }
         )
         .then((el) => {
-          dispatch({ type: ActionTypes.NewsLine, payload: el.data });
-        });
+          console.log(el.data, 'RESPONSE');
+          dispatch({ type: ActionTypes.AcceptOrDeclineRequest, payload: el.data });
+        }).catch(() => {
+        dispatch({ type: ActionTypes.DeletePost, payload: { statusCode: 423 } });
+      });
     });
   };
-  public getUser = (username: string) => async (dispatch: Dispatch<Action>) => {
-    await this._useToken(async (el: string | null) => {
-      axios
-          .get(
-              `http://${apiURL}/users/${username}`,
-              {
-                headers: {
-                  Authorization: `Bearer ${el}`,
-                },
-              }
-          )
-          .then((el) => {
-            dispatch({ type: ActionTypes.User, payload: el.data });
-          });
-    });
-  }
-  public makeSubscribe = (ownerId: string) => async (dispatch: Dispatch<Action>) => {
-        await this._useToken( async (el: string | null) => {
-            axios
-                .get(
-                    `http://${apiURL}/users/${ownerId}/subscribe`,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${el}`,
-                        },
-                    }
-                )
-                .then((el) => {
-                    dispatch({ type: ActionTypes.Subscribe, payload: el.data });
-                });
-        });
-  }
-
-  public makeUnfollow = (ownerId: string) => async (dispatch: Dispatch<Action>) => {
-      await this._useToken( async (el: string | null) => {
-          axios
-              .get(
-                  `http://${apiURL}/users/${ownerId}/unfollow`,
-                  {
-                      headers: {
-                          Authorization: `Bearer ${el}`,
-                      },
-                  }
-              )
-              .then((el) => {
-                  dispatch({ type: ActionTypes.Unfollow, payload: el.data });
-              });
-      });
-  }
-  public getRequestList = () => async (dispatch: Dispatch<Action>) => {
-      await this._useToken( async (el: string | null) => {
-          axios
-              .get(
-                  `http://${apiURL}/users/requestList`,
-                  {
-                      headers: {
-                          Authorization: `Bearer ${el}`,
-                      },
-                  }
-              )
-              .then((el) => {
-                  console.log(el.data, "RESPONSE")
-                  dispatch({ type: ActionTypes.RequestList, payload: el.data });
-              });
-      });
-  }
-
-  public acceptOrDeclineRequest = (status: boolean, owner: string) => async (dispatch: Dispatch<Action>) => {
-      await this._useToken( async (el: string | null) => {
-          axios
-              .post(
-                  `http://${apiURL}/users/${owner}/acceptRequest`,
-                  {status},
-                  {
-                      headers: {
-                          Authorization: `Bearer ${el}`,
-                      },
-                  }
-              )
-              .then((el) => {
-                  console.log(el.data, "RESPONSE")
-                  dispatch({ type: ActionTypes.AcceptOrDeclineRequest, payload: el.data });
-              });
-      });
-  }
 }
 
 export const actionImpl = new Actions(apiURL);

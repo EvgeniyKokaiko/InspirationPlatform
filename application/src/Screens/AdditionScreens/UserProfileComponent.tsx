@@ -6,7 +6,7 @@ import {images} from "../../assets/images";
 import {St} from "../../Styles/StylesTwo";
 import {backgrounds} from "../../Styles/Backgrounds";
 import Avatar from "../segments/Avatar";
-import {fontSizeDP, mockupHeightToDP, mockupWidthToDP} from "../../Parts/utils";
+import { mockupHeightToDP } from "../../Parts/utils";
 import {Post, User} from "../../Types/Models";
 import FullScreenPreloader from "../segments/FullScreenPreloader";
 import MyPost from "../segments/MyPost";

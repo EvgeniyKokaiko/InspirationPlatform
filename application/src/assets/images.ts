@@ -45,4 +45,9 @@ export const images: {[key: string]: ImageSourcePropType} = {
     unfollow: require("./images/user_close.png"),
     circleArrow: require("./images/circle_chevron_up.png"),
 
+
+    like: require("./images/heart_outline.png"),
+    commend: require("./images/chat.png"),
+    repost: require("./images/repost.png"),
+
 }

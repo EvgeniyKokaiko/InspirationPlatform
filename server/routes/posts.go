@@ -17,6 +17,7 @@ import (
 func Posts(route *gin.Engine, db *database.DB) {
 	router := route.Group("/posts")
 	{//TODO сделать валидацию если нет токена, ибо рантайм паник.
+		//TODO переделати генерацию папок
 		router.POST("/add", func (c *gin.Context) {
 			var requestData = map[string]interface{}{}
 			form, err := c.MultipartForm()
@@ -155,7 +156,6 @@ func Posts(route *gin.Engine, db *database.DB) {
 		var pageQuery string = c.Query("page")
 		page, _ := strconv.Atoi(pageQuery)
 			if name, _ , tokenError := utils.ParseHeader(c); tokenError == nil {
-				fmt.Println(page)
 					dbResponse, dbPageCount ,databaseError := db.GetNewsLine(name, page)
 					if databaseError != nil || len(dbResponse) < 1 {
 						c.JSON(http.StatusLocked, map[string]interface{}{
@@ -174,6 +174,25 @@ func Posts(route *gin.Engine, db *database.DB) {
 			} else {
 				log.Println("Error! ParseHeader exception", tokenError)
 			}
-
+	})
+	router.GET("/getMyNewsLine", func (c *gin.Context) {
+		var pageQuery string = c.Query("page")
+		page, _ := strconv.Atoi(pageQuery)
+		if name, _ , tokenError := utils.ParseHeader(c); tokenError == nil {
+			dbResponse ,databaseError := db.GetMyNewsLine(name, page)
+			if databaseError != nil || len(dbResponse) < 1 {
+				c.JSON(http.StatusLocked, map[string]interface{}{
+					"statusMessage": "Range Not Satisfiable",
+					"statusCode": 416,
+				})
+			} else {
+				c.JSON(http.StatusOK, map[string]interface{}{
+					"statusMessage": "Accepted",
+					"statusCode": 200,
+					"data": dbResponse,
+					"pages": 0, //TODO paging
+				})
+			}
+		}
 	})
 }

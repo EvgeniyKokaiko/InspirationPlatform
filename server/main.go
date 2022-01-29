@@ -5,6 +5,7 @@ import (
 	"server/database"
 	_ "server/database"
 	"server/routes"
+	"server/routes/chats"
 )
 
 func main() {
@@ -13,7 +14,9 @@ func main() {
 	routes.Auth(server,db)
 	routes.Users(server, db)
 	routes.Posts(server, db)
+	chats.Chats(server, db)
 	StaticServer(server)
+	//database.Start(db)
 	server.Use(CORSMiddleware())
 	server.Run(":8080")
 
