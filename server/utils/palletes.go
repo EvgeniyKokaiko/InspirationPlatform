@@ -20,6 +20,23 @@ func DeletePostFS(username string ,hash string) error  {
 	}
  }
 
+
+
+ func HandleStorageForPosts(name string, postName string) {
+		if err := os.MkdirAll("storage/" + name, 777); err != nil {
+			log.Println(err)
+			return
+		}
+	  if err := os.MkdirAll("storage/" + name + "/posts/" + postName, 777); err != nil {
+		  log.Println(err)
+		  return
+	  }
+ }
+
+
+
  func GetBunch(page int) {
 
  }
+
+

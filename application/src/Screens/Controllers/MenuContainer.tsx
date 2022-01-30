@@ -7,6 +7,7 @@ import { actionImpl } from '../../redux/actions';
 import { Post } from '../../Types/Models';
 import {Alert, NativeScrollEvent, NativeSyntheticEvent} from 'react-native';
 import {mockupHeightToDP} from "../../Parts/utils";
+import {INavigation} from "../Core/OverrideNavigation";
 
 export interface menuState {
   search: string;
@@ -35,7 +36,7 @@ const MenuContainer: React.FC<IProps> = (props: IProps): JSX.Element => {
   }
 
   const onPostPress = (postData: Post) => {
-    props.navigation.navigate(StackScreens.PostDetails, { postData });
+    INavigation.navigate(StackScreens.PostDetails, { postData });
   }
 
   const onRefresh = useCallback(() => {

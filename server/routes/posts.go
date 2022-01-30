@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 	"reflect"
 	"server/database"
 	"server/utils"
@@ -28,7 +27,8 @@ func Posts(route *gin.Engine, db *database.DB) {
 			for key, val := range form.File {
 				fmt.Println(key, val, "abobb")
 			}
-			postName := utils.RandStringBytesRmndr(30)
+			name, _, _ := utils.ParseHeader(c)
+			postName, _ := utils.GenerateHashWithSalt(name, files[0].Filename)
 			var a = 0
 			for key, value := range val {
 				fmt.Println(key, value)
@@ -40,25 +40,12 @@ func Posts(route *gin.Engine, db *database.DB) {
 				a++
 					fmt.Println(reflect.TypeOf(key), key, value, val[key])
 			}
-			name, _, _ := utils.ParseHeader(c)
 			fileIndex := 0
-			//TODO винести це в отдельний файл
-			if _, err := os.Stat("storage/" + name); os.IsNotExist(err) {
-				os.Mkdir("storage/" + name, 777)
-			} else {
-				os.Mkdir("storage/" + name, 777)
-			}
-			if _, err := os.Stat("storage/" + name + "/" + "posts"); os.IsNotExist(err) {
-				os.Mkdir("storage/" + name + "/" + "posts", 777)
-				os.Mkdir("storage/" + name + "/" + "posts/" + postName, 777)
-			} else {
-				os.Mkdir("storage/" + name + "/" + "posts/" + postName, 777)
-			}
+			utils.HandleStorageForPosts(name, postName)
 			for _, file := range files {
 				fmt.Println(file, "filess")
 				if err := c.SaveUploadedFile(file, fmt.Sprintf("storage/%s/posts/%s/%d%s", name, postName ,fileIndex, ".png")); err != nil {
 					c.String(http.StatusBadRequest, fmt.Sprintf("upload file err: %s", err.Error()))
-					//fmt.Println( fmt.Sprintf("/storage/%s/posts/1/%d%s", name, fileIndex, fileExtension), fileIndex)
 					return
 				}
 				fileIndex++

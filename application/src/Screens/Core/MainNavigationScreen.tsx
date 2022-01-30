@@ -23,6 +23,8 @@ import UserProfileContainer from '../Controllers/UserProfileContainer';
 import RequestListContainer from '../Controllers/RequestListContainer';
 import HomeContainer from '../Controllers/HomeContainer';
 import U2UChatContainer from "../Controllers/U2UChatContainer";
+import ManageAccountContainer from "../Controllers/ManageAccountContainer";
+import {INavigation, OverrideNavigation} from "./OverrideNavigation";
 
 interface IProps {}
 
@@ -42,11 +44,13 @@ export enum StackScreens {
   PostDetails = 'ExpandedPostComponent',
   RequestList = 'RequestListComponent',
   U2UChat = 'UserToUserChatComponent',
+  Manage = 'ManageAccountComponent',
 }
 
 export const noGoBack = () => {
   useFocusEffect(() => {
     BackHandler.addEventListener('hardwareBackPress', () => {
+      INavigation.goBack();
       return true;
     });
   });
@@ -56,12 +60,6 @@ export const goBack = (navProps: NavigationProp<any>) => {
   navProps.goBack();
 };
 
-export const goBackOnBottomButton = (navProps: NavigationProp<any>) => {
-  BackHandler.addEventListener('hardwareBackPress', () => {
-    navProps.goBack();
-    return false;
-  });
-};
 
 export const goToUserProfileScreenOnBottomButton = (navProps: any) => {
   BackHandler.addEventListener('hardwareBackPress', () => {
@@ -70,12 +68,13 @@ export const goToUserProfileScreenOnBottomButton = (navProps: any) => {
   });
 };
 
+
 const MainNavigationScreen: React.FC = (props: IProps) => {
   const Stack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();
   let defaultScreen = 'SplashComponent';
   const withoutNavigation = [StackScreens.SignIn, StackScreens.SignUp, StackScreens.SetupAccount];
-  const withoutNavigationIndex = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+  const withoutNavigationIndex = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
   const Screens: { name: string; component: Component; options?: any }[] = [
     // Service screens
     { name: StackScreens.Splash, component: SplashComponent, options: { headerShown: false } },
@@ -84,6 +83,7 @@ const MainNavigationScreen: React.FC = (props: IProps) => {
     { name: StackScreens.SetupAccount, component: SetupAccountComponent, options: { headerShown: false } },
     { name: StackScreens.EditProfile, component: EditProfileComponent, options: { headerShown: false } },
     { name: StackScreens.Settings, component: SettingsComponent, options: { headerShown: false } },
+    { name: StackScreens.Manage, component: ManageAccountContainer, options: {headerShown: false} },
     //Main screens
     { name: StackScreens.U2UChat, component: U2UChatContainer, options: {headerShown: false} },
     { name: StackScreens.PostDetails, component: ExpandedPostContainer, options: { headerShown: false } },
@@ -134,7 +134,7 @@ const MainNavigationScreen: React.FC = (props: IProps) => {
   };
 
   return (
-    <NavigationContainer>
+    <NavigationContainer ref={INavigation.navigation}>
       <Tab.Navigator
         initialRouteName={defaultScreen}
         tabBar={({ navigation }) => {

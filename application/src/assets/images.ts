@@ -44,10 +44,13 @@ export const images: {[key: string]: ImageSourcePropType} = {
     addSub: require("./images/add_friend.png"),
     unfollow: require("./images/user_close.png"),
     circleArrow: require("./images/circle_chevron_up.png"),
-
+    close: require("./images/close.png"),
 
     like: require("./images/heart_outline.png"),
     commend: require("./images/chat.png"),
     repost: require("./images/repost.png"),
+
+
+    camera: require("./images/photo_camera.png"),
 
 }

@@ -5,30 +5,28 @@ import {useNavigation, useRoute} from "@react-navigation/native";
 import {images} from "../../assets/images";
 import {StylesOne} from "../../Styles/StylesOne";
 import {StackScreens} from "../Core/MainNavigationScreen";
+import {INavigation} from "../Core/OverrideNavigation";
 
 type IProps = {}
 
 
 
 const BottomNavigation: React.FC<IProps> = (props) => {
-    const nav: any = useNavigation();
-
-
     return (
         <View style={St.BottomNavigationStyles}>
-           <TouchableOpacity onPress={() => {nav.navigate(StackScreens.Home)}} style={St.BottomNavigationItem}>
+           <TouchableOpacity onPress={() => {INavigation.navigate(StackScreens.Home)}} style={St.BottomNavigationItem}>
                <Image style={[StylesOne.wh100]} source={images.home} />
            </TouchableOpacity>
-            <TouchableOpacity onPress={() => {nav.navigate(StackScreens.Menu)}} style={St.BottomNavigationItem}>
+            <TouchableOpacity onPress={() => {INavigation.navigate(StackScreens.Menu)}} style={St.BottomNavigationItem}>
                 <Image style={[StylesOne.wh100]} source={images.menu} />
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => {nav.navigate(StackScreens.Add)}} style={St.BottomNavigationItem}>
+            <TouchableOpacity onPress={() => {INavigation.navigate(StackScreens.Add)}} style={St.BottomNavigationItem}>
                 <Image style={[StylesOne.wh100]} source={images.add} />
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => {nav.navigate(StackScreens.Notifications)}} style={St.BottomNavigationItem}>
+            <TouchableOpacity onPress={() => {INavigation.navigate(StackScreens.Notifications)}} style={St.BottomNavigationItem}>
                 <Image style={[StylesOne.wh100]} source={images.notifications} />
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => {nav.navigate(StackScreens.MyProfile)}} style={St.BottomNavigationItem}>
+            <TouchableOpacity onPress={() => {INavigation.navigate(StackScreens.MyProfile)}} style={St.BottomNavigationItem}>
                 <Image style={[StylesOne.wh100]} source={images.me} />
             </TouchableOpacity>
         </View>

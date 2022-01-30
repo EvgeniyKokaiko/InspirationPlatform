@@ -16,22 +16,23 @@ import ListItem from './segments/ListItem';
 import {useDispatch, useSelector} from "react-redux";
 import {actionImpl} from "../redux/actions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {INavigation} from "./Core/OverrideNavigation";
 
 type IProps = {} & BaseProps
 
 const SettingsComponent: React.FC<IProps> = (props: IProps) => {
-        const nav = useNavigation()
         const dispatch = useDispatch();
         const isPrivate = props.route?.params?.isPrivate;
         //TODO протипизировать юзСелектор
         const state: any = useSelector<any>(state => state)
     const onBackBtn = () => {
-            props.navigation.navigate(StackScreens.MyProfile)
+           INavigation.goBack()
     }
 
     const routes: {[key: string]: string} = {
-            ManageAccount: StackScreens.EditProfile,
-            RequestList: StackScreens.RequestList
+            ManageAccount: StackScreens.Manage,
+            RequestList: StackScreens.RequestList,
+            Pustishka: StackScreens.EditProfile,
     }
 
 
@@ -50,7 +51,7 @@ const SettingsComponent: React.FC<IProps> = (props: IProps) => {
             dispatch(actionImpl.clear)
         console.log(state, "STATE")
             await AsyncStorage.setItem("Access_TOKEN", "")
-            props.navigation.navigate(StackScreens.SignIn)
+            INavigation.navigate(StackScreens.SignIn)
 
     }
 
@@ -70,19 +71,19 @@ const SettingsComponent: React.FC<IProps> = (props: IProps) => {
                 {/*Смена картинки, имени(но не юзернейма, он несменный), дескрипшина,*/}
                 <ListItem navigation={props.navigation} title={"Manage account"} icon={images.avatar_mini} route={routes.ManageAccount} />
                 {/*Управление уведомлениями*/}
-                <ListItem navigation={props.navigation} title={"Notifications"} icon={images.notifications} route={routes.ManageAccount} />
+                <ListItem navigation={props.navigation} title={"Notifications"} icon={images.notifications} route={routes.Pustishka} />
                 {/*Смена пароля, логина и т.д*/}
-                <ListItem navigation={props.navigation} title={"Security"} icon={images.security} route={routes.ManageAccount} />
+                <ListItem navigation={props.navigation} title={"Security"} icon={images.security} route={routes.Pustishka} />
                 {/*Инвайты с кьюаром*/}
-                <ListItem navigation={props.navigation} title={"Invitation"} icon={images.invite} route={routes.ManageAccount} />
+                <ListItem navigation={props.navigation} title={"Invitation"} icon={images.invite} route={routes.Pustishka} />
                 {/*Про приложение*/}
-                <ListItem navigation={props.navigation} title={"About"} icon={images.about} route={routes.ManageAccount} />
+                <ListItem navigation={props.navigation} title={"About"} icon={images.about} route={routes.Pustishka} />
 
                 <ListItem isDisabled={checkIsPrivate()} navigation={props.navigation} title={"Requests"} icon={images.circleArrow} route={routes.RequestList} />
             </View>
             <View>
                 {/*Удаление аккаунта*/}
-                <ListItem navigation={props.navigation} title={"Hazard"} icon={images.hazard} route={routes.ManageAccount} />
+                <ListItem navigation={props.navigation} title={"Hazard"} icon={images.hazard} route={routes.Pustishka} />
                 {/*Выход*/}
                 <ListItem title={"Log Out"} icon={images.logout} onPress={onLogoutPress} />
             </View>

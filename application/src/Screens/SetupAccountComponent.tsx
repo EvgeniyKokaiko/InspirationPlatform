@@ -10,6 +10,7 @@ import {actionImpl} from "../redux/actions";
 import {useDispatch, useSelector} from "react-redux";
 import {Reducers} from "../redux/reducers/reducers";
 import {StackScreens} from "./Core/MainNavigationScreen";
+import {INavigation} from "./Core/OverrideNavigation";
 
 type IProps = {} & BaseProps
 
@@ -39,7 +40,7 @@ const SetupAccountComponent: React.FC<IProps> = (props): JSX.Element => {
         console.log(state)
         if (state.setupReducer.statusCode === 200) {
             dispatch(actionImpl.clear())
-            props.navigation.navigate(StackScreens.SignIn)
+            INavigation.navigate(StackScreens.SignIn)
         } else if (state.statusCode === 208) {
             Alert.alert("Oops", "Something went wrong");
         }

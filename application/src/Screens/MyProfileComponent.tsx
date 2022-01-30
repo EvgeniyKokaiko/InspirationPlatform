@@ -15,6 +15,7 @@ import {actionImpl, apiURL} from '../redux/actions';
 import { User } from '../Types/Models';
 import MyPost from './segments/MyPost';
 import FullScreenPreloader from './segments/FullScreenPreloader';
+import {INavigation} from "./Core/OverrideNavigation";
 
 type IProps = BaseProps & {};
 
@@ -71,7 +72,7 @@ const MyProfileComponent: React.FC<IProps> = (props: IProps) => {
   }
 
   function onSettingsPress() {
-    props.navigation.navigate(StackScreens.Settings, {isPrivate: user.is_private});
+    INavigation.navigate(StackScreens.Settings, {isPrivate: user.is_private});
   }
 
   return user && posts ? (
@@ -144,8 +145,9 @@ const MyProfileComponent: React.FC<IProps> = (props: IProps) => {
       contentContainerStyle={[StylesOne.screenContainer, MP.ph25]}
       refreshControl={<RefreshControl refreshing={refresh} onRefresh={makeRequest} />}
     >
-      <View style={[StylesOne.flex_row, StylesOne.flex_jc_sb, StylesOne.flex_ai_c, MP.mv20, St.zIndex999]}>
 
+      <View style={[StylesOne.flex_row, StylesOne.flex_jc_sb, StylesOne.flex_ai_c, MP.mv20, St.zIndex999]}>
+        <View />
         <Image source={images.logo} style={[StylesOne.image40, { tintColor: 'black' }]} />
         <View style={[StylesOne.image24]}></View>
       </View>

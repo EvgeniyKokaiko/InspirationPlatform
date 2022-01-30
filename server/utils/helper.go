@@ -1,13 +1,16 @@
 package utils
 
 import (
+	"encoding/json"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 	"math/rand"
 	"server/models"
 	"strings"
+	"time"
 )
 
 
@@ -32,6 +35,20 @@ func RandomString(n int) string {
 		s[i] = letters[rand.Intn(len(letters))]
 	}
 	return string(s)
+}
+
+func GenerateHashWithSalt(salt... interface{}) (string, error) {
+	result := map[interface{}]interface{}{}
+	randStr := RandStringBytesRmndr(32)
+	for _, value := range salt {
+		result[value] = value
+	}
+	result[randStr] = randStr
+	result["timestamp"] = time.Now()
+
+	byteResult, _ := json.Marshal(result)
+	hash, _ := bcrypt.GenerateFromPassword(byteResult, 8)
+	return string(hash), nil
 }
 
 const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"

@@ -61,6 +61,19 @@ export const StylesOne = StyleSheet.create({
     width: mockupWidthToDP(200),
     height: mockupHeightToDP(50),
   },
+
+
+  wh25: {
+    width: mockupWidthToDP(25),
+    height: mockupHeightToDP(25)
+  },
+
+
+  wh35: {
+    width: mockupWidthToDP(35),
+    height: mockupHeightToDP(35)
+  },
+
   PickerButton: {
     borderRadius: 60,
     backgroundColor: colors.SignIn_Font2,

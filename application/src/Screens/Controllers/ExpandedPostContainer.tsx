@@ -9,6 +9,7 @@ import {actionImpl, apiURL} from '../../redux/actions';
 import {checkForAvatar} from "../../Parts/utils";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {useDispatch} from "react-redux";
+import {INavigation} from "../Core/OverrideNavigation";
 
 type IProps = {} & BaseProps;
 //source={state.isAvatarIncluded === 999 ? images.standardAvatar : {uri: state.ownerAvatar}}
@@ -23,7 +24,7 @@ const ExpandedPostContainer: React.FC<IProps> = (props: IProps): JSX.Element => 
   const onBackBtn = () => {
     postData = props.route.params.postData;
     console.log(postData)
-    props.navigation.navigate(StackScreens.Menu);
+    INavigation.goBack();
   };
   useEffect(() => {
     postData = props.route.params.postData;
@@ -44,14 +45,14 @@ const ExpandedPostContainer: React.FC<IProps> = (props: IProps): JSX.Element => 
       AsyncStorage.getItem("currentUserId").then((el) => {
           if (el !== null || el !== void 0) {
               if (el === postData.owner) {
-                  props.navigation.navigate(StackScreens.MyProfile)
+                INavigation.navigate(StackScreens.MyProfile)
               } else {
-                props.navigation.navigate(StackScreens.UserProfile, {ownerId: postData.owner})
+                INavigation.navigate(StackScreens.UserProfile, {ownerId: postData.owner})
               }
           } else {
               dispatch(actionImpl.logout())
               dispatch(actionImpl.clear())
-              props.navigation.navigate(StackScreens.SignIn)
+              INavigation.navigate(StackScreens.SignIn)
           }
       })
     }

@@ -6,6 +6,7 @@ import {actionImpl} from "../../redux/actions";
 import {useDispatch, useSelector} from "react-redux";
 import {Requests} from "../../Types/Models";
 import {StackScreens} from "../Core/MainNavigationScreen";
+import {INavigation} from "../Core/OverrideNavigation";
 
 interface IProps extends BaseProps {
 
@@ -26,7 +27,7 @@ const RequestListContainer: React.FC<IProps> = (props) => {
     })
 
     const onBackBtn = () => {
-        props.navigation.navigate(StackScreens.Settings);
+        INavigation.goBack()
     };
 
     const onAcceptOrDeclinePress = (subscriber: string, status: boolean, index: number) => {

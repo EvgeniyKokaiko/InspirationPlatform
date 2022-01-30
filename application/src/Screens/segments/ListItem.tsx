@@ -6,6 +6,7 @@ import {colors} from "../../Parts/colors";
 import {SThree} from "../../Styles/StylesThree";
 import {MP} from "../../Styles/MP";
 import {BaseProps} from "../../Types/Types";
+import {INavigation} from "../Core/OverrideNavigation";
 
 type IProps = {
     icon: ImageSourcePropType;
@@ -19,7 +20,7 @@ type IProps = {
 
 const ListItem: React.FC<IProps> = (props: IProps) => {
     function onItemPress() {
-        props.navigation.navigate(props.route)
+        INavigation.navigate(props.route)
     }
 
     return (

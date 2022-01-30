@@ -8,6 +8,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {BaseProps} from "../../Types/Types";
 import {actionImpl} from "../../redux/actions";
 import {StackScreens} from "./MainNavigationScreen";
+import {INavigation} from "./OverrideNavigation";
 
 type IProps = {} & BaseProps
 
@@ -21,13 +22,13 @@ const SplashComponent: React.FC<IProps> = (props: IProps) => {
                  //TODO тут робити проверку чи є інтернет, і якщо нема тоді кажді 20 секунд слати запрос, якщо появився, тоді сразу кидати реквест
                 dispatch(actionImpl.checkForConnection)
                  if (state.checkForConnectionReducer.status === 200) {
-                     props.navigation.navigate(StackScreens.MyProfile)
+                     INavigation.navigate(StackScreens.MyProfile)
                  } else {
-                     props.navigation.navigate(StackScreens.MyProfile)
+                     INavigation.navigate(StackScreens.MyProfile)
                  }
              }
              if (token === null) {
-                 props.navigation.navigate(StackScreens.SignIn)
+                INavigation.navigate(StackScreens.SignIn)
              }
         })
     }, [])
