@@ -6,7 +6,6 @@ import {St} from "../Styles/StylesTwo";
 import {images} from "../assets/images";
 import {
     goBack,
-    goBackOnBottomButton,
     goToUserProfileScreenOnBottomButton,
     StackScreens
 } from "./Core/MainNavigationScreen";

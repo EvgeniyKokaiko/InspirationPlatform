@@ -25,21 +25,21 @@ export class OverrideNavigation {
   };
 
   public goBack = () => {
-    if (this._navigationStack.length === 0) {
-      return;
-    }
-    let lastPath = this._navigationStack[this._navigationStack.length - 1]
-    if (lastPath === this._currentScreen) {
-      console.log(true)
-      lastPath = this._navigationStack[this._navigationStack.length - 2]
+    try {
+      if (this._navigationStack.length === 0) {
+        return;
+      }
+      let lastPath = this._navigationStack[this._navigationStack.length - 1]
+      if (lastPath === this._currentScreen) {
+        lastPath = this._navigationStack[this._navigationStack.length - 2]
+      }
       this._navigation.navigate(lastPath);
       this._navigationStack.pop()
       this._currentScreen = lastPath;
-      return;
+    } catch (e) {
+      console.log(e)
     }
-    this._navigation.navigate(lastPath);
-    this._navigationStack.pop()
-    this._currentScreen = lastPath;
+
   };
 }
 
