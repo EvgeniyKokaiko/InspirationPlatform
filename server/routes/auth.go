@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"server/database"
 	"server/models"
 )
@@ -23,6 +24,19 @@ func Auth(route *gin.Engine, db *database.DB) {
 					"data": warning,
 				})
 			} else {
+				file, err := os.ReadFile("./storage/service/base_avatar.png")
+				fmt.Println("1")
+				if err != nil {
+					fmt.Println("ERR! On Avatar reading")
+				}
+				fmt.Println("2")
+				if err := os.MkdirAll(fmt.Sprintf("./storage/%s/avatar", requestData.Username), 777); err != nil {
+					fmt.Println("ERR! On Avatar folder creating")
+				}
+				fmt.Println("3", requestData.Username)
+				if err := os.WriteFile(fmt.Sprintf("./storage/%s/avatar/avatar.png", requestData.Username), file, 777); err != nil {
+					fmt.Println("ERR! On Avatar writing")
+				}
 				c.JSON(http.StatusOK, map[string]interface{}{
 					"data": requestData.Username,
 				})

@@ -1,9 +1,10 @@
-import {createNavigationContainerRef} from "@react-navigation/native";
+import { createNavigationContainerRef } from '@react-navigation/native';
 
 export class OverrideNavigation {
   private readonly _navigationStack: string[] = [];
-  private readonly _navigation: any = createNavigationContainerRef()
-  private _currentScreen: string = "";
+  private readonly _navigation: any = createNavigationContainerRef();
+  private _currentScreen: string = '';
+  private _serviceScreens: string[] = ['SplashComponent', 'SignInComponent', 'SignUpComponent', 'SetupAccountComponent'];
   constructor() {}
   get navigationStack() {
     return this._navigationStack;
@@ -14,7 +15,7 @@ export class OverrideNavigation {
   }
 
   public navigate = (path: string, props: any = {}) => {
-    if (this._navigation === void 0 || this._navigation === null) {
+    if (this._navigation === void 0 || this._navigation === null || this._currentScreen === path) {
       return;
     }
     if (this._navigation.isReady()) {
@@ -29,19 +30,20 @@ export class OverrideNavigation {
       if (this._navigationStack.length === 0) {
         return;
       }
-      let lastPath = this._navigationStack[this._navigationStack.length - 1]
+      let lastPath = this._navigationStack[this._navigationStack.length - 1];
       if (lastPath === this._currentScreen) {
-        lastPath = this._navigationStack[this._navigationStack.length - 2]
+        lastPath = this._navigationStack[this._navigationStack.length - 2];
+      }
+      if (this._serviceScreens.includes(lastPath) || this._serviceScreens.includes(this._currentScreen) || lastPath === "SplashComponent") {
+        return;
       }
       this._navigation.navigate(lastPath);
-      this._navigationStack.pop()
+      this._navigationStack.pop();
       this._currentScreen = lastPath;
     } catch (e) {
-      console.log(e)
+      console.log(e);
     }
-
   };
 }
 
-
-export const INavigation = new OverrideNavigation()
+export const INavigation = new OverrideNavigation();

@@ -34,4 +34,5 @@ type DBMethods interface {
     SubscribeUser(owner string, subscriber string, ) (bool, error)
 	UnfollowUser(owner string, subscriber string) (bool, error)
 	AcceptRequestOnSubscription(string, string, bool) (bool, error)
+	SetUserParam(param string, value string, username string) (bool, error)
 }

@@ -85,7 +85,16 @@ class ReducersImpl {
             return action.payload
         } if (action.type === ActionTypes.AddPost) {
             return action.payload
-        } if (action.type === ActionTypes.Logout) {
+        }  if (action.type === ActionTypes.SetAvatar) {
+            return action.payload
+        } if (action.type === ActionTypes.SetParam) {
+            return action.payload
+        }
+        return state
+    }
+
+    public LogoutReducer(state = {}, action: Action) {
+        if (action.type === ActionTypes.Logout) {
             return action.payload
         }
         return state
@@ -150,6 +159,7 @@ class ReducersImpl {
             unfollowReducer: this.MakeUnfollowReducer,
             requestListReducer: this.RequestListReducer,
             currentRequestStatus: this.CurrentRequestStatus,
+            logoutReducer: this.LogoutReducer,
         })
     }
 }

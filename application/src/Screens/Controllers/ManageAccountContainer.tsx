@@ -1,7 +1,7 @@
 import React, {useEffect, useMemo, useState} from 'react';
-import {View} from "react-native";
+import {Alert, View} from "react-native";
 import ManageAccountComponent from "../ManageAccountComponent";
-import {ImagePickerResponse} from "react-native-image-picker";
+import {ImagePickerResponse, launchImageLibrary} from "react-native-image-picker";
 import {actionImpl, apiURL} from "../../redux/actions";
 import {User} from "../../Types/Models";
 import {useDispatch, useSelector} from "react-redux";
@@ -9,15 +9,7 @@ import {INavigation} from "../Core/OverrideNavigation";
 
 type IProps = {}
 export type ManageAccountState = {
-    email: string | number;
-    isPrivate: number;
     avatar: ImagePickerResponse | number;
-    gender: string | number;
-    description: string | number;
-    location: string | number;
-    fName: string | number;
-    dateOfBirth: string | number;
-    personalSite: string | number;
     originalData: User | any;
     type: ManageAccountState | null | string;
     modalVisible: boolean;
@@ -28,14 +20,6 @@ const ManageAccountContainer: React.FC<ManageAccountState> = (props: IProps) => 
     const store: any = useSelector(state => state);
     const [getState, setState] = useState<ManageAccountState>({
         avatar: -1,
-        dateOfBirth: -1,
-        description: -1,
-        fName: -1,
-        gender: -1,
-        isPrivate: -1,
-        location: -1,
-        personalSite: -1,
-        email: -1,
         originalData: {},
         type: null,
         modalVisible: false,

@@ -87,7 +87,7 @@ const MyProfileComponent: React.FC<IProps> = (props: IProps) => {
       <View style={[MP.mt20, StylesOne.w100, St.h190, St.borderRadius30, backgrounds.myProfileBlocks, MP.pv20, MP.ph20]}>
         <View style={[StylesOne.flex_row]}>
           <View style={[MP.mb20]}>
-            <Avatar icon={avatar === 999 ? images.standardAvatar : {uri: `http://${apiURL}/storage/${user!.username}/avatar/avatar.png`}} size={60} />
+            <Avatar icon={avatar === 999 ? images.standardAvatar : {uri: `http://${apiURL}/storage/${user!.username}/avatar/avatar.png?asd=${Date.now()}`}} size={60} />
           </View>
           <View style={[StylesOne.flex_row, StylesOne.flex_ai_c, { height: mockupHeightToDP(75) }]}>
             <TouchableOpacity style={[MP.mh15, StylesOne.flex_column, StylesOne.flex_ai_c]}>

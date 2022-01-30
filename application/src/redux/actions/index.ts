@@ -2,6 +2,7 @@ import { Dispatch } from 'redux';
 import axios from 'axios';
 import { Action, ActionTypes } from '../types/ActionTypes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {BaseAction} from "./BaseAction";
 
 export const apiURL = '192.168.1.90:8080';
 
@@ -19,23 +20,11 @@ interface ActionMethods {
   getUser(username: string): (dispatch: Dispatch<Action>) => {};
 }
 
-class Actions implements ActionMethods {
-  private readonly _serverURL: string;
+class Actions extends BaseAction implements ActionMethods {
   constructor(serverURL: string) {
-    this._serverURL = serverURL;
+    super(serverURL)
   }
 
-  private _useToken = async (callback: Function) => {
-    await AsyncStorage.getItem('Access_TOKEN').then((el: string | null) => {
-      try {
-        if (callback !== void 0 && typeof el === 'string') {
-          callback(el);
-        }
-      } catch (ex) {
-        console.log('_useToken ex', ex);
-      }
-    });
-  };
   public clear = () => {
     return {
       type: ActionTypes.Clear,
@@ -198,7 +187,9 @@ class Actions implements ActionMethods {
   };
 
   public logout = () => async (dispatch: Dispatch<Action>) => {
+    console.log('LOGOGUTR1')
     await this._useToken(async (el: string | null) => {
+      console.log('LOGOGUTR2')
       axios
         .get(`http://${apiURL}/users/logout`, {
           headers: {
@@ -208,7 +199,7 @@ class Actions implements ActionMethods {
         .then((el) => {
           dispatch({ type: ActionTypes.Logout, payload: { statusCode: el.status } });
         }).catch(() => {
-        dispatch({ type: ActionTypes.DeletePost, payload: { statusCode: 423 } });
+        dispatch({ type: ActionTypes.Logout, payload: { statusCode: 423 } });
       });
     });
   };

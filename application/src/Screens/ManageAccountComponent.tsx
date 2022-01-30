@@ -5,7 +5,6 @@ import { StylesOne } from '../Styles/StylesOne';
 import { MP } from '../Styles/MP';
 import { St } from '../Styles/StylesTwo';
 import { images } from '../assets/images';
-import { mockupHeightToDP, mockupWidthToDP } from '../Parts/utils';
 import { StylesFour } from '../Styles/StylesFour';
 import ReusableModalSegment from './segments/ReusableModalSegment';
 import SelectSegment from './segments/SelectSegment';
@@ -19,6 +18,7 @@ type IProps = {
   modalVisible: boolean;
   getIsPrivate(): string;
   onBackPress():void;
+
 };
 
 export enum SelectTitles {

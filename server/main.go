@@ -14,6 +14,7 @@ func main() {
 	routes.Auth(server,db)
 	routes.Users(server, db)
 	routes.Posts(server, db)
+	routes.Settings(server, db)
 	chats.Chats(server, db)
 	StaticServer(server)
 	//database.Start(db)

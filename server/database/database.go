@@ -344,6 +344,27 @@ func Da (base typedDB.DBMethods, a string) {
 	fmt.Println(b)
 }
 
+const (
+	USERNAME string = "username"
+	PASSWORD        = "password"
+	TOKEN        	= "token"
+	Avatar       	= "avatar"
+	CREATEDaT 		= "created_at"
+)
+
+func (db *DB) SetUserParam(param string, value string, username string) (bool, error) {
+	if param == USERNAME || param == PASSWORD || param == TOKEN || param == Avatar || param == CREATEDaT  {
+		return false, errors.New("ERROR! ON dbSetParamResponse. You can't change this param")
+	}
+	if dbSetParamResponse := db.database.
+		Table("users").
+		Where("username = ?", username).
+		Update(param, value); dbSetParamResponse.Error != nil {
+		return false, errors.New("ERROR! ON dbSetParamResponse")
+	}
+	return true, nil
+}
+
 func MessageToDB(username string) {
 
 }

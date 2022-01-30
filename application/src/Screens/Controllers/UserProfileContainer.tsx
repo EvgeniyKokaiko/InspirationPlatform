@@ -43,7 +43,8 @@ const UserProfileContainer = (props: IProps) => {
     }
 
     const onBackBtn = () => {
-        INavigation.goBack();
+        //TODO Fix this
+        // INavigation.goBack();
     };
 
     const onUnfollowPress = useCallback(() => {

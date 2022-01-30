@@ -16,6 +16,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {actionImpl} from "../redux/actions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {INavigation} from "./Core/OverrideNavigation";
+import LogoutSegment from "./segments/LogoutSegment";
 
 type IProps = {} & BaseProps
 
@@ -46,13 +47,18 @@ const SettingsComponent: React.FC<IProps> = (props: IProps) => {
 
 
     const onLogoutPress = async () => {
-            dispatch(actionImpl.logout)
-            dispatch(actionImpl.clear)
-        console.log(state, "STATE")
+            dispatch(actionImpl.logout())
+            console.log(state, "STATE")
             await AsyncStorage.setItem("Access_TOKEN", "")
-            INavigation.navigate(StackScreens.SignIn)
-
     }
+
+    useEffect(() => {
+            console.log(state.logoutReducer)
+        if (state.logoutReducer.statusCode === 200) {
+            dispatch(actionImpl.clear())
+            INavigation.navigate(StackScreens.SignIn)
+        }
+    }, [state.logoutReducer])
 
     return (
         <View style={[StylesOne.screenContainer, MP.ph15]}>
@@ -84,7 +90,7 @@ const SettingsComponent: React.FC<IProps> = (props: IProps) => {
                 {/*Удаление аккаунта*/}
                 <ListItem navigation={props.navigation} title={"Hazard"} icon={images.hazard} route={routes.Pustishka} />
                 {/*Выход*/}
-                <ListItem title={"Log Out"} icon={images.logout} onPress={onLogoutPress} />
+                <LogoutSegment title={"Log Out"} icon={images.logout} onPress={onLogoutPress} />
             </View>
             </View>
         </View>
