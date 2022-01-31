@@ -68,7 +68,7 @@ const ManageAccountComponent = (state: IProps) => {
         <SelectSegment onPress={() => state.openModal(true, SelectTitles.Date_Of_Birth)} secondTitle={state.state.originalData.date_of_birth} title={SelectTitles.Date_Of_Birth} />
       </View>
       <ReusableModalSegment setModalVisible={state.openModal} modalVisibility={state.modalVisible}>
-        {state.state.type === null ? <></> : <ModalManagementSegment type={state.state.type} />}
+        {state.state.type === null ? <></> : <ModalManagementSegment originalData={state.state.originalData} type={state.state.type} />}
       </ReusableModalSegment>
     </View>
   );

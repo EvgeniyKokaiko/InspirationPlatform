@@ -53,7 +53,7 @@ func Settings(route *gin.Engine, db *database.DB) {
 				c.JSON(http.StatusBadRequest, typedDB.GiveResponse(400, "Bad Request"))
 				return
 			}
-			ok, err := db.SetUserParam(currentChangeableParam, requestData["parameter"].(string), name)
+			ok, err := db.SetUserParam(currentChangeableParam, requestData["parameter"], name)
 			if err != nil || !ok {
 				c.JSON(http.StatusBadRequest, typedDB.GiveResponse(400, "Bad Request"))
 			} else {

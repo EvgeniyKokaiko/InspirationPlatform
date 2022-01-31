@@ -352,16 +352,26 @@ const (
 	CREATEDaT 		= "created_at"
 )
 
-func (db *DB) SetUserParam(param string, value string, username string) (bool, error) {
+func (db *DB) SetUserParam(param string, value interface{}, username string) (bool, error) {
 	if param == USERNAME || param == PASSWORD || param == TOKEN || param == Avatar || param == CREATEDaT  {
 		return false, errors.New("ERROR! ON dbSetParamResponse. You can't change this param")
 	}
-	if dbSetParamResponse := db.database.
-		Table("users").
-		Where("username = ?", username).
-		Update(param, value); dbSetParamResponse.Error != nil {
-		return false, errors.New("ERROR! ON dbSetParamResponse")
+	if param == "is_private" {
+		if dbSetParamResponse := db.database.
+			Table("users").
+			Where("username = ?", username).
+			Update(param, value.(bool)); dbSetParamResponse.Error != nil {
+			return false, errors.New("ERROR! ON dbSetParamResponse")
+		}
+	} else {
+		if dbSetParamResponse := db.database.
+			Table("users").
+			Where("username = ?", username).
+			Update(param, value.(string)); dbSetParamResponse.Error != nil {
+			return false, errors.New("ERROR! ON dbSetParamResponse")
+		}
 	}
+
 	return true, nil
 }
 

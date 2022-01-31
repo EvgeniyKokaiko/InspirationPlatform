@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {View, Text, Image, TouchableOpacity, Alert} from 'react-native';
+import {View, Text, Image, TouchableOpacity, Alert, Switch} from 'react-native';
 import { SelectTitles } from '../ManageAccountComponent';
 import { ManageAccountState } from '../Controllers/ManageAccountContainer';
 import {St} from "../../Styles/StylesTwo";
@@ -8,15 +8,19 @@ import {StylesOne} from "../../Styles/StylesOne";
 import {StylesFour} from "../../Styles/StylesFour";
 import {MP} from "../../Styles/MP";
 import {ImagePickerResponse, launchImageLibrary} from "react-native-image-picker";
-import {Asset} from "../../Types/Models";
+import {Asset, User} from "../../Types/Models";
 import {apiURL} from "../../redux/actions";
 import Avatar from "./Avatar";
 import {mockupHeightToDP, mockupWidthToDP} from "../../Parts/utils";
 import {useDispatch} from "react-redux";
 import {settingsImpl} from "../../redux/actions/settings";
+import {Picker} from "@react-native-picker/picker";
+import {colors} from "../../Parts/colors";
+import CheckBox from "@react-native-community/checkbox";
 
 type IProps = {
   type: ManageAccountState | null | string;
+  originalData: User | any;
 };
 
 
@@ -35,17 +39,17 @@ type IState = {
 
 const ModalManagementSegment = (props: IProps) => {
   const dispatch = useDispatch();
-  const [getState, setState] = useState<IState>({
+  const [getState, setState] = useState<IState | any>({
     files: {uri: undefined},
     avatar: "",
-    dateOfBirth: -1,
-    description: -1,
-    fName: -1,
-    gender: -1,
-    isPrivate: -1,
-    location: -1,
-    personalSite: -1,
-    email: -1,
+    dateOfBirth: props.originalData.date_of_birth,
+    description: props.originalData.description,
+    fName: props.originalData.full_name,
+    gender: props.originalData.gender,
+    isPrivate: props.originalData.is_private,
+    location: props.originalData.location,
+    personalSite: props.originalData.personal_site,
+    email: props.originalData.email,
   })
 
 
@@ -60,13 +64,23 @@ const ModalManagementSegment = (props: IProps) => {
     })
   }
 
+
+  const setNewValue = (param: string, value: string | number| boolean) => {
+          dispatch(settingsImpl.setParam(param, value))
+  }
+
   const setAvatar = () => {
     dispatch(settingsImpl.setNewAvatar(getState.files))
-    console.log('set avatar', getState.files)
   }
 
 
-
+const valueGetter = (param: string, originalParam: string) => {
+      if (getState[param] === props.originalData[originalParam]) {
+          return getState[param]
+      } else {
+          return props.originalData[originalParam]
+      }
+}
 
   switch (props.type) {
     case SelectTitles.Avatar:
@@ -95,19 +109,47 @@ const ModalManagementSegment = (props: IProps) => {
     case SelectTitles.Gender:
       return (
         <View>
-          <Text style={{ color: 'black' }}>Gender</Text>
-          <TouchableOpacity disabled={getState.avatar === ""} style={[MP.mt40, getState.avatar !== "" ? StylesOne.SendBtn_active_button : StylesOne.SendBtn_inactive_button, StylesOne.flex_row, StylesOne.flex_jc_c, StylesOne.flex_ai_c]}>
-            <Text style={[getState.avatar !== "" ? StylesOne.SendBtn_active_text : StylesOne.SendBtn_inactive_text]}>Set</Text>
+            <View style={[StylesOne.DropdownStyles, MP.plm20]}>
+                <Picker selectedValue={getState.gender}
+                        onValueChange={(val) =>
+                            setState({...getState, gender: val})}
+                        dropdownIconColor={colors.SignIn_Font}
+                        itemStyle={StylesOne.fontInputText_black}
+                        dropdownIconRippleColor={colors.transparent}
+                        mode="dropdown">
+                    <Picker.Item style={StylesOne.fontInputText_black} label="Male" value="Male" />
+                    <Picker.Item style={StylesOne.fontInputText_black} label="Female" value="Female" />
+                    <Picker.Item style={StylesOne.fontInputText_black} label="Unrecognized" value="Unrecognized" />
+                    <Picker.Item style={StylesOne.fontInputText_black} label="Digigender" value="Digigender" />
+                </Picker>
+                <View style={StylesOne.borderBottom} />
+            </View>
+            <View style={[StylesOne.w100, StylesOne.flex_column, StylesOne.flex_ai_c]}>
+          <TouchableOpacity onPress={() => setNewValue("gender", getState.gender)} disabled={getState.gender === -1} style={[MP.mt40, getState.gender !== -1 ? StylesOne.SendBtn_active_button : StylesOne.SendBtn_inactive_button, StylesOne.flex_row, StylesOne.flex_jc_c, StylesOne.flex_ai_c]}>
+            <Text style={[getState.gender !== -1 ? StylesOne.SendBtn_active_text : StylesOne.SendBtn_inactive_text]}>Set</Text>
           </TouchableOpacity>
+            </View>
         </View>
       );
     case SelectTitles.Is_Private:
       return (
         <View>
-          <Text style={{ color: 'black' }}>Is_Private</Text>
-          <TouchableOpacity disabled={getState.avatar === ""} style={[MP.mt40, getState.avatar !== "" ? StylesOne.SendBtn_active_button : StylesOne.SendBtn_inactive_button, StylesOne.flex_row, StylesOne.flex_jc_c, StylesOne.flex_ai_c]}>
-            <Text style={[getState.avatar !== "" ? StylesOne.SendBtn_active_text : StylesOne.SendBtn_inactive_text]}>Set</Text>
+            <View style={[StylesOne.flex_column, StylesOne.flex_ai_c]}>
+          <Text style={[StylesFour.myNewsLine_caption, MP.mb20]}>Set Your Privacy</Text>
+            <Switch
+                trackColor={{ false: "#767577", true: "#81b0ff" }}
+                thumbColor={"#f5dd4b"}
+                ios_backgroundColor="#3e3e3e"
+                onValueChange={(val) =>
+                    setState({...getState, isPrivate: val})}
+                value={!!getState.isPrivate}
+            />
+            </View>
+            <View style={[StylesOne.w100, StylesOne.flex_column, StylesOne.flex_ai_c]}>
+          <TouchableOpacity onPress={() => setNewValue("is_private", Boolean(getState.isPrivate))} disabled={getState.isPrivate === -1} style={[MP.mt40, getState.isPrivate !== -1 ? StylesOne.SendBtn_active_button : StylesOne.SendBtn_inactive_button, StylesOne.flex_row, StylesOne.flex_jc_c, StylesOne.flex_ai_c]}>
+            <Text style={[getState.isPrivate !== -1 ? StylesOne.SendBtn_active_text : StylesOne.SendBtn_inactive_text]}>Set</Text>
           </TouchableOpacity>
+            </View>
         </View>
       );
     case SelectTitles.Email:

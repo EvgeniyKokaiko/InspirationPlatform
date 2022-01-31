@@ -35,7 +35,7 @@ class Settings extends BaseAction {
             });
         });
     }
-    public setParam =  (param: string, value: string | number) => async (dispatch: Dispatch<Action>) => {
+    public setParam =  (param: string, value: string | number | boolean) => async (dispatch: Dispatch<Action>) => {
         await this._useToken(async (el: string | null) => {
             axios
                 .post(`http://${apiURL}/settings/${param}`, {
