@@ -1,4 +1,4 @@
-import React, {useLayoutEffect, useState} from "react"
+import React, {useEffect, useLayoutEffect, useState} from "react"
 import {Alert, Image, Text, TextInput, TouchableOpacity, View} from "react-native";
 import {StylesOne} from "../Styles/StylesOne";
 import {BaseProps} from "../Types/Types";
@@ -36,15 +36,16 @@ const SetupAccountComponent: React.FC<IProps> = (props): JSX.Element => {
     }
 
 
-    useLayoutEffect(() => {
-        console.log(state)
+    useEffect(() => {
+        console.log(state.setupReducer, "REDUCERS")
         if (state.setupReducer.statusCode === 200) {
-            dispatch(actionImpl.clear())
+            INavigation.erase(true)
             INavigation.navigate(StackScreens.SignIn)
+            dispatch(actionImpl.clear())
         } else if (state.statusCode === 208) {
             Alert.alert("Oops", "Something went wrong");
         }
-    }, [state])
+    }, [state.setupReducer])
 
 
 

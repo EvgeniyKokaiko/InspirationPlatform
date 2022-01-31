@@ -9,6 +9,7 @@ import (
 	"os"
 	"server/database"
 	"server/models"
+	typedDB "server/types"
 )
 
 func Auth(route *gin.Engine, db *database.DB) {
@@ -56,9 +57,7 @@ func Auth(route *gin.Engine, db *database.DB) {
 					"data": "Oops, something went wrong",
 				})
 			} else {
-				c.JSON(http.StatusOK, map[string]interface{}{
-					"data": "Your data was successfully saved!",
-				})
+				c.JSON(http.StatusOK, typedDB.GiveOKResponse())
 			}
 		})
 		auth.POST("/login", func(c *gin.Context) {

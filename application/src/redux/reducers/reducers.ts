@@ -19,11 +19,9 @@ class ReducersImpl {
         return state
     }
 
-    public SetupReducer(state = [], action: Action) {
+    public SetupReducer(state = {}, action: Action) {
         if (action.type === ActionTypes.Setup) {
             return action.payload
-        } else if (action.type === ActionTypes.Clear) {
-            return []
         }
 
         return state

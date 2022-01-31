@@ -1,7 +1,8 @@
 import { createNavigationContainerRef } from '@react-navigation/native';
+import {StackScreens} from "./MainNavigationScreen";
 
 export class OverrideNavigation {
-  private readonly _navigationStack: string[] = [];
+  private _navigationStack: string[] = [];
   private readonly _navigation: any = createNavigationContainerRef();
   private _currentScreen: string = '';
   private _serviceScreens: string[] = ['SplashComponent', 'SignInComponent', 'SignUpComponent', 'SetupAccountComponent'];
@@ -16,14 +17,24 @@ export class OverrideNavigation {
 
   public navigate = (path: string, props: any = {}) => {
     if (this._navigation === void 0 || this._navigation === null || this._currentScreen === path) {
-      return;
+      console.log(path, this._currentScreen)
+      console.log('stopped')
+        return;
+
     }
     if (this._navigation.isReady()) {
-      this._currentScreen = path;
       this._navigationStack.push(path);
+      this._currentScreen = path;
       this._navigation.navigate(path, props);
     }
   };
+
+  public erase = (can: boolean = false) => {
+    if (can) {
+      this._navigationStack = [];
+      this._currentScreen = "";
+    }
+  }
 
   public goBack = () => {
     try {

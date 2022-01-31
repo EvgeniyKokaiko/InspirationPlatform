@@ -63,9 +63,9 @@ class Actions extends BaseAction implements ActionMethods {
         })
         .then((el) => {
           console.log(el.status, el.data, 1444);
-          dispatch({ type: ActionTypes.Setup, payload: { statusCode: el.status, data: el.data.data } });
+          dispatch({ type: ActionTypes.Setup, payload: { statusCode: el.data.statusCode } });
         }).catch(() => {
-        dispatch({ type: ActionTypes.DeletePost, payload: { statusCode: 423 } });
+        dispatch({ type: ActionTypes.Setup, payload: { statusCode: 423 } });
       });
     };
 
