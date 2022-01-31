@@ -145,19 +145,32 @@ const ModalManagementSegment = (props: IProps) => {
       );
     case SelectTitles.Full_Name:
       return (
-        <View style={[StylesOne.flex_column, StylesOne.flex_ai_c]}>
-          <TouchableOpacity
-            disabled={getState.avatar === ''}
-            style={[
-              MP.mt40,
-              getState.avatar !== '' ? StylesOne.SendBtn_active_button : StylesOne.SendBtn_inactive_button,
-              StylesOne.flex_row,
-              StylesOne.flex_jc_c,
-              StylesOne.flex_ai_c,
-            ]}
-          >
-            <Text style={[getState.avatar !== '' ? StylesOne.SendBtn_active_text : StylesOne.SendBtn_inactive_text]}>Set</Text>
-          </TouchableOpacity>
+        <View>
+          <TextInput
+            placeholder="Full Name"
+            placeholderTextColor={colors.Placeholder}
+            underlineColorAndroid={colors.Underline_rgba_black}
+            style={StylesOne.fontInputText_black}
+            onChangeText={(val) => setState({...getState, fName: val})}
+            value={getState.fName}
+            multiline
+            maxLength={150}
+          />
+          <View style={[StylesOne.flex_column, StylesOne.flex_ai_c]}>
+            <TouchableOpacity
+              onPress={() => setNewValue("full_name", getState.fName)}
+              disabled={getState.fName === ''}
+              style={[
+                MP.mt40,
+                getState.fName !== '' ? StylesOne.SendBtn_active_button : StylesOne.SendBtn_inactive_button,
+                StylesOne.flex_row,
+                StylesOne.flex_jc_c,
+                StylesOne.flex_ai_c,
+              ]}
+            >
+              <Text style={[getState.fName !== '' ? StylesOne.SendBtn_active_text : StylesOne.SendBtn_inactive_text]}>Set</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       );
     case SelectTitles.Gender:
@@ -359,7 +372,10 @@ const ModalManagementSegment = (props: IProps) => {
             }}
           />
           <View style={[StylesOne.w100, StylesOne.flex_column, StylesOne.flex_ai_c]}>
-            <TouchableOpacity onPress={() => setNewValue("date_of_birth", +Date.parse(getState.dateOfBirth))} style={[MP.mt40, StylesOne.SendBtn_active_button, StylesOne.flex_row, StylesOne.flex_jc_c, StylesOne.flex_ai_c]}>
+            <TouchableOpacity
+              onPress={() => setNewValue('date_of_birth', +Date.parse(getState.dateOfBirth))}
+              style={[MP.mt40, StylesOne.SendBtn_active_button, StylesOne.flex_row, StylesOne.flex_jc_c, StylesOne.flex_ai_c]}
+            >
               <Text style={[StylesOne.SendBtn_active_text]}>Set</Text>
             </TouchableOpacity>
           </View>
