@@ -85,10 +85,15 @@ class ReducersImpl {
             return action.payload
         }  if (action.type === ActionTypes.SetAvatar) {
             return action.payload
-        } if (action.type === ActionTypes.SetParam) {
-            return action.payload
         }
         return state
+    }
+
+    public SetParamReducer(state = {}, action: Action) {
+        if (action.type === ActionTypes.SetParam) {
+            return action.payload
+        }
+        return {}
     }
 
     public LogoutReducer(state = {}, action: Action) {
@@ -158,6 +163,7 @@ class ReducersImpl {
             requestListReducer: this.RequestListReducer,
             currentRequestStatus: this.CurrentRequestStatus,
             logoutReducer: this.LogoutReducer,
+            setParamReducer: this.SetParamReducer,
         })
     }
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import { View, Text, Image, TouchableOpacity, Alert, Switch, TextInput } from 'react-native';
 import { SelectTitles } from '../ManageAccountComponent';
 import { ManageAccountState } from '../Controllers/ManageAccountContainer';
@@ -12,7 +12,7 @@ import { Asset, User } from '../../Types/Models';
 import { apiURL } from '../../redux/actions';
 import Avatar from './Avatar';
 import { mockupHeightToDP, mockupWidthToDP } from '../../Parts/utils';
-import { useDispatch } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import { settingsImpl } from '../../redux/actions/settings';
 import { Picker } from '@react-native-picker/picker';
 import { colors } from '../../Parts/colors';
@@ -41,6 +41,7 @@ type IState = {
 
 const ModalManagementSegment = (props: IProps) => {
   const dispatch = useDispatch();
+  const store: any = useSelector((store) => store)
   const [getState, setState] = useState<IState | any>({
     files: { uri: undefined },
     avatar: '',
@@ -55,6 +56,7 @@ const ModalManagementSegment = (props: IProps) => {
     personalSite: props.originalData.personal_site,
     email: props.originalData.email,
   });
+  const [forcer, setForcer] = useState(0);
 
   function getLocation() {
     const currentLocation: string = props.originalData.location;
@@ -80,7 +82,8 @@ const ModalManagementSegment = (props: IProps) => {
 
   const setNewValue = (param: string, value: string | number | boolean) => {
     dispatch(settingsImpl.setParam(param, value));
-  };
+      setForcer((prev) => prev += 1)
+  }
 
   const setAvatar = () => {
     dispatch(settingsImpl.setNewAvatar(getState.files));
@@ -97,6 +100,14 @@ const ModalManagementSegment = (props: IProps) => {
       return props.originalData[originalParam];
     }
   };
+
+  useEffect(() => {
+      console.log('statuscdoe', store.setParamReducer)
+      if (store.setParamReducer.statusCode === 423) {
+          Alert.alert("Oops", "Something went wrong")
+      }
+
+  }, [store.setParamReducer])
 
   function setLocation(val: string, param: string) {
     const fixedValue = val.split(' ')[0];
@@ -146,6 +157,7 @@ const ModalManagementSegment = (props: IProps) => {
     case SelectTitles.Full_Name:
       return (
         <View>
+            <Text style={[StylesFour.myNewsLine_caption, MP.mb20, {textAlign: 'center'}]}>Set Your Full Name</Text>
           <TextInput
             placeholder="Full Name"
             placeholderTextColor={colors.Placeholder}
@@ -177,6 +189,7 @@ const ModalManagementSegment = (props: IProps) => {
       return (
         <View>
           <View style={[StylesOne.DropdownStyles, MP.plm20]}>
+              <Text style={[StylesFour.myNewsLine_caption, MP.mb20, {textAlign: 'center'}]}>Set Your Gender</Text>
             <Picker
               selectedValue={getState.gender}
               onValueChange={(val) => setState({ ...getState, gender: val })}
@@ -213,7 +226,7 @@ const ModalManagementSegment = (props: IProps) => {
       return (
         <View>
           <View style={[StylesOne.flex_column, StylesOne.flex_ai_c]}>
-            <Text style={[StylesFour.myNewsLine_caption, MP.mb20]}>Set Your Privacy</Text>
+            <Text style={[StylesFour.myNewsLine_caption, MP.mb20, {textAlign: 'center'}]}>Set Your Privacy</Text>
             <Switch
               trackColor={{ false: '#767577', true: '#81b0ff' }}
               thumbColor={'#f5dd4b'}
@@ -241,25 +254,41 @@ const ModalManagementSegment = (props: IProps) => {
       );
     case SelectTitles.Email:
       return (
-        <View>
-          <Text style={{ color: 'black' }}>Email</Text>
-          <TouchableOpacity
-            disabled={getState.avatar === ''}
-            style={[
-              MP.mt40,
-              getState.avatar !== '' ? StylesOne.SendBtn_active_button : StylesOne.SendBtn_inactive_button,
-              StylesOne.flex_row,
-              StylesOne.flex_jc_c,
-              StylesOne.flex_ai_c,
-            ]}
-          >
-            <Text style={[getState.avatar !== '' ? StylesOne.SendBtn_active_text : StylesOne.SendBtn_inactive_text]}>Set</Text>
-          </TouchableOpacity>
-        </View>
+          <View>
+              <Text style={[StylesFour.myNewsLine_caption, MP.mb20, {textAlign: 'center'}]}>Set Your Email</Text>
+              <TextInput
+                  placeholder="Your Email"
+                  placeholderTextColor={colors.Placeholder}
+                  underlineColorAndroid={colors.Underline_rgba_black}
+                  style={StylesOne.fontInputText_black}
+                  onChangeText={(val) => setState({ ...getState, email: val })}
+                  value={getState.email}
+                  multiline
+                  maxLength={500}
+              />
+              <View style={[StylesOne.w100, StylesOne.flex_column, StylesOne.flex_ai_c]}>
+                  <TouchableOpacity
+                      onPress={() => {
+                          setNewValue('email', getState.email);
+                      }}
+                      disabled={getState.description === -1}
+                      style={[
+                          MP.mt40,
+                          getState.description !== -1 ? StylesOne.SendBtn_active_button : StylesOne.SendBtn_inactive_button,
+                          StylesOne.flex_row,
+                          StylesOne.flex_jc_c,
+                          StylesOne.flex_ai_c,
+                      ]}
+                  >
+                      <Text style={[getState.avatar !== -1 ? StylesOne.SendBtn_active_text : StylesOne.SendBtn_inactive_text]}>Set</Text>
+                  </TouchableOpacity>
+              </View>
+          </View>
       );
     case SelectTitles.About_self:
       return (
         <View>
+            <Text style={[StylesFour.myNewsLine_caption, MP.mb20, {textAlign: 'center'}]}>Set description about yourself</Text>
           <TextInput
             placeholder="Describe yourself"
             placeholderTextColor={colors.Placeholder}
@@ -292,6 +321,7 @@ const ModalManagementSegment = (props: IProps) => {
     case SelectTitles.Location:
       return (
         <View>
+            <Text style={[StylesFour.myNewsLine_caption, MP.mb20, {textAlign: 'center'}]}>Set Your Location</Text>
           <TextInput
             placeholder="City"
             placeholderTextColor={colors.Placeholder}
@@ -334,6 +364,7 @@ const ModalManagementSegment = (props: IProps) => {
     case SelectTitles.Personal_Site:
       return (
         <View>
+            <Text style={[StylesFour.myNewsLine_caption, MP.mb20, {textAlign: 'center'}]}>Set Your Personal Site</Text>
           <TextInput
             placeholder="Personal Site"
             placeholderTextColor={colors.Placeholder}
@@ -364,6 +395,7 @@ const ModalManagementSegment = (props: IProps) => {
     case SelectTitles.Date_Of_Birth:
       return (
         <View>
+            <Text style={[StylesFour.myNewsLine_caption, MP.mb20, {textAlign: 'center'}]}>Set Your Birth</Text>
           <DatePicker
             mode={'date'}
             date={getState.dateOfBirth}
