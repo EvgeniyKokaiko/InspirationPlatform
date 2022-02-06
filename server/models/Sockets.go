@@ -8,14 +8,10 @@ type SocketConnection struct {
 }
 
 
-type Event struct {
-	EventName string `json:"event_name"`
-}
-
 
 type SocketMessage struct {
-	Event 	`json:"event"`
-	Message `json:"message"`
+	Event 	string 	`json:"event"`
+	Data 	map[string]interface{} `json:"data"`
 }
 
 

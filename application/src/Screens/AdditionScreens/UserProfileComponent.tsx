@@ -25,6 +25,7 @@ type IProps = {
     onUnfollowPress(): void;
     isFollowed: boolean;
     isMe: boolean;
+    goToChatScreen():void;
 }
 
 const UserProfileComponent = (state: IProps) => {
@@ -94,19 +95,16 @@ const UserProfileComponent = (state: IProps) => {
                         <Image style={St.imgIcon} source={images.personalSite} />
                     </TouchableOpacity>
                 </View>
+                    <TouchableOpacity onPress={state.goToChatScreen} activeOpacity={0.7} style={[StylesOne.flex_row, StylesOne.flex_ai_c, StylesOne.flex_jc_c, {backgroundColor: colors.Chalise , borderRadius: 8, width: "40%", height: mockupHeightToDP(40)}]}>
+                        <Image style={[StylesOne.image25, MP.mr5, {tintColor: colors.blurWhite}]} source={images.message2} />
+                        <Text style={[St.ownerTextWithoutOffsets, {marginBottom: 2, color: colors.blurWhite, fontWeight: "600"}]}>Message</Text>
+                    </TouchableOpacity>
                     <TouchableOpacity onPress={state.isFollowed ? state.onUnfollowPress : state.onSubscribePress} activeOpacity={0.7} style={[StylesOne.flex_row, StylesOne.flex_ai_c, StylesOne.flex_jc_c, {backgroundColor: state.isFollowed ? colors.WhiteChalk : colors.Chalise , borderRadius: 8, width: "40%", height: mockupHeightToDP(40)}]}>
                         {!state.isFollowed ? <Image style={[StylesOne.image25, MP.mr5, {tintColor: colors.blurWhite}]} source={images.addSub} /> : <Image style={[StylesOne.image25, MP.mr5, {tintColor: colors.blurWhite}]} source={images.unfollow} />}
                         <Text style={[St.ownerTextWithoutOffsets, {marginBottom: 2, color: colors.blurWhite, fontWeight: "600"}]}>{state.isFollowed ? "Unfollow" :  "Subscribe"}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
-            {/*<View>*/}
-            {/*    <TouchableOpacity>*/}
-            {/*        <Image source={} />*/}
-            {/*    </TouchableOpacity>*/}
-            {/*    <TouchableOpacity>*/}
-            {/*    </TouchableOpacity>*/}
-            {/*</View>*/}
             <ScrollView showsVerticalScrollIndicator={false} style={[St.postListStyles]} contentContainerStyle={St.listContainer}>
                 {renderPosts()}
             </ScrollView>

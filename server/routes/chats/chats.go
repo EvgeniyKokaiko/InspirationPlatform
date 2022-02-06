@@ -18,9 +18,10 @@ func Chats(route *gin.Engine, db *database.DB) {
 		})
 
 
-		router.GET("/:cHash", func(c *gin.Context) {
+		router.GET("/:token/:cHash", func(c *gin.Context) {
 			var cHash = c.Param("cHash")
- 			if username, _, err := utils.ParseHeader(c); len(c.GetHeader("Authorization")) > 15 || err == nil {
+			var token = c.Param("token")
+ 			if username, _, err := utils.ParseToken(token); len(token) > 15 || err == nil {
 				 handleWS(c.Writer, *c.Request, nil, cHash ,username)
 			} else {
 				c.JSON(http.StatusConflict, typedDB.GiveResponse(http.StatusConflict, "Socket Conflicts"))

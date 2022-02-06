@@ -49,8 +49,9 @@ export const images: {[key: string]: ImageSourcePropType} = {
     like: require("./images/heart_outline.png"),
     commend: require("./images/chat.png"),
     repost: require("./images/repost.png"),
-
-
+    message2: require("./images/message2.png"),
+    message: require("./images/message.png"),
     camera: require("./images/photo_camera.png"),
-
+    emoji: require("./images/emoji.png"),
+    send: require("./images/send.png"),
 }

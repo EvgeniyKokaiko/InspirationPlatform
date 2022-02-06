@@ -54,6 +54,9 @@ export const MP = StyleSheet.create({
     ph25: {
         paddingHorizontal: mockupWidthToDP(25),
     },
+    ph6: {
+        paddingHorizontal: mockupWidthToDP(6),
+    },
     ph15: {
         paddingHorizontal: mockupWidthToDP(15),
     },

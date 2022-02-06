@@ -122,6 +122,13 @@ export const St = StyleSheet.create({
     resizeMode: 'contain',
   },
 
+  round100image35: {
+    width: mockupWidthToDP(40),
+    height: mockupWidthToDP(40),
+    borderRadius: 999,
+    resizeMode: 'contain',
+  },
+
   image15: {
     width: mockupWidthToDP(24),
     height: mockupWidthToDP(24),
@@ -257,6 +264,12 @@ export const St = StyleSheet.create({
     marginBottom: mockupHeightToDP(6),
   },
 
+  ownerText_second: {
+    fontSize: fontSizeDP(17),
+    fontFamily: 'SFProDisplay-Regular',
+    fontWeight: '600',
+    color: colors.absoluteBlack,
+  },
 
   image100modal: {
     width: '100%',

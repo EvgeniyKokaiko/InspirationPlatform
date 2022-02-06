@@ -12,6 +12,10 @@ export const StylesOne = StyleSheet.create({
     color: colors.SignIn_Font2,
   },
 
+  rounded: {
+    borderRadius: 999,
+  },
+
   searchPane: {
     backgroundColor: 'rgba(0,0,0,0.1)',
     borderRadius: 10,
@@ -146,6 +150,12 @@ export const StylesOne = StyleSheet.create({
     resizeMode: 'contain',
   },
 
+  image30: {
+    width: mockupWidthToDP(30),
+    height: mockupWidthToDP(30),
+    resizeMode: 'contain',
+  },
+
   rm_c: {
     resizeMode: 'contain',
   },
@@ -191,6 +201,12 @@ export const StylesOne = StyleSheet.create({
     fontSize: fontSizeDP(18),
     fontWeight: '800',
     fontFamily: 'Metropolis',
+  },
+
+  flex_center: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 
   wh200px: {

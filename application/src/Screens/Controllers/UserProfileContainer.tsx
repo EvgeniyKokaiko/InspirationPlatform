@@ -55,6 +55,10 @@ const UserProfileContainer = (props: IProps) => {
         dispatch(actionImpl.makeSubscribe(ownerId))
     }, [ownerId])
 
+    const goToChatScreen = () => {
+        INavigation.navigate(StackScreens.U2UChat, {userId: ownerId})
+    }
+
 
     const STATE = {
         ownerId,
@@ -68,7 +72,8 @@ const UserProfileContainer = (props: IProps) => {
         avatarStatus: userState.avatarStatus,
         onSubscribePress,
         onUnfollowPress,
-        isMe
+        isMe,
+        goToChatScreen,
     }
 
 
