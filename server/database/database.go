@@ -236,6 +236,12 @@ func (db *DB) GetUserDataWithPosts(username string, name string, page int) (map[
 	return dbResult, nil
 }
 
+
+//status 0 - unknown
+//status 1 - private
+//status 2 - accepted
+//status 3 - two dimension subscription
+
 func (db *DB) SubscribeUser(owner string, subscriber string) (bool, error) {
 	subscription := models.Subscriptions{}
 	subscription.Subscriber = subscriber
@@ -243,6 +249,7 @@ func (db *DB) SubscribeUser(owner string, subscriber string) (bool, error) {
 	subscription.CreatedAt = time.Now()
 	subscription.UpdatedAt = time.Now()
 	ownerUser := models.User{}
+	isExists := models.Subscriptions{}
 	var countOfResponses int = 0
 
 	dbUserResponse := db.database.
@@ -256,14 +263,33 @@ func (db *DB) SubscribeUser(owner string, subscriber string) (bool, error) {
 	if dbUserResponse.Error != nil || countOfResponses != 0 || dbSubscriptionResponse.Error != nil || owner == subscriber {
 		return false, errors.New("ERROR!This user doesnt exists")
 	}
-	if ownerUser.IsPrivate == 1 {
-		subscription.Status = 1
+
+	if dbTwoWaySubscriptionResponse := db.database.Table(typedDB.TABLES.SUBSCRIPTIONS).Where("owner = ? AND subscriber = ? AND status > 1", subscriber, owner).Take(&isExists); isExists.Owner != subscriber && isExists.Subscriber != owner {
+		fmt.Println(1,2)
+		if ownerUser.IsPrivate == 1 {
+			subscription.Status = 1
+		} else {
+			subscription.Status = 2
+		}
 	} else {
-		subscription.Status = 2
+		fmt.Println(3, dbTwoWaySubscriptionResponse.Error)
+		subscription.Status = 3
+		cHash, _ := utils.GenerateHashWithSalt(owner, subscriber, time.Now())
+		subscription.SocketHash = cHash
+		updateSecondDimension := models.Subscriptions{SocketHash: cHash, Status: 3}
+		fmt.Println(subscription.SocketHash, "BRUH0", updateSecondDimension, "BRUH")
+		if dbMySubscriptionResponse := db.database.
+			Table(typedDB.TABLES.SUBSCRIPTIONS).
+			Where("owner = ? AND subscriber = ? AND status > 1", subscriber, owner).
+			Updates(&updateSecondDimension); dbMySubscriptionResponse.Error != nil {
+			return false, errors.New("ERROR!This user doesnt exists")
+		}
 	}
+
+
 	if dbSubscriptionResponse := db.database.
 		Table(typedDB.TABLES.SUBSCRIPTIONS).
-		Create(&subscription); dbSubscriptionResponse.Error != nil {
+		Create(&subscription); dbSubscriptionResponse.Error != nil  {
 		return false, errors.New("ERROR!Something went wrong")
 	}
 	return true, nil
@@ -375,8 +401,7 @@ func MessageToDB(username string) {
 //	var socketData map[string]interface{}
 //	if dbGetSocketURLResponse := db.database.
 //		Table(typedDB.TABLES.SUBSCRIPTIONS).
-//
-//		; dbGetSocketURLResponse != nil {
+//		Where("owner  = ? AND subscriber = ? OR "); dbGetSocketURLResponse != nil {
 //		if dbGetSocketURLResponse.Error == gorm.ErrRecordNotFound {
 //
 //		}

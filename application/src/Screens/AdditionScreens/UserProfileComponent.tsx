@@ -30,7 +30,6 @@ type IProps = {
 
 const UserProfileComponent = (state: IProps) => {
 
-
     const renderPosts = () => {
         console.log(state.avatarStatus)
         if (!Array.isArray(state.user.userPosts) || state.user.isPrivate) {
