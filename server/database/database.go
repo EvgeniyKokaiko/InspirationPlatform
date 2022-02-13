@@ -200,7 +200,7 @@ func (db *DB) GetUserDataWithPosts(username string, name string, page int) (map[
 		(SELECT COUNT(*) AS owner_count from user_subscription WHERE OWNER = ?) AS x, 
 		(SELECT COUNT(*) AS subscriber_count FROM user_subscription WHERE subscriber = ?) as y`, username, username).
 		Scan(&userCounts)
-	if (userData.IsPrivate == 1 && userSubscription.Status == 2) || userData.IsPrivate == 0 {
+	if (userData.IsPrivate == 1 && userSubscription.Status > 2) || userData.IsPrivate == 0 {
 		dbUserPostsResponse := db.database.
 			Table(typedDB.TABLES.POSTS).
 			Where("owner = ?", username).
@@ -347,6 +347,37 @@ func (db *DB) GetRequestList(owner string) ([]map[string]interface{}, error) {
 	return subscriptionList, nil
 }
 
+
+func (db *DB) GetMyFriendList(owner string, page int) ([]map[string]interface{}, error) {
+	var subscriptionList []map[string]interface{}
+
+	if dbGetRequestListResponse := db.database.Raw(`
+		SELECT * FROM user_subscription
+		INNER JOIN (SELECT full_name, username, email, description FROM users)
+		AS user_rows ON user_subscription.subscriber = user_rows.username
+		AND user_subscription.owner = ?`, owner).
+		Find(&subscriptionList); dbGetRequestListResponse.Error != nil || dbGetRequestListResponse.RowsAffected == 0 {
+		return []map[string]interface{}{}, errors.New("ERROR! Something went wrong")
+	}
+	fmt.Println(subscriptionList)
+	return subscriptionList, nil
+}
+
+
+func (db *DB) GetMySubscriptionList(subscriber string, page int) ([]map[string]interface{}, error) {
+	var subscriptionList []map[string]interface{}
+
+	if dbGetRequestListResponse := db.database.Raw(`
+		SELECT * FROM user_subscription
+		INNER JOIN (SELECT full_name, username, email, description FROM users)
+		AS user_rows ON user_subscription.owner = user_rows.username
+		AND user_subscription.subscriber = ?`, subscriber).
+		Find(&subscriptionList); dbGetRequestListResponse.Error != nil || dbGetRequestListResponse.RowsAffected == 0 {
+		return []map[string]interface{}{}, errors.New("ERROR! Something went wrong")
+	}
+	fmt.Println(subscriptionList)
+	return subscriptionList, nil
+}
 
 func (db *DB) GetMyNewsLine(subscriber string, page int) ([]map[string]interface{}, error) {
 		var myNewsLine =  []map[string]interface{}{}

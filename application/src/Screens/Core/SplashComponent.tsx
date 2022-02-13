@@ -17,20 +17,6 @@ const SplashComponent: React.FC<IProps> = (props: IProps) => {
     const dispatch = useDispatch();
     const state: any = useSelector(state => state)
     useEffect(() => {
-        AsyncStorage.getItem("Access_TOKEN").then(token => {
-             if (typeof token !== "undefined" && token?.length! > 10) {
-                 //TODO тут робити проверку чи є інтернет, і якщо нема тоді кажді 20 секунд слати запрос, якщо появився, тоді сразу кидати реквест
-                dispatch(actionImpl.checkForConnection)
-                 if (state.checkForConnectionReducer.status === 200) {
-                     INavigation.navigate(StackScreens.MyProfile)
-                 } else {
-                     INavigation.navigate(StackScreens.MyProfile)
-                 }
-             }
-             if (token === null) {
-                INavigation.navigate(StackScreens.SignIn)
-             }
-        })
     }, [])
 
     return (

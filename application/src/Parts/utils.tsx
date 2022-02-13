@@ -2,6 +2,7 @@ import {Dimensions, Image, NativeModules, PixelRatio, Platform, StatusBar} from 
 import {images} from "../assets/images";
 import React from "react";
 import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const { StatusBarManager } = NativeModules;
 export const DEVICE_WIDTH = Dimensions.get('window').width;
@@ -82,4 +83,20 @@ export const dateParser = (timestamp: any, localtime = 0): string => {
     return `${day < 10 ? "0" : ""}${day}.${month < 9 ? "0" : ""}${
         localtime === 1 ? month + 1 : month
     }.${parser.getFullYear()} at ${hours < 10 ? "0" : ""}${hours}:${minutes < 10 ? "0" : ""}${minutes}`;
+};
+
+
+export async function isMe() {
+    const currentUserId = await AsyncStorage.getItem('currentUserId');
+    return currentUserId
+}
+
+export const getToken = async (callback: Function) => {
+    await AsyncStorage.getItem('Access_TOKEN').then((el: string | null) => {
+        try {
+            callback(el);
+        } catch (ex) {
+            console.log('_useToken ex', ex);
+        }
+    });
 };

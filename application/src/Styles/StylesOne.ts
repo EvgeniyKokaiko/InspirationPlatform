@@ -275,6 +275,11 @@ export const StylesOne = StyleSheet.create({
   cInactive: {
     color: colors.Placeholder,
   },
+  following_title: {
+    fontSize: fontSizeDP(15),
+    color: colors.absoluteBlack,
+    fontFamily: 'SFProDisplay-Bold',
+  },
 
   requests_username: {
     fontSize: fontSizeDP(15),
@@ -294,6 +299,17 @@ export const StylesOne = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: colors.acceptColor
+  },
+  followerListButton: {
+    borderRadius: mockupWidthToDP(5),
+    width: mockupWidthToDP(80),
+    height: mockupHeightToDP(30),
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+    borderColor: colors.WhiteChalk,
+    borderWidth: 2,
   },
   requests_decline: {
     borderRadius: mockupWidthToDP(5),

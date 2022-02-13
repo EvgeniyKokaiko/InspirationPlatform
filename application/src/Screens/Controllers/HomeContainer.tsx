@@ -4,6 +4,7 @@ import HomeComponent from '../HomeComponent';
 import {useDispatch, useSelector} from "react-redux";
 import {actionImpl} from "../../redux/actions";
 import {Post} from "../../Types/Models";
+import {onBlur} from "../Core/MainNavigationScreen";
 
 type IProps = {};
 
@@ -40,6 +41,10 @@ const HomeContainer: React.FC<IProps> = (props) => {
   const onRepostPress = () => {
     console.log('onRepostPress');
   }
+
+  onBlur(() => {
+   setState({...getState, data: []})
+  })
 
   const STATE = {
     onRefresh,

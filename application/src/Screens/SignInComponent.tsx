@@ -13,6 +13,7 @@ import {BaseProps} from "../Types/Types";
 import { useDispatch, useSelector } from "react-redux";
 import {actionImpl} from "../redux/actions/index"
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {INavigation} from "./Core/OverrideNavigation";
 
 
 type IProps = {} & BaseProps
@@ -38,7 +39,7 @@ const SignInComponent = (props: IProps) => {
 
 
     const goToSignUpScreen = () => {
-        props.navigation.navigate(StackScreens.SignUp);
+        INavigation.navigate(StackScreens.SignUp);
     }
 
 
@@ -50,7 +51,7 @@ const SignInComponent = (props: IProps) => {
               dispatch(actionImpl.clear())
               AsyncStorage.setItem("currentUserId", auth.currentTry).then()
               setAuth({login: '', password: '', currentTry: ''});
-              props.navigation.navigate(StackScreens.MyProfile)
+              INavigation.navigate(StackScreens.MyProfile)
           })
         } else if (state.loginReducer.statusCode === 208) {
            //тоже зробити красним подсветку

@@ -18,6 +18,8 @@ export enum ActionTypes {
     AcceptOrDeclineRequest = "ACCEPT_OR_DECLINE_REQUEST",
     SetAvatar = "SET_NEW_AVATAR",
     SetParam = "SET_NEW_PARAMETER",
+    Following = "FOLLOWING_LIST",
+    ClearFollowing = "CLEAR_FOLLOWING_LIST",
 }
 
 

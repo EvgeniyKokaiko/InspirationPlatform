@@ -25,6 +25,7 @@ import HomeContainer from '../Controllers/HomeContainer';
 import U2UChatContainer from "../Controllers/U2UChatContainer";
 import ManageAccountContainer from "../Controllers/ManageAccountContainer";
 import {INavigation, OverrideNavigation} from "./OverrideNavigation";
+import FollowingListContainer from "../Controllers/FollowingListContainer";
 
 interface IProps {}
 
@@ -45,6 +46,7 @@ export enum StackScreens {
   RequestList = 'RequestListComponent',
   U2UChat = 'UserToUserChatComponent',
   Manage = 'ManageAccountComponent',
+  Following = 'FollowingListComponent',
 }
 
 export const noGoBack = () => {
@@ -55,6 +57,26 @@ export const noGoBack = () => {
     });
   });
 };
+
+
+export function onFocus(callback: Function, deps: Array<any> = []) {
+ return useFocusEffect(
+      React.useCallback(() => {
+        callback()
+      }, [INavigation.navigationStack, ...deps])
+
+  );
+}
+
+export function onBlur(callback: Function, deps: Array<any> = []) {
+  return useFocusEffect(
+      React.useCallback(() => {
+        return () => callback();
+      }, [INavigation.navigationStack, ...deps])
+
+  );
+}
+
 
 export const goBack = (navProps: NavigationProp<any>) => {
   navProps.goBack();
@@ -74,7 +96,7 @@ const MainNavigationScreen: React.FC = (props: IProps) => {
   const Tab = createBottomTabNavigator();
   let defaultScreen = 'SplashComponent';
   const withoutNavigation = [StackScreens.SignIn, StackScreens.SignUp, StackScreens.SetupAccount];
-  const withoutNavigationIndex = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+  const withoutNavigationIndex = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   const Screens: { name: string; component: Component; options?: any }[] = [
     // Service screens
     { name: StackScreens.Splash, component: SplashComponent, options: { headerShown: false } },
@@ -84,6 +106,7 @@ const MainNavigationScreen: React.FC = (props: IProps) => {
     { name: StackScreens.EditProfile, component: EditProfileComponent, options: { headerShown: false } },
     { name: StackScreens.Settings, component: SettingsComponent, options: { headerShown: false } },
     { name: StackScreens.Manage, component: ManageAccountContainer, options: {headerShown: false} },
+    { name: StackScreens.Following, component: FollowingListContainer, options: {headerShown: false} },
     //Main screens
     { name: StackScreens.U2UChat, component: U2UChatContainer, options: {headerShown: false} },
     { name: StackScreens.PostDetails, component: ExpandedPostContainer, options: { headerShown: false } },

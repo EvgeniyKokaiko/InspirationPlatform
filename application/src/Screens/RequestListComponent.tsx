@@ -65,7 +65,7 @@ if (state.data.length > 0) {
 }
     return (
         <ScrollView style={[StylesOne.screenContainer, MP.ph25]} refreshControl={<RefreshControl refreshing={state.refresh} onRefresh={state.onRefresh}/>}>
-            <View style={[StylesOne.w100, MP.ph25]}>
+            <View style={[StylesOne.w100]}>
                 <View style={[StylesOne.flex_row, StylesOne.flex_jc_sb, StylesOne.flex_ai_c, MP.mv20]}>
                     <TouchableOpacity onPress={state.onBackBtn} style={StylesOne.image24}>
                         <Image style={[StylesOne.wh100,StylesOne.rm_c, St.blackArrow]} source={images.arrowLeft} />

@@ -149,6 +149,22 @@ func Users(route *gin.Engine, db *database.DB) {
 				c.JSON(http.StatusOK, typedDB.GiveResponse(http.StatusBadRequest, "Bad Request"))
 			}
 		})
+		route.GET("/:userId/following", func(c *gin.Context) {
+			username := c.Param("userId")
+				if response, err := db.GetMySubscriptionList(username, 0); err == nil {
+					c.JSON(http.StatusOK, typedDB.GiveOKResponseWithData(response))
+				} else {
+					c.JSON(http.StatusOK, typedDB.GiveResponse(http.StatusBadRequest, "Bad Request"))
+				}
+		})
+		route.GET("/:userId/followers", func(c *gin.Context) {
+			username := c.Param("userId")
+				if response, err := db.GetMyFriendList(username, 0); err == nil {
+					c.JSON(http.StatusOK, typedDB.GiveOKResponseWithData(response))
+				} else {
+					c.JSON(http.StatusOK, typedDB.GiveResponse(http.StatusBadRequest, "Bad Request"))
+				}
+		})
 	}
 }
 //dbResult, error := db.GetUserDataWithPosts("evgeniy", 0)

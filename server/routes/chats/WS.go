@@ -7,8 +7,8 @@ import (
 	"log"
 	"net/http"
 	"reflect"
+	"server/handlers"
 	"server/models"
-	"server/utils"
 )
 
 
@@ -73,7 +73,7 @@ func handleWS(w http.ResponseWriter, r http.Request, h http.Header, cHash string
 func SocketEmitter(eventName interface{}, mT int, message []byte, user *models.SocketConnection) error {
 	switch eventName {
 	case "SendMessage":
-		utils.SendMessageHandler(mT, message, user)
+		handlers.SendMessageHandler(mT, message, user)
 	default:
 		fmt.Println("default")
 	}
@@ -85,19 +85,19 @@ func SocketEmitter(eventName interface{}, mT int, message []byte, user *models.S
 
 func Stop(error error, cHash string, newConnection models.SocketConnection) {
 	log.Println("read:", error)
-	index := FindIndex(SocketRoomer[cHash], newConnection)
+	index := FindIndex[models.SocketConnection](SocketRoomer[cHash], newConnection)
 	fmt.Println(index)
-	SocketRoomer[cHash] = remove(SocketRoomer[cHash], index)
+	SocketRoomer[cHash] = remove[models.SocketConnection](SocketRoomer[cHash], index)
 	defer newConnection.Connector.Close()
 	return
 }
 
 
-func remove(slice []models.SocketConnection, s int) []models.SocketConnection {
+func remove[T comparable](slice []T, s int) []T {
 		return append(slice[:s], slice[s+1:]...)
 }
 
-func FindIndex(a []models.SocketConnection, x models.SocketConnection) int {
+func FindIndex[T comparable](a []T, x T) int {
 	for index, value := range a {
 		if reflect.DeepEqual(value, x) {
 			return index

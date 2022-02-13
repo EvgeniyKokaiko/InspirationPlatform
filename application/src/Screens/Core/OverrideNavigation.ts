@@ -2,9 +2,9 @@ import { createNavigationContainerRef } from '@react-navigation/native';
 import {StackScreens} from "./MainNavigationScreen";
 
 export class OverrideNavigation {
-  private _navigationStack: string[] = [];
+  private _navigationStack: {path: string, props: any}[] = [];
   private readonly _navigation: any = createNavigationContainerRef();
-  private _currentScreen: string = '';
+  private _currentScreen: {path: string, props: any} = {path: '', props: ''};
   private _serviceScreens: string[] = ['SplashComponent', 'SignInComponent', 'SignUpComponent', 'SetupAccountComponent'];
   constructor() {}
   get navigationStack() {
@@ -16,15 +16,13 @@ export class OverrideNavigation {
   }
 
   public navigate = (path: string, props: any = {}) => {
-    if (this._navigation === void 0 || this._navigation === null || this._currentScreen === path) {
-      console.log(path, this._currentScreen)
-      console.log('stopped')
+    if (this._navigation === void 0 || this._navigation === null || this._currentScreen.path === path) {
         return;
 
     }
     if (this._navigation.isReady()) {
-      this._navigationStack.push(path);
-      this._currentScreen = path;
+      this._navigationStack.push({path, props});
+      this._currentScreen = {path, props};
       this._navigation.navigate(path, props);
     }
   };
@@ -32,7 +30,7 @@ export class OverrideNavigation {
   public erase = (can: boolean = false) => {
     if (can) {
       this._navigationStack = [];
-      this._currentScreen = "";
+      this._currentScreen = {path: '', props: ''};
     }
   }
 
@@ -41,14 +39,11 @@ export class OverrideNavigation {
       if (this._navigationStack.length === 0) {
         return;
       }
-      let lastPath = this._navigationStack[this._navigationStack.length - 1];
-      if (lastPath === this._currentScreen) {
-        lastPath = this._navigationStack[this._navigationStack.length - 2];
-      }
-      if (this._serviceScreens.includes(lastPath) || this._serviceScreens.includes(this._currentScreen) || lastPath === "SplashComponent") {
+      let lastPath = this._navigationStack[this._navigationStack.length - 2];
+      if (this._serviceScreens.includes(lastPath.path) || this._serviceScreens.includes(this._currentScreen.path) || lastPath.path === "SplashComponent") {
         return;
       }
-      this._navigation.navigate(lastPath);
+      this._navigation.navigate(lastPath.path, lastPath.props);
       this._navigationStack.pop();
       this._currentScreen = lastPath;
     } catch (e) {

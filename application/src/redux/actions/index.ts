@@ -31,6 +31,13 @@ class Actions extends BaseAction implements ActionMethods {
     };
   };
 
+  public ClearFollowing = () => {
+    return {
+      type: ActionTypes.ClearFollowing,
+    };
+  };
+
+
   public register = (username: string, email: string, password: string) => async (dispatch: Dispatch<Action>) => {
     try {
       axios
@@ -314,6 +321,25 @@ class Actions extends BaseAction implements ActionMethods {
           console.log(el.data, 'RESPONSE');
           dispatch({ type: ActionTypes.AcceptOrDeclineRequest, payload: el.data });
         }).catch(() => {
+        dispatch({ type: ActionTypes.DeletePost, payload: { statusCode: 423 } });
+      });
+    });
+  };
+
+
+
+  public getFollowerList = (userId: string, listType: number) => async (dispatch: Dispatch<Action>) => {
+    await this._useToken(async (el: string | null) => {
+      axios
+          .get(`http://${apiURL}/users/${userId}/${listType === 1 ? 'following' : 'followers'}`, {
+            headers: {
+              Authorization: `Bearer ${el}`,
+            },
+          })
+          .then((el) => {
+            console.log(el.data, 'RESPONSE');
+            dispatch({ type: ActionTypes.Following, payload: el.data });
+          }).catch(() => {
         dispatch({ type: ActionTypes.DeletePost, payload: { statusCode: 423 } });
       });
     });

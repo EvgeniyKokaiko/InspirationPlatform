@@ -3,7 +3,6 @@ import UserProfileComponent from "../AdditionScreens/UserProfileComponent";
 import {BaseProps} from "../../Types/Types";
 import {useDispatch, useSelector} from "react-redux";
 import {actionImpl, apiURL} from "../../redux/actions";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import {StackScreens} from "../Core/MainNavigationScreen";
 import {Linking} from "react-native";
 import {User} from "../../Types/Models";
@@ -15,7 +14,6 @@ type IProps = {} & BaseProps
 type userDataProps = {
     userData: any;
     refresh: boolean;
-    avatarStatus: number;
     isFollowed: boolean;
 }
 
@@ -29,10 +27,8 @@ const UserProfileContainer = (props: IProps) => {
     const [userState, setUserState] = useState<userDataProps>({
         userData: {},
         refresh: false,
-        avatarStatus: -1,
         isFollowed: false,
     });
-
     const makeRequest = useCallback(() => {
         dispatch(actionImpl.getUser(ownerId));
     }, [ownerId]);
@@ -43,8 +39,7 @@ const UserProfileContainer = (props: IProps) => {
     }
 
     const onBackBtn = () => {
-        //TODO Fix this
-        // INavigation.goBack();
+        INavigation.goBack();
     };
 
     const onUnfollowPress = useCallback(() => {
@@ -56,8 +51,18 @@ const UserProfileContainer = (props: IProps) => {
     }, [ownerId])
 
     const goToChatScreen = () => {
-        INavigation.navigate(StackScreens.U2UChat, {userId: ownerId})
+        console.log(userState.userData)
+        INavigation.navigate(StackScreens.U2UChat, {userId: ownerId, socketHash: userState.userData.isSubscribed.socket_hash})
     }
+
+    function onFollowingPress() {
+        INavigation.navigate(StackScreens.Following, {userId: ownerId, listType: 1})
+    }
+
+    function onFollowersPress() {
+        INavigation.navigate(StackScreens.Following, {userId: ownerId, listType: 0})
+    }
+
 
 
     const STATE = {
@@ -69,13 +74,13 @@ const UserProfileContainer = (props: IProps) => {
         onPersonalSitePress,
         ownerAvatar,
         onBackBtn,
-        avatarStatus: userState.avatarStatus,
         onSubscribePress,
         onUnfollowPress,
         isMe,
         goToChatScreen,
+        onFollowingPress,
+        onFollowersPress,
     }
-
 
 
     useEffect(() => {
@@ -98,10 +103,8 @@ const UserProfileContainer = (props: IProps) => {
 
     useEffect(() => {
         dispatch(actionImpl.getUser(ownerId))
-        checkForAvatar(ownerAvatar).then((el) => {
-            setUserState({...userState, avatarStatus: el})
-        })
     }, [ownerId])
+
 
 
     useEffect(() => {

@@ -136,6 +136,16 @@ class ReducersImpl {
         return state
     }
 
+    public FollowerListReducer(state = {}, action: Action) {
+        if (action.type === ActionTypes.Following) {
+            console.log(action.payload, "PAYLOAD")
+            return action.payload
+        } else if (action.type === ActionTypes.ClearFollowing) {
+            return {};
+        }
+        return state
+    }
+
     public CurrentRequestStatus(state = {}, action: Action) {
         if (action.type === ActionTypes.AcceptOrDeclineRequest) {
             console.log(action.payload, "PAYLOAD")
@@ -164,6 +174,7 @@ class ReducersImpl {
             currentRequestStatus: this.CurrentRequestStatus,
             logoutReducer: this.LogoutReducer,
             setParamReducer: this.SetParamReducer,
+            followerListReducer: this.FollowerListReducer,
         })
     }
 }

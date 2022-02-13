@@ -75,6 +75,17 @@ const MyProfileComponent: React.FC<IProps> = (props: IProps) => {
     INavigation.navigate(StackScreens.Settings, {isPrivate: user.is_private});
   }
 
+//0 - мои подписки
+//1 - мои подписчики
+  function onFollowingPress() {
+    INavigation.navigate(StackScreens.Following, {userId: user!.username, listType: 1})
+  }
+
+  function onFollowersPress() {
+    INavigation.navigate(StackScreens.Following, {userId: user!.username, listType: 0})
+  }
+
+
   return user && posts ? (
     <ScrollView style={[StylesOne.screenContainer, MP.ph25]} refreshControl={<RefreshControl refreshing={refresh} onRefresh={makeRequest} />}>
       <View style={[StylesOne.w100]}>
@@ -90,12 +101,12 @@ const MyProfileComponent: React.FC<IProps> = (props: IProps) => {
             <Avatar icon={avatar === 999 ? images.standardAvatar : {uri: `http://${apiURL}/storage/${user!.username}/avatar/avatar.png?asd=${Date.now()}`}} size={60} />
           </View>
           <View style={[StylesOne.flex_row, StylesOne.flex_ai_c, { height: mockupHeightToDP(75) }]}>
-            <TouchableOpacity style={[MP.mh15, StylesOne.flex_column, StylesOne.flex_ai_c]}>
+            <TouchableOpacity onPress={onFollowingPress} style={[MP.mh15, StylesOne.flex_column, StylesOne.flex_ai_c]}>
               <Text style={St.myAccButtonsHeader}>{counts.subscriber_count}</Text>
               <Text style={St.myAccButtonsDescr}>Following</Text>
             </TouchableOpacity>
             <View style={[St.verticalLine]} />
-            <TouchableOpacity style={[MP.mh15, StylesOne.flex_column, StylesOne.flex_ai_c]}>
+            <TouchableOpacity onPress={onFollowersPress} style={[MP.mh15, StylesOne.flex_column, StylesOne.flex_ai_c]}>
               <Text style={St.myAccButtonsHeader}>{counts.owner_count}</Text>
               <Text style={St.myAccButtonsDescr}>Followers</Text>
             </TouchableOpacity>
