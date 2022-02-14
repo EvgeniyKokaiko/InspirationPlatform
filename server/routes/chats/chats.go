@@ -27,7 +27,7 @@ func Chats(route *gin.Engine, db *database.DB) {
  			if err != nil {
 				c.JSON(http.StatusConflict, typedDB.GiveResponse(http.StatusConflict, "Socket Conflicts"))
 			}
-				 handleWS(c.Writer, *c.Request, nil, cHash ,username)
+				 handleWS(c.Writer, *c.Request, nil, cHash ,username, db)
 		})
 
 

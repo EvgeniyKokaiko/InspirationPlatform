@@ -9,20 +9,32 @@ import {INavigation} from "../Core/OverrideNavigation";
 import {onBlur, onFocus} from "../Core/MainNavigationScreen";
 
 type IProps = {} & BaseProps;
-type IState = {
-  socketImpl: null | Socket;
-};
+type IState = {};
 
+
+enum MessageType {
+  PlainMessage   = 0,
+  ImageMessage   = 1,
+  FileMessage    = 3,
+  SystemMessage  = 4,
+}
 const U2UChatContainer = (props: IProps) => {
   const [getState, setState] = useState<IState>({
-    socketImpl: null,
+
   });
   const {userId, socketHash} = props.route.params;
+  let socket: null | Socket = null;
   const avatarURL: string = `http://${apiURL}/storage/${userId}/avatar/avatar.png`;
   console.log(userId, socketHash, props.route.params);
-  const onMessageSend = async () => {
-    await getState.socketImpl!.emitByEvent(SocketEvents.connect, 'abibas');
-    await getState.socketImpl!.emitByEvent(SocketEvents.sendMessage, 'Idi nahuy chort');
+  const onMessageSend = async (text: string) => {
+    const socketData = {
+      plain_message: text,
+      to: userId,
+      date: new Date().getTime(),
+      messageType: MessageType.PlainMessage,
+      salt: Math.random()
+    }
+    await socket!.emitByEvent(SocketEvents.sendMessage, socketData);
   };
   const onEmojiPress = () => {};
   const onBurgerPress = () => {};
@@ -39,17 +51,19 @@ const U2UChatContainer = (props: IProps) => {
     onBackBtn
   };
 
-  onFocus(() => {
-    if (getState.socketImpl === void 0 || getState.socketImpl === null) {
+  onFocus(async () => {
+    if (socket === void 0 || socket === null) {
       getToken((el: string) => {
-        setState({ ...getState, socketImpl: new Socket(socketHash, el) });
+       socket = new Socket(socketHash, el)
       }).then();
     }
   })
 
   onBlur(() => {
-    getState.socketImpl?.closeSocket();
-    setState({...getState, socketImpl: null})
+    console.log('blur')
+    console.log(socket)
+    socket!.closeSocket();
+    socket = null;
   })
 
   return <ChatComponent {...STATE} />;

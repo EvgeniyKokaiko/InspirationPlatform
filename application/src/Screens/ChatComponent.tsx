@@ -9,7 +9,7 @@ import { St } from '../Styles/StylesTwo';
 import { images } from '../assets/images';
 
 type IProps = {
-  onMessageSend(): void;
+  onMessageSend(text: string): void;
   onEmojiPress(): void;
   onBurgerPress(): void;
   chatWith: string;

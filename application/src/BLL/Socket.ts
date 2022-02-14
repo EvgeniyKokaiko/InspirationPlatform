@@ -10,10 +10,9 @@ class Socket {
   private readonly serverURL: string = 'ws://192.168.1.90:8080/messaging';
   constructor(cHash: string, token: string) {
     this._cHash = cHash;
-    this._socket = new WebSocket(`${this.serverURL}/Valhalla/${cHash}?token=${token}`);
+    this._socket = new WebSocket(`${this.serverURL}/valhalla/${cHash}?token=${token}`);
     this._socket.onopen = () => {
-      this.emitByEvent(SocketEvents.connect, "abibas")
-      this.emitByEvent(SocketEvents.sendMessage, "Idi nahuy chort")
+      this.emitByEvent(SocketEvents.connect, '');
       console.log('Socket opened successfully!')
     }
     this._socket.onclose = () => {
@@ -27,15 +26,17 @@ class Socket {
   }
 
   public closeSocket  = () => {
-    this._socket.close(101, "User Left Chat")
+    console.log('close socket')
+    this._socket.close(1000, "User Left Chat")
   }
 
 
   public emitByEvent = async (eventName: SocketEvents, data: any) => {
       const socketBody: {event: string, data: any} = {
         event: eventName || 'default',
-        data: JSON.stringify(data),
+        data: data,
       }
+      console.log(socketBody)
       const bodyStr = JSON.stringify(socketBody);
       if (this._socket.readyState === 1) {
         this._socket.send(bodyStr);

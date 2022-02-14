@@ -6,15 +6,17 @@ import (
 )
 
 type Tables struct {
-	USERS 		  string
-	POSTS  		  string
-	SUBSCRIPTIONS string
+	USERS 		  	string
+	POSTS  		  	string
+	SUBSCRIPTIONS 	string
+	USERToUSERChat	string
 }
 
 var TABLES = Tables{
 	USERS: 			"users",
 	POSTS: 			"posts",
 	SUBSCRIPTIONS: 	"user_subscription",
+	USERToUSERChat: "chat_u2u",
 }
 
 

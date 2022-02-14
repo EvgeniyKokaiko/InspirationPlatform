@@ -10,14 +10,25 @@ type SocketConnection struct {
 
 
 type SocketMessage struct {
-	Event 	string 	`json:"event"`
-	Data 	map[string]interface{} `json:"data"`
+	Event 	string 			`json:"event"`
+	Data 	FromClientData  `json:"data"`
 }
 
 
-type Message struct {
-	From 			string `json:"from"`
-	To 				string `json:"to"`
-	CreatedAt 		string `json:"created_at"`
-	PlainMessage 	string `json:"plain_message"`
+type FromClientData struct {
+	To 				string 	`json:"to"`
+	PlainMessage 	string 	`json:"plain_message"`
+	Date 			int 	`json:"date"`
+	MessageType 	int 	`json:"messageType"`
+	Salt			float64 `json:"salt"`
 }
+
+
+
+
+
+//		to: userId,
+//		plain_message: text,
+//      date: new Date().getTime(),
+//      messageType: MessageType.PlainMessage,
+//      salt: Math.random()

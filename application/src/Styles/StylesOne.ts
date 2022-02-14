@@ -55,6 +55,13 @@ export const StylesOne = StyleSheet.create({
     fontFamily: 'Metropolis-Medium',
     paddingBottom: mockupHeightToDP(20),
   },
+  fontInputText_black14: {
+    color: colors.SignIn_Font2,
+    fontSize: fontSizeDP(16),
+    fontFamily: 'SFProDisplay-Regular',
+    paddingBottom: mockupHeightToDP(20),
+  },
+
   inputContainer: {
     paddingHorizontal: mockupWidthToDP(45),
     marginBottom: mockupHeightToDP(32),

@@ -9,7 +9,7 @@ import {mockupWidthToDP} from "../../Parts/utils";
 import {colors} from "../../Parts/colors";
 
 type IProps = {
-    onMessageSend(): void;
+    onMessageSend(text: string): void;
     onEmojiButtonPress():void;
 }
 type IState = {
@@ -25,7 +25,7 @@ const FormTextBoxSegment: React.FC<IProps> = (props: IProps): JSX.Element => {
         // if (getState.inputValue === void 0 || getState.inputValue.length <= 0) {
         //     return
         // }
-        props.onMessageSend && props.onMessageSend()
+        props.onMessageSend && props.onMessageSend(getState.inputValue)
     }
 
     const onEmojiPress = () => {
@@ -43,8 +43,9 @@ const FormTextBoxSegment: React.FC<IProps> = (props: IProps): JSX.Element => {
                 <TextInput
                     placeholder={"Enter Your Message"}
                     placeholderTextColor={colors.Placeholder}
-                    style={{width: mockupWidthToDP(275)}}
+                    style={[{width: mockupWidthToDP(275)}, StylesOne.fontInputText_black14,]}
                     value={getState.inputValue}
+                    maxLength={500}
                     onChangeText={(value) => setState({...getState, inputValue: value})} />
             </View>
             <TouchableOpacity style={[StylesOne.image25, StylesOne.flex_center ,{width: mockupWidthToDP(65), height: '100%'}]} onPress={onMessageSendPress}>

@@ -11,6 +11,7 @@ import (
 	models "server/models"
 	typedDB "server/types"
 	"server/utils"
+	"strconv"
 	"time"
 )
 
@@ -424,19 +425,26 @@ func (db *DB) SetUserParam(param string, value interface{}, username string) (bo
 	return true, nil
 }
 
-func MessageToDB(username string) {
-
+func (db *DB) AddMessage(data *models.FromClientData, owner string) (bool, error) {
+	date, err := strconv.ParseInt(string(rune(data.Date)), 10, 64)
+	if err != nil {
+		date = time.Now().Unix()
+	}
+	messageHash, err := utils.GenerateHashWithSalt(data.Salt, date, data.PlainMessage, data.To, owner)
+	if err != nil {
+		messageHash = utils.RandomString(64)
+	}
+	newMessage := models.ChatData{
+		From:         owner,
+		To:           data.To,
+		CreatedAt:    time.Now().Unix(),
+		PlainMessage: data.PlainMessage,
+		Status:       3,
+		Type:         0,
+		MessageHash:  messageHash,
+	}
+	if dbMessageResponse :=  db.database.Table(typedDB.TABLES.USERToUSERChat).Create(&newMessage); dbMessageResponse.Error != nil {
+		return false, errors.New("ERROR! On Message Creating")
+	}
+	return true, nil
 }
-
-//func (db *DB) GetSocketURL (user string, otherUser string) {
-//	var socketData map[string]interface{}
-//	if dbGetSocketURLResponse := db.database.
-//		Table(typedDB.TABLES.SUBSCRIPTIONS).
-//		Where("owner  = ? AND subscriber = ? OR "); dbGetSocketURLResponse != nil {
-//		if dbGetSocketURLResponse.Error == gorm.ErrRecordNotFound {
-//
-//		}
-//	}
-//}
-
-//TODO сделать на флаг isLock, ed если да, и есть доступ(новая таблица user_permissions) тогда возращать и посты пользователя, а если нет тогда возращать только данные пользователя
