@@ -20,7 +20,6 @@ const UserMenuPost: React.FC<IProps> = (props: IProps): JSX.Element => {
     const onPostPress = () => {
         if (props.onPostPress !== void 0) {
             props.onPostPress(props.postData);
-            console.log('bruh');
         } else {
             //Handling
         }

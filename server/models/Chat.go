@@ -3,8 +3,8 @@ package models
 
 
 type ChatData struct {
-	From 			string 	`json:"from"`
-	To 				string 	`json:"to"`
+	Sender 			string 	`json:"sender"`
+	Companion 		string 	`json:"companion"`
 	CreatedAt 		int64 	`json:"created_at"`
 	PlainMessage	string 	`json:"plain_message"`
 	Status 			int 	`json:"status"`

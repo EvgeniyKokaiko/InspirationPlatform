@@ -29,7 +29,6 @@ const FormTextBoxSegment: React.FC<IProps> = (props: IProps): JSX.Element => {
     }
 
     const onEmojiPress = () => {
-        console.log('onEmojiPress send')
         props.onEmojiButtonPress && props.onEmojiButtonPress()
     }
 

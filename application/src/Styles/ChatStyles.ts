@@ -12,7 +12,7 @@ export const chatStyles = StyleSheet.create({
   chatContainer: {
     width: '100%',
     height: '100%',
-    backgroundColor: 'red',
+    backgroundColor: '#dae3f2',
   },
   chatInput: {
     width: DEVICE_WIDTH,

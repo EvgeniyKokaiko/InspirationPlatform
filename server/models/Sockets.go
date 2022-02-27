@@ -16,7 +16,7 @@ type SocketMessage struct {
 
 
 type FromClientData struct {
-	To 				string 	`json:"to"`
+	Companion 		string 	`json:"companion"`
 	PlainMessage 	string 	`json:"plain_message"`
 	Date 			int 	`json:"date"`
 	MessageType 	int 	`json:"messageType"`

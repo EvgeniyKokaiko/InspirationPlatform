@@ -37,7 +37,6 @@ const SetupAccountComponent: React.FC<IProps> = (props): JSX.Element => {
 
 
     useEffect(() => {
-        console.log(state.setupReducer, "REDUCERS")
         if (state.setupReducer.statusCode === 200) {
             INavigation.erase(true)
             INavigation.navigate(StackScreens.SignIn)

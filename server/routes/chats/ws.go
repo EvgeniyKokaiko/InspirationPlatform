@@ -10,6 +10,7 @@ import (
 	"server/database"
 	"server/handlers"
 	"server/models"
+	"server/models/mutable"
 )
 
 
@@ -23,27 +24,27 @@ var upgrader = websocket.Upgrader{
 
 var SocketRoomer = map[string][]models.SocketConnection{}
 //delete(SocketRoomer, "")
-
-func handleWS(w http.ResponseWriter, r http.Request, h http.Header, cHash string ,username string,db *database.DB) {
+//cHash string ,username string,db *database.DB
+func handleWS(w http.ResponseWriter, r http.Request, h http.Header, dataSet map[string]any) {
 	 socket, error := upgrader.Upgrade(w, &r, h)
 	 if error != nil {
 		 fmt.Println("Socket dropped!", error)
 		 return
 	 }
 	newConnection := models.SocketConnection{
-		Username:  username,
+		Username:  dataSet["username"].(string),
 		Connector: socket,
 	}
 	 defer socket.Close()
-	 SocketRoomer[cHash] = append(SocketRoomer[cHash], newConnection)
-	 socket.WriteJSON(fmt.Sprintf("Success!Golang Socket was connected by this user <%s>", username))
+	 SocketRoomer[dataSet["cHash"].(string)] = append(SocketRoomer[dataSet["cHash"].(string)], newConnection)
+	 socket.WriteJSON(fmt.Sprintf("Success!Golang Socket was connected by this user <%s>", dataSet["username"].(string)))
 	 for {
 		 //mT - message type, message - byte slice message, error - error
 		mT ,message , error := socket.ReadMessage()
 		 if error != nil {
 			 fmt.Println(error)
 			 fmt.Println("closed1")
-			 Stop(error, cHash, newConnection)
+			 Stop(error, dataSet["cHash"].(string), newConnection)
 			 break
 		 }
 		 newMessage := map[string]interface{}{}
@@ -53,31 +54,41 @@ func handleWS(w http.ResponseWriter, r http.Request, h http.Header, cHash string
 		 if parsingErr != nil {
 			 fmt.Println("closed2")
 			 fmt.Println(parsingErr, "Parse JSON ERROR!")
-			 Stop(parsingErr, cHash, newConnection)
+			 Stop(parsingErr, dataSet["cHash"].(string), newConnection)
 			 break
 		 }
 		 fmt.Println(newMessage, "MESSAGE")
-		 for _, value := range SocketRoomer[cHash] {
-			 fmt.Println(value, SocketRoomer, SocketRoomer[cHash])
-			 //if reflect.DeepEqual(value, newConnection) {
-				// continue
-			 //}
+		 for _, value := range SocketRoomer[dataSet["cHash"].(string)] {
+			 fmt.Println(value, SocketRoomer, "SOCKET ROOMER")
 				fmt.Println("Emitter")
-				err := SocketEmitter(currentEvent, mT, message, &value, db ,username)
-			 	if err != nil {
-				 Stop(parsingErr, cHash, newConnection)
-					break
-			 	}
+			 	ownConnect := false
+			 	if reflect.DeepEqual(value, newConnection) {
+					ownConnect = true
+				}
+					err := SocketEmitter(currentEvent, mT, message, &value, dataSet["db"].(*database.DB), dataSet["username"].(string), ownConnect)
+					if err != nil {
+					Stop(parsingErr, dataSet["cHash"].(string), newConnection)
+						return
+					}
+
 		 }
 	 }
 	fmt.Println(SocketRoomer)
 }
 
-func SocketEmitter(eventName interface{}, mT int, message []byte, user *models.SocketConnection, db *database.DB ,owner string) error {
+func SocketEmitter(eventName interface{}, mT int, message []byte, user *models.SocketConnection, db *database.DB ,owner string, isMe bool) error {
+	sendMessageModelProps := mutable.SocketHandler{
+		MT:      mT,
+		Message: message,
+		User:    user,
+		Db:      db,
+		Owner:   owner,
+		Me: isMe,
+	}
 	switch eventName {
 	case "SendMessage":
 		fmt.Println("send Message type")
-		handlers.SendMessageHandler(mT, message, user, db, owner)
+		handlers.SendMessageHandler(sendMessageModelProps)
 		break
 	case "Connect":
 		handlers.OnConnectSocket(mT, message, user)

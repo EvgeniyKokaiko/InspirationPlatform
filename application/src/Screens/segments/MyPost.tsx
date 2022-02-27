@@ -32,7 +32,6 @@ const MyPost = (props: myPostProps) => {
         return result
     }
    const _renderItem = useCallback(({item, index}) => {
-       console.log(`${dataPath}${item}.png`, 545)
        return (
            <Image key={1} style={[St.image100modal]} source={{uri: `${dataPath}${item}.png?ab=${props.image}`}} />
        );
@@ -57,7 +56,6 @@ const MyPost = (props: myPostProps) => {
     }, [])
 
     useEffect(() => {
-        console.log(state, "STATE")
         if (state?.statusCode !== void 0 ) {
             if (state?.statusCode === 200 && index === props.index) {
                 showModal(false);

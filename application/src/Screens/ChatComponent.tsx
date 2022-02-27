@@ -7,6 +7,8 @@ import { FormTextBoxContainer } from './Controllers/FormTextBoxContainer';
 import { MP } from '../Styles/MP';
 import { St } from '../Styles/StylesTwo';
 import { images } from '../assets/images';
+import {PlainMessage} from "../Types/Models";
+import {MessageEntity} from "../BLL/entity/MessageEntity";
 
 type IProps = {
   onMessageSend(text: string): void;
@@ -15,9 +17,32 @@ type IProps = {
   chatWith: string;
   avatarURL: string;
   onBackBtn(): void;
+  messages: MessageEntity[]
 };
 
 const ChatComponent = (state: IProps) => {
+
+
+    const renderList = ({item, index}: {item: MessageEntity, index: number}) => {
+            return (
+                <View style={{backgroundColor: 'black', marginVertical: 10}}>
+                    <View>
+                        <Text>From: {item.sender}</Text>
+                    </View>
+                    <View>
+                        <Text style={{fontSize: 22}}>Message: {item.plain_message}</Text>
+                    </View>
+                    <View>
+                        <Text>To: {item.companion}</Text>
+                    </View>
+                    <View>
+                        <Text>In {new Date(item.created_at).toString()}</Text>
+                    </View>
+                </View>
+            )
+    }
+
+
   return (
     <View style={[StylesOne.wh100]}>
       <View style={[chatStyles.chatHeader, StylesOne.flex_row, StylesOne.flex_jc_sb, MP.ph15, StylesOne.flex_ai_c]}>
@@ -38,7 +63,7 @@ const ChatComponent = (state: IProps) => {
           </TouchableOpacity>
         </View>
       </View>
-      <FlatList style={[chatStyles.chatContainer]} />
+      <FlatList data={state.messages} renderItem={renderList} style={[chatStyles.chatContainer]} />
       <FormTextBoxSegment onMessageSend={state.onMessageSend} onEmojiButtonPress={state.onEmojiPress} />
     </View>
   );

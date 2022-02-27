@@ -1,6 +1,8 @@
 import {combineReducers} from "redux";
 import {Action, ActionTypes} from "../types/ActionTypes";
 import {act} from "react-test-renderer";
+import {PlainMessage} from "../../Types/Models";
+import {MessageEntity} from "../../BLL/entity/MessageEntity";
 
 export interface Reducers {
     registerReducer: any
@@ -10,6 +12,15 @@ export interface Reducers {
 }
 
 class ReducersImpl {
+
+    public async GetTokenReducer(state = "", action: Action) {
+        if (action.type === ActionTypes.GetToken) {
+
+            return action.payload
+        }
+        return state
+    }
+
     public RegisterReducer(state = [], action: Action) {
         if (action.type === ActionTypes.Register) {
             return action.payload
@@ -128,7 +139,7 @@ class ReducersImpl {
 
     public RequestListReducer(state = {}, action: Action) {
         if (action.type === ActionTypes.RequestList) {
-            console.log(action.payload, "PAYLOAD")
+
             return action.payload
         } else if (action.type === ActionTypes.Clear) {
             return {};
@@ -138,7 +149,6 @@ class ReducersImpl {
 
     public FollowerListReducer(state = {}, action: Action) {
         if (action.type === ActionTypes.Following) {
-            console.log(action.payload, "PAYLOAD")
             return action.payload
         } else if (action.type === ActionTypes.ClearFollowing) {
             return {};
@@ -148,11 +158,46 @@ class ReducersImpl {
 
     public CurrentRequestStatus(state = {}, action: Action) {
         if (action.type === ActionTypes.AcceptOrDeclineRequest) {
-            console.log(action.payload, "PAYLOAD")
             return action.payload
         }
         return state
     }
+
+
+    public GetMessagesReducer(state = {}, action: Action) {
+        if (action.type === ActionTypes.U2UMessages) {
+            const Messages: MessageEntity[] = [];
+           const messageProps: PlainMessage[] = action.payload.data
+            messageProps.forEach((el) => {
+                const newMessage = new MessageEntity({
+                    message_hash: el.message_hash as string,
+                    type: el.type,
+                    plain_message: el.plain_message,
+                    created_at: new Date(el.created_at).getDate().toString(),
+                    sender: el.sender,
+                    status: el.status,
+                    companion: el.companion,
+                })
+                Messages.push(newMessage)
+            })
+                console.log(Messages, "<Message>")
+               return {
+                statusCode: action.payload.statusCode,
+                statusMessage: action.payload.statusMessage,
+                data: Messages,
+               }
+        }
+        return state
+    }
+
+    public testReducer(state = {}, action: Action) {
+        if (action.type === ActionTypes.Test) {
+            console.log("testReducer")
+        }
+        return state
+    }
+
+
 
 
 
@@ -175,6 +220,9 @@ class ReducersImpl {
             logoutReducer: this.LogoutReducer,
             setParamReducer: this.SetParamReducer,
             followerListReducer: this.FollowerListReducer,
+            getMessagesReducer: this.GetMessagesReducer,
+            getTokenReducer: this.GetTokenReducer,
+            testReducer: this.testReducer,
         })
     }
 }

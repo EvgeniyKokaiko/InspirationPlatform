@@ -11,6 +11,8 @@ import NavContext from './src/Context/NavContext';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {actionImpl} from "./src/redux/actions";
 import {INavigation} from "./src/Screens/Core/OverrideNavigation";
+import {modulesImpl} from "./src/redux/actions/modules";
+import {currentUser} from "./src/BLL/CurrentUserProps";
 
 
 
@@ -27,6 +29,7 @@ class App extends React.Component<IProps, IState> {
   }
 
   private onApplicationStarts = async () => {
+   await currentUser.setToken();
     AsyncStorage.getItem("Access_TOKEN").then(token => {
       if (typeof token !== "undefined" && token?.length! > 10) {
         //TODO тут робити проверку чи є інтернет, і якщо нема тоді кажді 20 секунд слати запрос, якщо появився, тоді сразу кидати реквест
@@ -61,4 +64,4 @@ const mapDispatchToProps = (state: any) => {
   return state;
 }
 
-export default connect(mapDispatchToProps, {checkUser: actionImpl.checkForConnection})(App);
+export default connect(mapDispatchToProps, {checkUser: actionImpl.checkForConnection, getToken: modulesImpl.getToken})(App);

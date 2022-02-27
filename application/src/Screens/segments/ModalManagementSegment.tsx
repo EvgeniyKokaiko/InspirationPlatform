@@ -76,7 +76,6 @@ const ModalManagementSegment = (props: IProps) => {
         return;
       }
       setState({ ...getState, files: response.assets![0], avatar: response.assets![0].uri as string });
-      console.log(getState, 'AAAA', response.assets![0], 'RES');
     });
   };
 
@@ -102,7 +101,6 @@ const ModalManagementSegment = (props: IProps) => {
   };
 
   useEffect(() => {
-      console.log('statuscdoe', store.setParamReducer)
       if (store.setParamReducer.statusCode === 423) {
           Alert.alert("Oops", "Something went wrong")
       }

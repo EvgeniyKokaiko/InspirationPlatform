@@ -425,26 +425,36 @@ func (db *DB) SetUserParam(param string, value interface{}, username string) (bo
 	return true, nil
 }
 
-func (db *DB) AddMessage(data *models.FromClientData, owner string) (bool, error) {
+func (db *DB) AddMessage(data *models.FromClientData, owner string) (models.ChatData, error) {
 	date, err := strconv.ParseInt(string(rune(data.Date)), 10, 64)
 	if err != nil {
 		date = time.Now().Unix()
 	}
-	messageHash, err := utils.GenerateHashWithSalt(data.Salt, date, data.PlainMessage, data.To, owner)
+	messageHash, err := utils.GenerateHashWithSalt(data.Salt, date, data.PlainMessage, data.Companion, owner)
 	if err != nil {
 		messageHash = utils.RandomString(64)
 	}
 	newMessage := models.ChatData{
-		From:         owner,
-		To:           data.To,
-		CreatedAt:    time.Now().Unix(),
-		PlainMessage: data.PlainMessage,
-		Status:       3,
-		Type:         0,
-		MessageHash:  messageHash,
+		Sender:         owner,
+		Companion:      data.Companion,
+		CreatedAt:    	time.Now().Unix(),
+		PlainMessage: 	data.PlainMessage,
+		Status:      	3,
+		Type:        	0,
+		MessageHash: 	messageHash,
 	}
 	if dbMessageResponse :=  db.database.Table(typedDB.TABLES.USERToUSERChat).Create(&newMessage); dbMessageResponse.Error != nil {
-		return false, errors.New("ERROR! On Message Creating")
+		return models.ChatData{}, errors.New("ERROR! On Message Creating")
 	}
-	return true, nil
+	return newMessage, nil
+}
+
+
+func (db *DB) GetMessages(owner string, to string, page int) ([]*models.ChatData, error) {
+	var response []*models.ChatData
+	if getMessagesResponse := db.database.Table(typedDB.TABLES.USERToUSERChat).Where("sender = ? AND companion = ? OR sender = ? AND companion = ?", owner, to, to, owner).Scan(&response); getMessagesResponse.Error != nil {
+		return []*models.ChatData{}, errors.New("Error!On GetMessages Method")
+	}
+
+	return response, nil
 }

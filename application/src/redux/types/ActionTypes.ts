@@ -1,4 +1,5 @@
 export enum ActionTypes {
+    GetToken = "GET_MY_ACCESS_TOKEN",
     Register = "Register",
     Setup = "Setup",
     Clear = "Clear",
@@ -20,10 +21,13 @@ export enum ActionTypes {
     SetParam = "SET_NEW_PARAMETER",
     Following = "FOLLOWING_LIST",
     ClearFollowing = "CLEAR_FOLLOWING_LIST",
+    U2UMessages = "GET_MY_WITH_COMPANION_MESSAGES",
+    Test = 'test',
 }
 
 
 export interface Action {
     type: string;
     payload?: any;
+    statusCode?: number;
 }

@@ -91,8 +91,8 @@ export async function isMe() {
     return currentUserId
 }
 
-export const getToken = async (callback: Function) => {
-    await AsyncStorage.getItem('Access_TOKEN').then((el: string | null) => {
+export const getToken = (callback: Function) => {
+    AsyncStorage.getItem('Access_TOKEN').then((el: string | null) => {
         try {
             callback(el);
         } catch (ex) {

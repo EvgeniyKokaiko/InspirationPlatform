@@ -45,7 +45,6 @@ const SignInComponent = (props: IProps) => {
 
     useLayoutEffect( () => {
         //TODO переделать всю эту логику в сплеш скрин.
-        console.log(state.loginReducer, state.loginReducer.statusCode)
         if (state.loginReducer.statusCode === 200) {
           AsyncStorage.setItem("Access_TOKEN", state.loginReducer.data).then(() => {
               dispatch(actionImpl.clear())
