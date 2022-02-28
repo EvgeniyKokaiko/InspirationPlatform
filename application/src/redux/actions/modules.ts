@@ -2,6 +2,7 @@ import {BaseAction} from "./BaseAction";
 import {Action, ActionTypes} from "../types/ActionTypes";
 import {Dispatch} from "redux";
 import {apiURL} from "./index";
+import {MessageEntity} from "../../BLL/entity/MessageEntity";
 
 
 class ModuleActions extends BaseAction {
@@ -10,10 +11,27 @@ class ModuleActions extends BaseAction {
     }
 
 
-    public addMessageToStack = () => {
-        console.log('testred')
+    public setStatus = (status: number, message_hash: string) => {
+        console.log('setStatus')
         return {
-            type: ActionTypes.Test,
+            type: ActionTypes.SetNewStatus,
+            payload: {
+                status,
+                message_hash,
+            }
+        }
+    }
+
+    public addMessageToStack = (message: MessageEntity) => {
+        return {
+            type: ActionTypes.AddFakeMessage,
+            payload: message
+        }
+    }
+
+    public clearAllMessages = () => {
+        return {
+            type: ActionTypes.ClearMessages,
         }
     }
 

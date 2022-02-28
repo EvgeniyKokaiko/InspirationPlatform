@@ -22,7 +22,9 @@ export enum ActionTypes {
     Following = "FOLLOWING_LIST",
     ClearFollowing = "CLEAR_FOLLOWING_LIST",
     U2UMessages = "GET_MY_WITH_COMPANION_MESSAGES",
-    Test = 'test',
+    AddFakeMessage = 'ADD_NEW_MESSAGE',
+    ClearMessages = 'CLEAR_ALL_MESSAGES',
+    SetNewStatus = "SET_NEW_MESSAGE_STATUS",
 }
 
 
@@ -30,4 +32,11 @@ export interface Action {
     type: string;
     payload?: any;
     statusCode?: number;
+}
+
+
+export interface initialState {
+    statusCode: number;
+    statusMessage: string;
+    data: any;
 }

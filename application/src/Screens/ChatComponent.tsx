@@ -1,14 +1,16 @@
 import React from 'react';
-import { View, Text, FlatList, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { View, Text, FlatList, ScrollView, TouchableOpacity, Image, ImageBackground } from 'react-native';
 import { StylesOne } from '../Styles/StylesOne';
 import { chatStyles } from '../Styles/ChatStyles';
 import { FormTextBoxSegment } from './segments/FormTextBoxSegment';
 import { FormTextBoxContainer } from './Controllers/FormTextBoxContainer';
 import { MP } from '../Styles/MP';
 import { St } from '../Styles/StylesTwo';
-import { images } from '../assets/images';
-import {PlainMessage} from "../Types/Models";
-import {MessageEntity} from "../BLL/entity/MessageEntity";
+import { images, messageStatuses } from '../assets/images';
+import { PlainMessage } from '../Types/Models';
+import { MessageEntity } from '../BLL/entity/MessageEntity';
+import { KeyboardAvoidingComponent } from './Core/KeyboardAvoidingComponent';
+import PlainMessageView from './segments/MessageViews/PlainMessageView';
 
 type IProps = {
   onMessageSend(text: string): void;
@@ -17,39 +19,27 @@ type IProps = {
   chatWith: string;
   avatarURL: string;
   onBackBtn(): void;
-  messages: MessageEntity[]
+  messages: MessageEntity[];
+  flatListRef: React.MutableRefObject<FlatList>;
+  scrollToEnd(): void;
 };
 
 const ChatComponent = (state: IProps) => {
-
-
-    const renderList = ({item, index}: {item: MessageEntity, index: number}) => {
-            return (
-                <View style={{backgroundColor: 'black', marginVertical: 10}}>
-                    <View>
-                        <Text>From: {item.sender}</Text>
-                    </View>
-                    <View>
-                        <Text style={{fontSize: 22}}>Message: {item.plain_message}</Text>
-                    </View>
-                    <View>
-                        <Text>To: {item.companion}</Text>
-                    </View>
-                    <View>
-                        <Text>In {new Date(item.created_at).toString()}</Text>
-                    </View>
-                </View>
-            )
+  const renderList = ({ item, index }: { item: MessageEntity; index: number }) => {
+    if (state.messages.length >= index) {
+      state.scrollToEnd();
     }
-
-
+    console.log(item.created_at);
+    return <PlainMessageView messageEntityProps={item} />;
+  };
+  console.log(state.chatWith, 'CHATWITH');
   return (
     <View style={[StylesOne.wh100]}>
       <View style={[chatStyles.chatHeader, StylesOne.flex_row, StylesOne.flex_jc_sb, MP.ph15, StylesOne.flex_ai_c]}>
         <View style={[StylesOne.flex_row, StylesOne.flex_jc_sb, StylesOne.flex_ai_c]}>
-            <TouchableOpacity onPress={state.onBackBtn} style={[StylesOne.image24, MP.mr15]}>
-                <Image style={[StylesOne.wh100, StylesOne.rm_c, St.blackArrow]} source={images.arrowLeft} />
-            </TouchableOpacity>
+          <TouchableOpacity onPress={state.onBackBtn} style={[StylesOne.image24, MP.mr15]}>
+            <Image style={[StylesOne.wh100, StylesOne.rm_c, St.blackArrow]} source={images.arrowLeft} />
+          </TouchableOpacity>
           <View style={[St.round100image35]}>
             <Image style={[StylesOne.wh100, StylesOne.rounded]} source={{ uri: state.avatarURL }} />
           </View>
@@ -63,8 +53,21 @@ const ChatComponent = (state: IProps) => {
           </TouchableOpacity>
         </View>
       </View>
-      <FlatList data={state.messages} renderItem={renderList} style={[chatStyles.chatContainer]} />
-      <FormTextBoxSegment onMessageSend={state.onMessageSend} onEmojiButtonPress={state.onEmojiPress} />
+        <FlatList
+          extraData={state.chatWith}
+          decelerationRate={'fast'}
+          ref={state.flatListRef}
+          data={state.messages}
+          renderItem={renderList}
+          style={[chatStyles.chatContainer]}
+          onContentSizeChange={state.scrollToEnd}
+          onLayout={state.scrollToEnd}
+          contentContainerStyle={{
+            flexGrow: 1,
+            justifyContent: 'flex-end',
+          }}
+        />
+        <FormTextBoxSegment onMessageSend={state.onMessageSend} onEmojiButtonPress={state.onEmojiPress} />
     </View>
   );
 };

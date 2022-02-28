@@ -11,7 +11,6 @@ import (
 	models "server/models"
 	typedDB "server/types"
 	"server/utils"
-	"strconv"
 	"time"
 )
 
@@ -426,22 +425,14 @@ func (db *DB) SetUserParam(param string, value interface{}, username string) (bo
 }
 
 func (db *DB) AddMessage(data *models.FromClientData, owner string) (models.ChatData, error) {
-	date, err := strconv.ParseInt(string(rune(data.Date)), 10, 64)
-	if err != nil {
-		date = time.Now().Unix()
-	}
-	messageHash, err := utils.GenerateHashWithSalt(data.Salt, date, data.PlainMessage, data.Companion, owner)
-	if err != nil {
-		messageHash = utils.RandomString(64)
-	}
 	newMessage := models.ChatData{
 		Sender:         owner,
 		Companion:      data.Companion,
-		CreatedAt:    	time.Now().Unix(),
+		CreatedAt:    	time.Now().UnixMilli(),
 		PlainMessage: 	data.PlainMessage,
-		Status:      	3,
+		Status:      	2,
 		Type:        	0,
-		MessageHash: 	messageHash,
+		MessageHash: 	data.MessageHash,
 	}
 	if dbMessageResponse :=  db.database.Table(typedDB.TABLES.USERToUSERChat).Create(&newMessage); dbMessageResponse.Error != nil {
 		return models.ChatData{}, errors.New("ERROR! On Message Creating")

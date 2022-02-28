@@ -2,29 +2,29 @@
 export type messageProps = {
     sender: string;
     companion: string;
-    created_at: string;
+    created_at: string | number;
     plain_message: string;
     status: number;
     type: number;
-    message_hash: string;
+    message_hash?: string;
 }
 
 class MessageEntity  {
     private _sender: string;
     private _companion: string;
-    private _created_at: string;
+    private _created_at: string | number;
     private _plain_message: string;
     private _status: number;
     private _type: number;
-    private _message_hash: string;
+    public _message_hash: string;
     constructor(messageProps: messageProps) {
         this._sender = messageProps.sender;
         this._companion = messageProps.companion;
-        this._created_at = messageProps.created_at;
+        this._created_at = messageProps.created_at ? new Date(messageProps.created_at).toString() : new Date().toString();
         this._plain_message = messageProps.plain_message;
         this._status = messageProps.status;
         this._type = messageProps.type;
-        this._message_hash = messageProps.message_hash
+        this._message_hash = messageProps.message_hash as string
     }
 
 
@@ -35,8 +35,11 @@ class MessageEntity  {
     get companion(): string {
         return this._companion;
     }
-    get created_at(): string {
+    get created_at() {
         return this._created_at;
+    }
+    set status(value: number) {
+        this._status = value;
     }
     get plain_message(): string {
         return this._plain_message;

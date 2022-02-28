@@ -86,6 +86,14 @@ export const dateParser = (timestamp: any, localtime = 0): string => {
 };
 
 
+export const timeParse = (timestamp: any) => {
+    const parsed = new Date(Date.parse(timestamp));
+    const hours: number = parsed.getHours();
+    const minutes: number = parsed.getMinutes();
+    return `${hours < 10 ? "0" : ''}${hours}:${minutes < 10 ? '0' : ''}${minutes}`
+}
+
+
 export async function isMe() {
     const currentUserId = await AsyncStorage.getItem('currentUserId');
     return currentUserId

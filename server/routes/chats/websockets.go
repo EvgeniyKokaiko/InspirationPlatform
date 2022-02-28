@@ -13,7 +13,7 @@ import (
 	"server/models/mutable"
 )
 
-
+// -------------------DEFINES---------------------- //
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
@@ -23,8 +23,13 @@ var upgrader = websocket.Upgrader{
 }
 
 var SocketRoomer = map[string][]models.SocketConnection{}
-//delete(SocketRoomer, "")
-//cHash string ,username string,db *database.DB
+
+// ------------------------------------------------ //
+
+
+
+
+// ------------------SOCKET HANDLER-------------------------- //
 func handleWS(w http.ResponseWriter, r http.Request, h http.Header, dataSet map[string]any) {
 	 socket, error := upgrader.Upgrade(w, &r, h)
 	 if error != nil {
@@ -67,14 +72,24 @@ func handleWS(w http.ResponseWriter, r http.Request, h http.Header, dataSet map[
 				}
 					err := SocketEmitter(currentEvent, mT, message, &value, dataSet["db"].(*database.DB), dataSet["username"].(string), ownConnect)
 					if err != nil {
-					Stop(parsingErr, dataSet["cHash"].(string), newConnection)
+						Stop(parsingErr, dataSet["cHash"].(string), newConnection)
 						return
 					}
-
 		 }
 	 }
 	fmt.Println(SocketRoomer)
 }
+
+// ------------------------------------------------ //
+
+
+
+
+
+
+
+
+// ----------------EMITTER----------------------- //
 
 func SocketEmitter(eventName interface{}, mT int, message []byte, user *models.SocketConnection, db *database.DB ,owner string, isMe bool) error {
 	sendMessageModelProps := mutable.SocketHandler{
@@ -91,15 +106,25 @@ func SocketEmitter(eventName interface{}, mT int, message []byte, user *models.S
 		handlers.SendMessageHandler(sendMessageModelProps)
 		break
 	case "Connect":
-		handlers.OnConnectSocket(mT, message, user)
+		//handlers.OnConnectSocket(mT, message, user)
+		//changeOnlineStatus
+		fmt.Println("Connected!")
 	default:
 		fmt.Println("default")
 	}
 	return nil
 }
+// ------------------------------------------------ //
 
 
 
+
+
+
+
+
+
+// ----------------UTILS-------------------- //
 
 func Stop(error error, cHash string, newConnection models.SocketConnection) {
 	log.Println("read:", error)
@@ -126,3 +151,6 @@ func FindIndex[T comparable](a []T, x T) int {
 	}
 	return 0
 }
+
+
+// ------------------------------------------------ //

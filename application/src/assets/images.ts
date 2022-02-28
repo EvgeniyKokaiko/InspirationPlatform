@@ -55,3 +55,12 @@ export const images: {[key: string]: ImageSourcePropType} = {
     emoji: require("./images/emoji.png"),
     send: require("./images/send.png"),
 }
+
+
+export const messageStatuses: {[key: string]: ImageSourcePropType} = {
+    error: require('../assets/images/messagesStatus/error_outline.png'),
+    awaiting: require('../assets/images/messagesStatus/clock.png'),
+    sent: require('../assets/images/messagesStatus/check.png'),
+    read: require('../assets/images/messagesStatus/check_all.png'),
+    background: require('../assets/images/messagesStatus/background.png'),
+}

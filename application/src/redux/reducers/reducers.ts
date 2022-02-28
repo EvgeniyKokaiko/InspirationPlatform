@@ -164,37 +164,63 @@ class ReducersImpl {
     }
 
 
-    public GetMessagesReducer(state = {}, action: Action) {
+    public GetMessagesReducer(state: any = {}, action: Action) {
         if (action.type === ActionTypes.U2UMessages) {
             const Messages: MessageEntity[] = [];
            const messageProps: PlainMessage[] = action.payload.data
+            if (!Array.isArray(messageProps)) {
+                return {
+                    statusCode: action.payload.statusCode,
+                    statusMessage: action.payload.statusMessage,
+                    data: [],
+                }
+            }
             messageProps.forEach((el) => {
                 const newMessage = new MessageEntity({
                     message_hash: el.message_hash as string,
                     type: el.type,
                     plain_message: el.plain_message,
-                    created_at: new Date(el.created_at).getDate().toString(),
+                    created_at: new Date(el.created_at).toString(),
                     sender: el.sender,
                     status: el.status,
                     companion: el.companion,
                 })
                 Messages.push(newMessage)
             })
-                console.log(Messages, "<Message>")
                return {
                 statusCode: action.payload.statusCode,
                 statusMessage: action.payload.statusMessage,
                 data: Messages,
                }
+        } else if (action.type === ActionTypes.AddFakeMessage) {
+            console.log(action.payload, 'new mess')
+            return {
+                statusCode: 200,
+                statusMessage: "OK!",
+                data: [...state.data, action.payload],
+            }
+        } else if (action.type === ActionTypes.SetNewStatus) {
+            console.log('changed message invoked');
+            const messages: MessageEntity[] = state.data || [];
+            for (let i = messages.length; i > 0; i--) {
+                const mHash = messages[i]?.message_hash
+                if (mHash === action.payload.message_hash) {
+                    messages[i].status = action.payload.status;
+                    console.log(messages[i], 'changed message');
+                }
+            }
+        } else if (action.type === ActionTypes.ClearMessages) {
+            return {
+                statusCode: 0,
+                statusMessage: "!",
+                data: [],
+            }
         }
-        return state
-    }
-
-    public testReducer(state = {}, action: Action) {
-        if (action.type === ActionTypes.Test) {
-            console.log("testReducer")
+        return {
+            statusCode: 0,
+            statusMessage: "!",
+            data: state.data,
         }
-        return state
     }
 
 
@@ -222,7 +248,6 @@ class ReducersImpl {
             followerListReducer: this.FollowerListReducer,
             getMessagesReducer: this.GetMessagesReducer,
             getTokenReducer: this.GetTokenReducer,
-            testReducer: this.testReducer,
         })
     }
 }

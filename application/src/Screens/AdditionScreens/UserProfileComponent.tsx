@@ -52,7 +52,7 @@ console.log(state, "STATE")
                     <View />
                 </View>
             </View>
-            <View style={[MP.mt20, StylesOne.w100, St.h190, St.borderRadius30, backgrounds.myProfileBlocks, MP.pv20, MP.ph20]}>
+            <View style={[MP.mt20, StylesOne.w100, St.borderRadius30, backgrounds.myProfileBlocks, MP.pv20, MP.ph20]}>
                 <View style={[StylesOne.flex_row]}>
                     <View style={[MP.mb20]}>
                         <Avatar icon={{uri: state?.ownerAvatar}} size={60} />
@@ -88,7 +88,7 @@ console.log(state, "STATE")
                         </View>
                     </View>
                 </View>
-                <View style={[StylesOne.flex_row, StylesOne.flex_jc_sb, StylesOne.flex_ai_c]}>
+                <View style={[StylesOne.flex_row, StylesOne.flex_jc_sb, StylesOne.flex_ai_c, MP.mt10]}>
                 <View style={[StylesOne.flex_row]}>
                     <TouchableOpacity onPress={state.onPersonalSitePress}>
                         <Image style={St.imgIcon} source={images.personalSite} />

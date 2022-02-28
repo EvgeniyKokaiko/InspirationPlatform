@@ -13,14 +13,19 @@ func HandleByUser() {
 
 }
 
-
+const (
+	sendMessage = "SendMessage"
+	connect = "Connect"
+	close = "Close"
+	addedMessage = "AddedMessage"
+)
 
 func SendMessageHandlerByUser(h mutable.SocketHandler, message models.ChatData)  error {
 	switch h.Me {
 	case true:
 		ownResponse := map[string]any{
+			"event": addedMessage,
 			"statusCode": http.StatusOK,
-			"statusMessage": "OK",
 			"username": h.User.Username,
 			"message": message,
 		}
@@ -36,7 +41,11 @@ func SendMessageHandlerByUser(h mutable.SocketHandler, message models.ChatData) 
 		}
 		break
 	case false:
-		messageBytes, err := json.Marshal(message)
+		response := map[string]any{
+			"event": sendMessage,
+			"data": message,
+		}
+		messageBytes, err := json.Marshal(response)
 		err2 := h.User.Connector.WriteMessage(h.MT, messageBytes)
 		if err2 != nil || err != nil {
 			fmt.Println(err2)

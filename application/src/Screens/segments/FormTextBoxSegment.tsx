@@ -25,7 +25,11 @@ const FormTextBoxSegment: React.FC<IProps> = (props: IProps): JSX.Element => {
         // if (getState.inputValue === void 0 || getState.inputValue.length <= 0) {
         //     return
         // }
-        props.onMessageSend && props.onMessageSend(getState.inputValue)
+        if (getState.inputValue === '' || getState.inputValue === ' ') {
+            return;
+        }
+        props.onMessageSend && props.onMessageSend(getState.inputValue.trim())
+        setState({...getState, inputValue: ''})
     }
 
     const onEmojiPress = () => {
@@ -40,6 +44,7 @@ const FormTextBoxSegment: React.FC<IProps> = (props: IProps): JSX.Element => {
                     <Image style={[StylesOne.wh100, StylesOne.rm_c]} source={images.emoji} />
                 </TouchableOpacity>
                 <TextInput
+                    multiline
                     placeholder={"Enter Your Message"}
                     placeholderTextColor={colors.Placeholder}
                     style={[{width: mockupWidthToDP(275)}, StylesOne.fontInputText_black14,]}

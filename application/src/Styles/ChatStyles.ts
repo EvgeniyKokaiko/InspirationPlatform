@@ -6,19 +6,19 @@ export const chatStyles = StyleSheet.create({
   chatHeader: {
     width: '100%',
     height: mockupHeightToDP(50),
-    borderBottomWidth: 1,
-    borderBottomColor: colors.SignIn_Font2,
+    borderBottomWidth: 0.5,
+    borderBottomColor: colors.WhiteChalk,
   },
   chatContainer: {
     width: '100%',
     height: '100%',
-    backgroundColor: '#dae3f2',
+    backgroundColor: '#F7F7FF',
   },
   chatInput: {
     width: DEVICE_WIDTH,
     maxWidth: DEVICE_WIDTH,
-    height: mockupHeightToDP(55),
-    borderTopWidth: 1,
-    borderTopColor: colors.SignIn_Font2,
+    minHeight: mockupHeightToDP(55),
+    borderTopWidth: 0.5,
+    borderTopColor: colors.WhiteChalk,
   },
 });

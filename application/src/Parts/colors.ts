@@ -28,4 +28,6 @@ export const colors = {
     acceptColor: '#22BC40',
     ownerDark: '#1D1D28',
     dateGray: '#A4A4B2',
+    myMessageBody: '#7669F3',
+    tetriary: '#F7F7F7',
 }

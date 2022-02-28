@@ -10,25 +10,18 @@ import (
 
 
 func SendMessageHandler(h mutable.SocketHandler) {
-	//time.Sleep(3 * time.Second)
-	fmt.Println("SEND FUCING MESSSAGEGWSERKOGPPOKSRGKP{ORSGPKOSRG}KOPSROPGK")
 	response := models.SocketMessage{}
-	err1 := json.Unmarshal(h.Message, &response)
-	if err1 != nil {
-		fmt.Println(err1)
+	if err := json.Unmarshal(h.Message, &response); err != nil {
+		fmt.Println(err)
 	}
+	fmt.Println("Added to database")
 	message, error := h.Db.AddMessage(&response.Data, h.Owner)
 	if error != nil {
-		fmt.Println(err1)
+		fmt.Println(error)
 		//if error == vernuti error tomu polzovatelyu
 	}
-	err := SendMessageHandlerByUser(h, message)
-	if err != nil {
+	if err := SendMessageHandlerByUser(h, message); err != nil {
 		fmt.Println(err)
 		return
 	}
-}
-
-func OnConnectSocket(mT int, message []byte, user *models.SocketConnection) {
-	//setOnlineStatus
 }

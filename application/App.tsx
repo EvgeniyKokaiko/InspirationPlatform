@@ -1,5 +1,5 @@
 import React from 'react';
-import {SafeAreaView, StatusBar, View} from 'react-native';
+import {Platform, SafeAreaView, StatusBar, UIManager, View} from 'react-native';
 import {connect, Provider} from "react-redux";
 import {AnyAction, applyMiddleware, compose, createStore, Store} from "redux";
 import thunk, {ThunkDispatch} from "redux-thunk";
@@ -29,6 +29,11 @@ class App extends React.Component<IProps, IState> {
   }
 
   private onApplicationStarts = async () => {
+    if (Platform.OS === 'android') {
+      if (UIManager.setLayoutAnimationEnabledExperimental) {
+        UIManager.setLayoutAnimationEnabledExperimental(true);
+      }
+    }
    await currentUser.setToken();
     AsyncStorage.getItem("Access_TOKEN").then(token => {
       if (typeof token !== "undefined" && token?.length! > 10) {
