@@ -109,6 +109,9 @@ func SocketEmitter(eventName interface{}, mT int, message []byte, user *models.S
 		//handlers.OnConnectSocket(mT, message, user)
 		//changeOnlineStatus
 		fmt.Println("Connected!")
+	case "ReadAllMessages":
+		handlers.ReadAllMessagesHandler(sendMessageModelProps)
+		break
 	default:
 		fmt.Println("default")
 	}

@@ -449,3 +449,18 @@ func (db *DB) GetMessages(owner string, to string, page int) ([]*models.ChatData
 
 	return response, nil
 }
+
+
+
+func (db *DB) UpdateMessageStatus(sender string, companion string, status int) (int, error) {
+	if updateMessageStatusResponse := db.database.Table(typedDB.TABLES.USERToUSERChat).
+		Where("sender = ? AND companion = ?", sender, companion).
+		Update("status", status); updateMessageStatusResponse.Error != nil {
+		if updateMessageStatusResponse.Error == gorm.ErrRecordNotFound {
+			return 404, errors.New("ERROR! UpdateMessageStatus ex")
+		} else {
+			return 400, errors.New("ERROR! UpdateMessageStatus ex")
+		}
+	}
+	return 200, nil
+}

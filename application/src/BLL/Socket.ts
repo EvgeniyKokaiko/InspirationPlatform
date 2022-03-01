@@ -3,6 +3,7 @@ import { SocketHandlers } from './SocketHandlers';
 
 export enum SocketEvents {
   sendMessage = 'SendMessage',
+  readAllMessages = 'ReadAllMessages',
   connect = 'Connect',
   close = 'Close',
   addedMessage = "AddedMessage"

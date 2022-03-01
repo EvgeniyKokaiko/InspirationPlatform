@@ -25,3 +25,24 @@ func SendMessageHandler(h mutable.SocketHandler) {
 		return
 	}
 }
+
+
+func ReadAllMessagesHandler(h mutable.SocketHandler) {
+	if !h.Me {
+		return
+	}
+	response := map[string]any{}
+	if err := json.Unmarshal(h.Message, &response); err != nil {
+		fmt.Println(err)
+	}
+	statusCode, err := h.Db.UpdateMessageStatus(response["userId"].(string), h.Owner, 3)
+	result := map[string]any{
+		"statusCode": statusCode,
+		"statusMessage": err,
+	}
+	resultBytes, err1 := json.Marshal(result)
+	if err != nil || err1 != nil {
+		fmt.Println("ReadAllMessagesHandler", err)
+	}
+	h.User.Connector.WriteMessage(h.MT, resultBytes)
+}

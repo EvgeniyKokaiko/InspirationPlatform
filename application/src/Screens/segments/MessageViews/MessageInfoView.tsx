@@ -19,7 +19,7 @@ const PlainMessageView = (props: IProps) => {
     const owner = props.sender === currentUser.currentUserId;
     const date = timeParse(props.currentDate);
     const tintColor = {tintColor: colors.WhiteChalk}
-
+    const tintGreen = {tintColor: colors.acceptColor}
 
 
   const renderStatus = () => {
@@ -31,7 +31,7 @@ const PlainMessageView = (props: IProps) => {
       case MessageStatus.SentToServer:
         return <Image style={[StylesOne.wh100, StylesOne.rm_c, tintColor]} source={messageStatuses.sent} />;
       case MessageStatus.ReadByUser:
-        return <Image style={[StylesOne.wh100, StylesOne.rm_c, tintColor]} source={messageStatuses.read} />;
+        return <Image style={[StylesOne.wh100, StylesOne.rm_c, tintGreen]} source={messageStatuses.read} />;
     }
   };
 

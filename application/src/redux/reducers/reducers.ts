@@ -202,7 +202,7 @@ class ReducersImpl {
         } else if (action.type === ActionTypes.SetNewStatus) {
             console.log('changed message invoked');
             const messages: MessageEntity[] = state.data || [];
-            for (let i = messages.length; i > 0; i--) {
+            for (let i = messages.length; i >= 0; i--) {
                 const mHash = messages[i]?.message_hash
                 if (mHash === action.payload.message_hash) {
                     messages[i].status = action.payload.status;
