@@ -3,6 +3,7 @@ import {Action, ActionTypes} from "../types/ActionTypes";
 import {act} from "react-test-renderer";
 import {PlainMessage} from "../../Types/Models";
 import {MessageEntity} from "../../BLL/entity/MessageEntity";
+import {MessageStatus} from "../../Types/enums";
 
 export interface Reducers {
     registerReducer: any
@@ -203,10 +204,17 @@ class ReducersImpl {
             console.log('changed message invoked');
             const messages: MessageEntity[] = state.data || [];
             for (let i = messages.length; i >= 0; i--) {
-                const mHash = messages[i]?.message_hash
-                if (mHash === action.payload.message_hash) {
-                    messages[i].status = action.payload.status;
-                    console.log(messages[i], 'changed message');
+                if (action.payload.message_hash !== null) {
+                    const mHash = messages[i]?.message_hash
+                    if (mHash === action.payload.message_hash) {
+                        messages[i].status = action.payload.status;
+                        console.log(messages[i], 'changed message');
+                    }
+                } else {
+                   if (messages[i].status !== MessageStatus.ReadByUser) {
+                       messages[i].status = MessageStatus.ReadByUser;
+                       console.log(messages[i], 'changed message');
+                   }
                 }
             }
         } else if (action.type === ActionTypes.ClearMessages) {

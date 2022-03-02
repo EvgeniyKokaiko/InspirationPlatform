@@ -33,6 +33,13 @@ class SocketHandlers {
   }
 
 
+    public readAllMessages = async (socketData: SocketData) => {
+    if (socketData.data.statusCode === 200) {
+      this._dispatch(modulesImpl.setStatus(MessageStatus.ReadByUser, null))
+    } else {
+      console.log('error! readAllMessages ex')
+    }
+    }
 }
 
 export { SocketHandlers };
