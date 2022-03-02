@@ -1,4 +1,3 @@
-import { modulesImpl } from '../redux/actions/modules';
 import { SocketHandlers } from './SocketHandlers';
 
 export enum SocketEvents {
@@ -6,15 +5,14 @@ export enum SocketEvents {
   readAllMessages = 'ReadAllMessages',
   connect = 'Connect',
   close = 'Close',
-  addedMessage = "AddedMessage"
+  addedMessage = 'AddedMessage',
 }
 
 export type SocketData = {
   event: string;
   data: any;
   message?: any;
-}
-
+};
 
 class Socket {
   private readonly _cHash: string;
@@ -76,11 +74,13 @@ class Socket {
       console.log(socketData);
       switch (socketData.event) {
         case SocketEvents.sendMessage:
-         await this.handlers.getMessage(socketData)
+          await this.handlers.getMessage(socketData);
           break;
         case SocketEvents.addedMessage:
-         await this.handlers.serverGotMessage(socketData)
-              break;
+          await this.handlers.serverGotMessage(socketData);
+          break;
+        case SocketEvents.readAllMessages:
+          await this.handlers.readAllMessages(socketData);
         default:
           console.log('messs');
           console.log('default event');

@@ -1,18 +1,14 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import ChatComponent from '../ChatComponent';
-import { BaseProps } from '../../Types/Types';
-import { actionImpl, apiURL } from '../../redux/actions';
-import { Socket, SocketEvents } from '../../BLL/Socket';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getToken } from '../../Parts/utils';
-import { INavigation } from '../Core/OverrideNavigation';
-import { onBlur, onFocus } from '../Core/MainNavigationScreen';
-import { useDispatch, useSelector } from 'react-redux';
-import { PlainMessage } from '../../Types/Models';
-import { MessageEntity } from '../../BLL/entity/MessageEntity';
-import { modulesImpl } from '../../redux/actions/modules';
-import { currentUser } from '../../BLL/CurrentUserProps';
-import { useFocusEffect } from '@react-navigation/native';
+import {BaseProps} from '../../Types/Types';
+import {actionImpl, apiURL} from '../../redux/actions';
+import {Socket, SocketEvents} from '../../BLL/Socket';
+import {INavigation} from '../Core/OverrideNavigation';
+import {onBlur, onFocus} from '../Core/MainNavigationScreen';
+import {useDispatch, useSelector} from 'react-redux';
+import {MessageEntity} from '../../BLL/entity/MessageEntity';
+import {modulesImpl} from '../../redux/actions/modules';
+import {currentUser} from '../../BLL/CurrentUserProps';
 import {FlatList, Keyboard, LayoutAnimation} from 'react-native';
 import {Utilities} from "../../BLL/Utilities";
 
@@ -100,6 +96,9 @@ const U2UChatContainer = (props: IProps) => {
   onFocus(async () => {
     dispatch(actionImpl.getMessages(userId));
     socket = new Socket(socketHash, currentUser.token, dispatch);
+    if (socket !== null) {
+      await socket.emitByEvent(SocketEvents.readAllMessages, {userId: userId});
+    }
     console.log(socket, 'SOCKET SADAS')
   }, [socketHash, userId]);
 

@@ -11,7 +11,7 @@ class ModuleActions extends BaseAction {
     }
 
 
-    public setStatus = (status: number, message_hash: string) => {
+    public setStatus = (status: number, message_hash: string | null) => {
         console.log('setStatus')
         return {
             type: ActionTypes.SetNewStatus,
