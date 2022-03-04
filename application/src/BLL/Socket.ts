@@ -18,7 +18,7 @@ class Socket {
   private readonly _cHash: string;
   private _socket: WebSocket;
   private _makeDispatch: Function;
-  private readonly serverURL: string = 'ws://192.168.1.90:8080/messaging';
+  private readonly serverURL: string = 'ws://192.168.1.160:8080/messaging';
   private readonly _handlers: SocketHandlers;
   constructor(cHash: string, token: string | null, dispatch: Function) {
     console.log('new');
@@ -28,6 +28,7 @@ class Socket {
     this._socket = new WebSocket(`${this.serverURL}/valhalla/${cHash}?token=${token}`);
     this._socket.onopen = () => {
       this.emitByEvent(SocketEvents.connect, '');
+      this.emitByEvent(SocketEvents.readAllMessages, 'Kizaru111')
       console.log('Socket opened successfully!');
     };
     this._socket.onclose = () => {
@@ -80,6 +81,7 @@ class Socket {
           await this.handlers.serverGotMessage(socketData);
           break;
         case SocketEvents.readAllMessages:
+          console.log('readallmessages')
           await this.handlers.readAllMessages(socketData);
         default:
           console.log('messs');

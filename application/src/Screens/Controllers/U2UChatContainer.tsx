@@ -97,6 +97,7 @@ const U2UChatContainer = (props: IProps) => {
     dispatch(actionImpl.getMessages(userId));
     socket = new Socket(socketHash, currentUser.token, dispatch);
     if (socket !== null) {
+      console.log('read')
       await socket.emitByEvent(SocketEvents.readAllMessages, {userId: userId});
     }
     console.log(socket, 'SOCKET SADAS')
