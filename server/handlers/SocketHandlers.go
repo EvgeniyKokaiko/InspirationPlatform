@@ -35,7 +35,8 @@ func ReadAllMessagesHandler(h mutable.SocketHandler) {
 	if err := json.Unmarshal(h.Message, &response); err != nil {
 		fmt.Println(err)
 	}
-	statusCode, err := h.Db.UpdateMessageStatus(response["userId"].(string), h.Owner, 3)
+	fmt.Println(response)
+	statusCode, err := h.Db.UpdateMessageStatus(response["data"].(string), h.Owner, 3)
 	result := map[string]any{
 		"statusCode": statusCode,
 		"statusMessage": err,
