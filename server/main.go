@@ -11,18 +11,18 @@ import (
 func main() {
 	server := gin.Default()
 	db := database.CreateDB()
-	routes.Auth(server,db)
+	routes.Auth(server, db)
 	routes.Users(server, db)
 	routes.Posts(server, db)
 	routes.Settings(server, db)
+	routes.Likes(server, db)
 	chats.Chats(server, db)
 	StaticServer(server)
-	//database.Start(db)
+	database.InitTables(db)
 	server.Use(CORSMiddleware())
 	server.Run(":8080")
 
 }
-
 
 func CORSMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -40,7 +40,6 @@ func CORSMiddleware() gin.HandlerFunc {
 		c.Next()
 	}
 }
-
 
 func StaticServer(server *gin.Engine) {
 	server.Static("/storage", "./storage")

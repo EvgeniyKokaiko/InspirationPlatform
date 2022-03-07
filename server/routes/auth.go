@@ -15,7 +15,7 @@ import (
 func Auth(route *gin.Engine, db *database.DB) {
 	auth := route.Group("/auth")
 	{
-		auth.POST("/register", func (c *gin.Context) { //создавати папку в сторейджі з avatar, posts
+		auth.POST("/register", func(c *gin.Context) { //создавати папку в сторейджі з avatar, posts
 			var requestData = models.EmptyUser{}
 			jsonDataBytes, err := ioutil.ReadAll(c.Request.Body)
 			json.Unmarshal(jsonDataBytes, &requestData)
@@ -26,15 +26,12 @@ func Auth(route *gin.Engine, db *database.DB) {
 				})
 			} else {
 				file, err := os.ReadFile("./storage/service/base_avatar.png")
-				fmt.Println("1")
 				if err != nil {
 					fmt.Println("ERR! On Avatar reading")
 				}
-				fmt.Println("2")
 				if err := os.MkdirAll(fmt.Sprintf("./storage/%s/avatar", requestData.Username), 777); err != nil {
 					fmt.Println("ERR! On Avatar folder creating")
 				}
-				fmt.Println("3", requestData.Username)
 				if err := os.WriteFile(fmt.Sprintf("./storage/%s/avatar/avatar.png", requestData.Username), file, 777); err != nil {
 					fmt.Println("ERR! On Avatar writing")
 				}
@@ -79,7 +76,6 @@ func Auth(route *gin.Engine, db *database.DB) {
 					"message": "Invalid Data",
 				})
 			}
-
 
 		})
 	}
