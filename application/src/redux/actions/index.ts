@@ -4,7 +4,7 @@ import { Action, ActionTypes } from '../types/ActionTypes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BaseAction } from './BaseAction';
 
-export const apiURL = '192.168.1.160:8080';
+export const apiURL = '192.168.1.92:8080';
 
 interface ActionMethods {
   register(username: string, email: string, password: string): (dispatch: Dispatch<Action>) => {};

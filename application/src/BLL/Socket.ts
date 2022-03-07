@@ -18,7 +18,7 @@ class Socket {
   private readonly _cHash: string;
   private _socket: WebSocket;
   private _makeDispatch: Function;
-  private readonly serverURL: string = 'ws://192.168.1.160:8080/messaging';
+  private readonly serverURL: string = 'ws://192.168.1.92:8080/messaging';
   private readonly _handlers: SocketHandlers;
   constructor(cHash: string, token: string | null, dispatch: Function) {
     console.log('new');

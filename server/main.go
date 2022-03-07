@@ -1,11 +1,12 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
 	"server/database"
 	_ "server/database"
 	"server/routes"
 	"server/routes/chats"
+
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -16,6 +17,7 @@ func main() {
 	routes.Posts(server, db)
 	routes.Settings(server, db)
 	routes.Likes(server, db)
+	routes.Service(server, db)
 	chats.Chats(server, db)
 	StaticServer(server)
 	database.InitTables(db)
