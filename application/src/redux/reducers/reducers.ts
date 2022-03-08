@@ -171,6 +171,7 @@ class ReducersImpl {
            const messageProps: PlainMessage[] = action.payload.data
             if (!Array.isArray(messageProps)) {
                 return {
+                    isModify: 0,
                     statusCode: action.payload.statusCode,
                     statusMessage: action.payload.statusMessage,
                     data: [],
@@ -189,36 +190,57 @@ class ReducersImpl {
                 Messages.push(newMessage)
             })
                return {
+                isModify: 0,
                 statusCode: action.payload.statusCode,
                 statusMessage: action.payload.statusMessage,
                 data: Messages,
                }
         } else if (action.type === ActionTypes.AddFakeMessage) {
-            console.log(action.payload, 'new mess')
+            console.log(action.payload, state ,'new mess')
             return {
+                isModify: state.isModify += 1,
                 statusCode: 200,
                 statusMessage: "OK!",
                 data: [...state.data, action.payload],
             }
         } else if (action.type === ActionTypes.SetNewStatus) {
-            console.log('changed message invoked');
-            const messages: MessageEntity[] = state.data || [];
-            for (let i = messages.length; i >= 0; i--) {
-                if (action.payload.message_hash !== null) {
-                    const mHash = messages[i]?.message_hash
-                    if (mHash === action.payload.message_hash) {
-                        messages[i].status = action.payload.status;
-                        console.log(messages[i], 'changed message');
-                    }
-                } else {
-                   if (messages[i].status !== MessageStatus.ReadByUser) {
-                       messages[i].status = MessageStatus.ReadByUser;
-                       console.log(messages[i], 'changed message');
-                   }
-                }
+            const index = (<MessageEntity[]>state.data).findIndex(el => el.message_hash === action.payload.message_hash)
+            if (index !== -1) {
+                (<MessageEntity[]>state.data)[index].status = action.payload.status;
             }
+            return {
+                isModify: state.isModify,
+                statusCode: 200,
+                statusMessage: "OK!",
+                data: [...state.data],
+            }
+        } else if (action.type === ActionTypes.SetAllReadMessages) {
+            console.log('updated statuses')
+            console.log(state, state.data === void 0, !Array.isArray(state.data), action.payload)
+            if (state.data === void 0 || !Array.isArray(state.data) || action.payload.type !== 0) {
+                    return {
+                        isModify: state.isModify,
+                        statusCode: 200,
+                        statusMessage: "OK!",
+                        data: [...state.data],
+                    }  
+            } else {
+                state.data.forEach((el: MessageEntity) => {
+                    console.log("item, el")
+                        if (el.status === MessageStatus.SentToServer) {
+                            el.status = MessageStatus.ReadByUser;
+                        }
+                })
+            }
+            return {
+                isModify: state.isModify,
+                statusCode: 200,
+                statusMessage: "OK!",
+                data: [...state.data],
+            } 
         } else if (action.type === ActionTypes.ClearMessages) {
             return {
+                isModify: state.isModify += 1,
                 statusCode: 0,
                 statusMessage: "!",
                 data: [],

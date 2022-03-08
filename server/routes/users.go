@@ -2,11 +2,12 @@ package routes
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"server/database"
 	typedDB "server/types"
 	"server/utils"
+
+	"github.com/gin-gonic/gin"
 )
 
 func Users(route *gin.Engine, db *database.DB) {
@@ -79,35 +80,35 @@ func Users(route *gin.Engine, db *database.DB) {
 			if len(usernameFromParam) < 0 || err != nil {
 				c.JSON(http.StatusBadRequest, typedDB.GiveResponse(http.StatusBadRequest, "Bad Request"))
 			} else {
-				if dbResult, error := db.GetUserDataWithPosts(usernameFromParam, name ,0); error == nil {
+				if dbResult, error := db.GetUserDataWithPosts(usernameFromParam, name, 0); error == nil {
 					c.JSON(http.StatusOK, typedDB.GiveOKResponseWithData(dbResult))
 				} else {
 					c.JSON(http.StatusBadRequest, typedDB.GiveResponse(http.StatusBadRequest, "Bad Request"))
 				}
 			}
 		})
-		router.GET("/:userId/subscribe", func (c *gin.Context) {
+		router.GET("/:userId/subscribe", func(c *gin.Context) {
 			var usernameFromParam string = c.Param("userId")
-			 if username, _, err := utils.ParseHeader(c); len(c.GetHeader("Authorization")) > 15 || err == nil {
+			if username, _, err := utils.ParseHeader(c); len(c.GetHeader("Authorization")) > 15 || err == nil {
 				if response, err := db.SubscribeUser(usernameFromParam, username); err == nil && response == true {
 					c.JSON(http.StatusOK, typedDB.GiveOKResponseWithData(map[string]interface{}{
-						"owner": usernameFromParam,
+						"owner":      usernameFromParam,
 						"subscriber": username,
 					}))
 				} else {
 					c.JSON(http.StatusOK, typedDB.GiveResponse(http.StatusBadRequest, "Bad Request"))
 				}
-			 } else {
-				 c.JSON(http.StatusOK, typedDB.GiveResponse(http.StatusBadRequest, "Bad Request"))
-			 }
+			} else {
+				c.JSON(http.StatusOK, typedDB.GiveResponse(http.StatusBadRequest, "Bad Request"))
+			}
 
 		})
-		router.GET("/:userId/unfollow", func (c *gin.Context) {
+		router.GET("/:userId/unfollow", func(c *gin.Context) {
 			var usernameFromParam string = c.Param("userId")
 			if username, _, err := utils.ParseHeader(c); len(c.GetHeader("Authorization")) > 15 || err == nil {
 				if response, err := db.UnfollowUser(usernameFromParam, username); err == nil && response == true {
 					c.JSON(http.StatusOK, typedDB.GiveOKResponseWithData(map[string]interface{}{
-						"owner": usernameFromParam,
+						"owner":      usernameFromParam,
 						"subscriber": username,
 					}))
 				} else {
@@ -126,9 +127,9 @@ func Users(route *gin.Engine, db *database.DB) {
 				c.JSON(http.StatusOK, typedDB.GiveResponse(http.StatusBadRequest, "Bad Request"))
 			}
 			if username, _, err := utils.ParseHeader(c); len(c.GetHeader("Authorization")) > 15 || err == nil {
-				if response, err := db.AcceptRequestOnSubscription(username,usernameFromParam , requestBody["status"].(bool)); err == nil && response == true {
+				if response, err := db.AcceptRequestOnSubscription(username, usernameFromParam, requestBody["status"].(bool)); err == nil && response == true {
 					c.JSON(http.StatusOK, typedDB.GiveOKResponseWithData(map[string]interface{}{
-						"owner": usernameFromParam,
+						"owner":      usernameFromParam,
 						"subscriber": username,
 					}))
 				} else {
@@ -149,23 +150,24 @@ func Users(route *gin.Engine, db *database.DB) {
 				c.JSON(http.StatusOK, typedDB.GiveResponse(http.StatusBadRequest, "Bad Request"))
 			}
 		})
-		route.GET("/:userId/following", func(c *gin.Context) {
+		router.GET("/:userId/following", func(c *gin.Context) {
 			username := c.Param("userId")
-				if response, err := db.GetMySubscriptionList(username, 0); err == nil {
-					c.JSON(http.StatusOK, typedDB.GiveOKResponseWithData(response))
-				} else {
-					c.JSON(http.StatusOK, typedDB.GiveResponse(http.StatusBadRequest, "Bad Request"))
-				}
+			if response, err := db.GetMySubscriptionList(username, 0); err == nil {
+				c.JSON(http.StatusOK, typedDB.GiveOKResponseWithData(response))
+			} else {
+				c.JSON(http.StatusOK, typedDB.GiveResponse(http.StatusBadRequest, "Bad Request"))
+			}
 		})
-		route.GET("/:userId/followers", func(c *gin.Context) {
+		router.GET("/:userId/followers", func(c *gin.Context) {
 			username := c.Param("userId")
-				if response, err := db.GetMyFriendList(username, 0); err == nil {
-					c.JSON(http.StatusOK, typedDB.GiveOKResponseWithData(response))
-				} else {
-					c.JSON(http.StatusOK, typedDB.GiveResponse(http.StatusBadRequest, "Bad Request"))
-				}
+			if response, err := db.GetMyFriendList(username, 0); err == nil {
+				c.JSON(http.StatusOK, typedDB.GiveOKResponseWithData(response))
+			} else {
+				c.JSON(http.StatusOK, typedDB.GiveResponse(http.StatusBadRequest, "Bad Request"))
+			}
 		})
 	}
 }
+
 //dbResult, error := db.GetUserDataWithPosts("evgeniy", 0)
 //fmt.Println(c.Request.Host+c.Request.URL.Path)

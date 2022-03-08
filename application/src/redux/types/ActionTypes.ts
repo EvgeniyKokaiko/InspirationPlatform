@@ -25,6 +25,7 @@ export enum ActionTypes {
     AddFakeMessage = 'ADD_NEW_MESSAGE',
     ClearMessages = 'CLEAR_ALL_MESSAGES',
     SetNewStatus = "SET_NEW_MESSAGE_STATUS",
+    SetAllReadMessages = "SET_ABSOLUTE_ALL_MESSAGES_AS_READ"
 }
 
 

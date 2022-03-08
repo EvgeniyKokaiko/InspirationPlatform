@@ -10,6 +10,17 @@ class ModuleActions extends BaseAction {
         super(serverURL);
     }
 
+    public setAllReadMessages = (status: number, type: number | undefined) => {
+        console.log('setStatus')
+        return {
+            type: ActionTypes.SetAllReadMessages,
+            payload: {
+                status,
+                type,
+            }
+        }
+    }
+
 
     public setStatus = (status: number, message_hash: string | null) => {
         console.log('setStatus')

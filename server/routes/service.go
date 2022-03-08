@@ -13,5 +13,6 @@ func Service(router *gin.Engine, db *database.DB) {
 		c.HTML(http.StatusNotFound, "404page.html", map[string]any{
 			"not-found": "body",
 		})
+
 	})
 }

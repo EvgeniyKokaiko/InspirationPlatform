@@ -7,8 +7,6 @@ import (
 	"server/models/mutable"
 )
 
-
-
 func SendMessageHandler(h mutable.SocketHandler) {
 	response := models.SocketMessage{}
 	if err := json.Unmarshal(h.Message, &response); err != nil {
@@ -26,24 +24,50 @@ func SendMessageHandler(h mutable.SocketHandler) {
 	}
 }
 
-
 func ReadAllMessagesHandler(h mutable.SocketHandler) {
 	if !h.Me {
+		body, err := CreateSocketBody("ReadAllMessages", map[string]any{
+			"statusCode":    200,
+			"type":          0,
+			"statusMessage": nil,
+		}, true)
+		if err != nil {
+			panic("Error! ReadAllMessagesHandler ex")
+		}
+		h.User.Connector.WriteMessage(h.MT, body.([]byte))
 		return
 	}
 	response := map[string]any{}
 	if err := json.Unmarshal(h.Message, &response); err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(response)
+	fmt.Println(response, "Response")
 	statusCode, err := h.Db.UpdateMessageStatus(response["data"].(string), h.Owner, 3)
-	result := map[string]any{
-		"statusCode": statusCode,
+	fmt.Println(statusCode, response["data"], h.Owner)
+	body, err := CreateSocketBody("ReadAllMessages", map[string]any{
+		"statusCode":    statusCode,
 		"statusMessage": err,
+		"type":          1,
+	}, true)
+	h.User.Connector.WriteMessage(h.MT, body.([]byte))
+}
+
+func CreateSocketBody(eventName string, body any, isBytes bool) (any, error) {
+	if isBytes {
+		result := map[string]any{
+			"event": eventName,
+			"data":  body,
+		}
+		bytesBody, err := json.Marshal(result)
+		if err != nil {
+			fmt.Print(bytesBody)
+			return nil, nil
+		}
+		return bytesBody, nil
+	} else {
+		return map[string]any{
+			"event": eventName,
+			"data":  body,
+		}, nil
 	}
-	resultBytes, err1 := json.Marshal(result)
-	if err != nil || err1 != nil {
-		fmt.Println("ReadAllMessagesHandler", err)
-	}
-	h.User.Connector.WriteMessage(h.MT, resultBytes)
 }

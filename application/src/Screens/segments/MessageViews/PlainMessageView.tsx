@@ -1,15 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { MessageEntity } from '../../../BLL/entity/MessageEntity';
 import { currentUser } from '../../../BLL/CurrentUserProps';
 import { MessageStyles } from '../../../Styles/MessageStyles';
 import MessageInfoView from './MessageInfoView';
+import { MessageStatus } from '../../../Types/enums';
 
 type IProps = {
   messageEntityProps: MessageEntity;
 };
 
+type IState = {};
+
 const PlainMessageView = (props: IProps) => {
+  const [getState, setState] = useState<IState>({
+  
+  })
   const owner = props.messageEntityProps.sender === currentUser.currentUserId;
 
   return (

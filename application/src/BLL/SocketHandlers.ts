@@ -1,12 +1,14 @@
-import { SocketData } from './Socket';
+import { Socket, SocketData, SocketEvents } from './Socket';
 import { modulesImpl } from '../redux/actions/modules';
 import { MessageEntity } from './entity/MessageEntity';
 import {MessageStatus} from "../Types/enums";
 
 class SocketHandlers {
   private readonly _dispatch: Function;
-  constructor(dispatch: Function) {
+  private _socketImpl: Socket;
+  constructor(dispatch: Function, socketImpl: Socket) {
     this._dispatch = dispatch;
+    this._socketImpl = socketImpl;
   }
 
   public getMessage = async (socketData: SocketData) => {
@@ -24,18 +26,21 @@ class SocketHandlers {
       message_hash: socketData.data.message_hash
     });
     this._dispatch(modulesImpl.addMessageToStack(newMessage))
+    if (this._socketImpl.socket.readyState === 1) {
+      this._socketImpl.emitByEvent(SocketEvents.readAllMessages, socketData.data.sender)
+    }
   };
 
   public serverGotMessage = async (socketData: SocketData) => {
-    setTimeout(() => {
       this._dispatch(modulesImpl.setStatus(MessageStatus.SentToServer, socketData.message.message_hash))
-    }, 2000)
   }
 
 
     public readAllMessages = async (socketData: SocketData) => {
+      console.log(socketData, 'socketdata')
+      if (socketData)
     if (socketData.data.statusCode === 200) {
-      this._dispatch(modulesImpl.setStatus(MessageStatus.ReadByUser, null))
+      this._dispatch(modulesImpl.setAllReadMessages(MessageStatus.ReadByUser, socketData.data.type))
     } else {
       console.log('error! readAllMessages ex')
     }

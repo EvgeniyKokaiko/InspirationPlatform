@@ -95,10 +95,9 @@ const U2UChatContainer = (props: IProps) => {
 
   onFocus(async () => {
     dispatch(actionImpl.getMessages(userId));
-    socket = new Socket(socketHash, currentUser.token, dispatch);
+    socket = new Socket(socketHash, currentUser.token, dispatch, userId);
     if (socket !== null) {
       console.log('read')
-      await socket.emitByEvent(SocketEvents.readAllMessages, {userId: userId});
     }
     console.log(socket, 'SOCKET SADAS')
   }, [socketHash, userId]);
@@ -124,7 +123,10 @@ const U2UChatContainer = (props: IProps) => {
   }, [flatListRef]);
 
 
+
+
   useEffect(() => {
+    console.log('updates flatlist')
     console.log(store);
     if (store.getMessagesReducer.statusCode !== 200) {
       return;
@@ -132,7 +134,7 @@ const U2UChatContainer = (props: IProps) => {
       LayoutAnimation.configureNext(LayoutAnimation.create(250, 'linear', 'opacity'));
       setState({ ...getState, messages: store.getMessagesReducer.data });
     }
-  }, [store.getMessagesReducer]);
+  }, [store.getMessagesReducer.isModify]);
 
   return <ChatComponent {...STATE} />;
 };

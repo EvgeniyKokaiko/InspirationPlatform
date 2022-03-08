@@ -20,15 +20,17 @@ class Socket {
   private _makeDispatch: Function;
   private readonly serverURL: string = 'ws://192.168.1.92:8080/messaging';
   private readonly _handlers: SocketHandlers;
-  constructor(cHash: string, token: string | null, dispatch: Function) {
+  private _userName: string;
+  constructor(cHash: string, token: string | null, dispatch: Function, userName: string) {
     console.log('new');
-    this._handlers = new SocketHandlers(dispatch);
+    this._handlers = new SocketHandlers(dispatch, this);
     this._cHash = cHash;
+    this._userName = userName;
     this._makeDispatch = dispatch;
     this._socket = new WebSocket(`${this.serverURL}/valhalla/${cHash}?token=${token}`);
     this._socket.onopen = () => {
       this.emitByEvent(SocketEvents.connect, '');
-      this.emitByEvent(SocketEvents.readAllMessages, 'Kizaru111')
+      this.emitByEvent(SocketEvents.readAllMessages, this._userName)
       console.log('Socket opened successfully!');
     };
     this._socket.onclose = () => {
@@ -48,6 +50,10 @@ class Socket {
 
   get handlers(): SocketHandlers {
     return this._handlers;
+  }
+
+  public get socket(): WebSocket {
+    return this._socket;
   }
 
   public emitByEvent = async (eventName: SocketEvents, data: any) => {
@@ -72,7 +78,7 @@ class Socket {
   private handleByEvent = async (evt: WebSocketMessageEvent) => {
     try {
       const socketData: SocketData = JSON.parse(evt.data);
-      console.log(socketData);
+      console.log(socketData, 'new EVENT');
       switch (socketData.event) {
         case SocketEvents.sendMessage:
           await this.handlers.getMessage(socketData);

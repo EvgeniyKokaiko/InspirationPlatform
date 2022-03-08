@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Image, Text, View } from 'react-native';
 import { MessageEntity } from '../../../BLL/entity/MessageEntity';
 import { currentUser } from '../../../BLL/CurrentUserProps';
@@ -15,12 +15,25 @@ type IProps = {
   sender: string;
 };
 
+type IState = {
+  messageStatus: MessageStatus;
+};
+
 const PlainMessageView = (props: IProps) => {
+  const [getState, setState] = useState<IState>({
+    messageStatus: props.currentStatus,
+  })
     const owner = props.sender === currentUser.currentUserId;
     const date = timeParse(props.currentDate);
     const tintColor = {tintColor: colors.WhiteChalk}
     const tintGreen = {tintColor: colors.acceptColor}
 
+
+    useEffect(() => {
+        if (getState.messageStatus !== props.currentStatus) {
+          setState({...getState, messageStatus: props.currentStatus})
+        }
+    }, [props.currentStatus])
 
   const renderStatus = () => {
     switch (props.currentStatus) {
@@ -34,6 +47,7 @@ const PlainMessageView = (props: IProps) => {
         return <Image style={[StylesOne.wh100, StylesOne.rm_c, tintGreen]} source={messageStatuses.read} />;
     }
   };
+
 
   return (
     <View style={[]}>

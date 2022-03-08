@@ -54,6 +54,7 @@ const ChatComponent = (state: IProps) => {
         </View>
       </View>
         <FlatList
+          fadingEdgeLength={0}
           extraData={state.chatWith}
           decelerationRate={'fast'}
           ref={state.flatListRef}
