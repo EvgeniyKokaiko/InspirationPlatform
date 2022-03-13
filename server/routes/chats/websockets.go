@@ -116,11 +116,19 @@ func SocketEmitter(eventName interface{}, mT int, message []byte, user *models.S
 
 func Stop(error error, cHash string, newConnection models.SocketConnection) {
 	log.Println("read:", error)
-	index := FindIndex[models.SocketConnection](SocketRoomer[cHash], newConnection)
-	fmt.Println(index)
-	SocketRoomer[cHash] = remove[models.SocketConnection](SocketRoomer[cHash], index)
+	CloseEveryConnection(cHash, newConnection)
 	defer newConnection.Connector.Close()
 	return
+}
+
+func CloseEveryConnection(cHash string, myConnection models.SocketConnection) {
+	for key, value := range SocketRoomer[cHash] {
+		if value.Username == myConnection.Username {
+			value.Connector.Close()
+			SocketRoomer[cHash] = remove[models.SocketConnection](SocketRoomer[cHash], key)
+		}
+	}
+	fmt.Println(SocketRoomer[cHash], "ROOMER")
 }
 
 func remove[T comparable](slice []T, s int) []T {

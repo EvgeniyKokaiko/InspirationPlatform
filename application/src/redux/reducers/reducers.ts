@@ -1,9 +1,10 @@
 import {combineReducers} from "redux";
-import {Action, ActionTypes} from "../types/ActionTypes";
+import {Action, ActionTypes, ClassicPayload} from "../types/ActionTypes";
 import {act} from "react-test-renderer";
 import {PlainMessage} from "../../Types/Models";
 import {MessageEntity} from "../../BLL/entity/MessageEntity";
 import {MessageStatus} from "../../Types/enums";
+import { homeEntityProps, HomePostEntity } from "../../BLL/entity/HomePostEntity";
 
 export interface Reducers {
     registerReducer: any
@@ -73,13 +74,64 @@ class ReducersImpl {
         return state
     }
 
-    public GetMyNewsLineReducer(state = {}, action: Action) {
+    public GetMyNewsLineReducer(state: any = {
+        isModify: 0,
+    }, action: Action) {
         if (action.type === ActionTypes.MyNewsLine) {
-            return action.payload
+            const result = {
+                isModify: state.isModify + 1,
+                pages: action.payload.pages,
+                statusCode: action.payload.statusCode,
+                statusMessage: action.payload.statusMessage,
+                data: [] as HomePostEntity[],
+            };
+            if (action.payload === void 0 || !Array.isArray(action.payload.data)) {
+                return {
+                    isModify: 0,
+                    pages: 0,
+                    statusCode: 402,
+                    statusMessage: "Closed!",
+                    data: [],
+                };
+            }
+            const rawData: homeEntityProps[] = action.payload.data;
+            rawData.forEach((homePost: homeEntityProps) => {
+                const newHomePost = new HomePostEntity(homePost)
+                result.data.push(newHomePost);
+            })
+            return result;
+        } else if (action.type === ActionTypes.LikePost) {
+                if (action.payload.statusCode !== 200) {
+                    return state
+                }
+                state.data.forEach((el: HomePostEntity) => {
+                    if (el.image === action.payload.data.post_hash) {
+                        if (action.payload.data.is_like) {
+                            el.likesCount = el.likesCount + 1;
+                            el.post_hash = action.payload.post_hash;
+                        } else {
+                            el.likesCount = el.likesCount - 1;
+                            el.post_hash = null;
+                        }
+                    }
+                })
+            return state;
         } else if (action.type === ActionTypes.Clear) {
-            return []
+            return {
+                isModify: state.isModify + 1,
+                pages: 0,
+                statusCode: 0,
+                statusMessage: '',
+                data: [],
+            }
         }
-        return state
+        return {
+            isModify: 0,
+            pages: 0,
+            statusCode: 0,
+            statusMessage: '',
+            data: state,
+        }
     }
 
 
@@ -252,10 +304,6 @@ class ReducersImpl {
             data: state.data,
         }
     }
-
-
-
-
 
     public getAllReducers = () => {
         return combineReducers({

@@ -25,7 +25,8 @@ export enum ActionTypes {
     AddFakeMessage = 'ADD_NEW_MESSAGE',
     ClearMessages = 'CLEAR_ALL_MESSAGES',
     SetNewStatus = "SET_NEW_MESSAGE_STATUS",
-    SetAllReadMessages = "SET_ABSOLUTE_ALL_MESSAGES_AS_READ"
+    SetAllReadMessages = "SET_ABSOLUTE_ALL_MESSAGES_AS_READ",
+    LikePost = "LIKE_POST_OR_UNLIKE_POST",
 }
 
 
@@ -33,6 +34,14 @@ export interface Action {
     type: string;
     payload?: any;
     statusCode?: number;
+}
+
+
+export interface ClassicPayload {
+    statusCode: number;
+    statusMessage: string;
+    data?: any;
+    pages?: number;
 }
 
 

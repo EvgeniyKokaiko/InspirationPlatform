@@ -4,7 +4,7 @@ import "time"
 
 type Like struct {
 	Id        uint      `gorm:"primaryKey"`
-	Owner     string    `json:"owner"`
+	Creator   string    `json:"creator"`
 	PostHash  string    `json:"post_hash"`
 	Initiator string    `json:"initiator"`
 	CreatedAt time.Time `json:"createdAt"`

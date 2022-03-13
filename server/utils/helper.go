@@ -3,22 +3,27 @@ package utils
 import (
 	"encoding/json"
 	"errors"
-	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
-	"golang.org/x/crypto/bcrypt"
-	"gorm.io/gorm"
+	"fmt"
 	"math/rand"
 	"server/models"
 	"strings"
 	"time"
-)
 
+	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
+	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
+)
 
 type StandardMap map[string]interface{}
 type Subscriptions models.Subscriptions
 
 func ParseHeader(c *gin.Context) (string, string, error) {
 	authorizationHeader := strings.Split(c.Request.Header.Get("Authorization"), " ")
+	fmt.Println("-------TOKEN-------", c.Request.Header.Get("Authorization"), "--------------------")
+	if len(c.Request.Header.Get("Authorization")) < 10 {
+		return "", "", errors.New("ERROR! Something went wrong on token parsing")
+	}
 	token := authorizationHeader[1]
 	name, email, err := ParseToken(token)
 	if err != nil {
@@ -37,7 +42,7 @@ func RandomString(n int) string {
 	return string(s)
 }
 
-func GenerateHashWithSalt(salt... interface{}) (string, error) {
+func GenerateHashWithSalt(salt ...interface{}) (string, error) {
 	result := map[interface{}]interface{}{}
 	randStr := RandStringBytesRmndr(32)
 	for _, value := range salt {
@@ -52,10 +57,11 @@ func GenerateHashWithSalt(salt... interface{}) (string, error) {
 }
 
 const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
 func RandStringBytesRmndr(n int) string {
 	b := make([]byte, n)
 	for i := range b {
-		b[i] = letterBytes[rand.Int63() % int64(len(letterBytes))]
+		b[i] = letterBytes[rand.Int63()%int64(len(letterBytes))]
 	}
 	return string(b)
 }
@@ -88,8 +94,7 @@ func FindIndex(a []*websocket.Conn, x *websocket.Conn) int {
 	return -1
 }
 
-
-func HandleDBError (ctx *gorm.DB, errorMessage string, result interface{} ,values... interface{}) (interface{}, error) {
+func HandleDBError(ctx *gorm.DB, errorMessage string, result interface{}, values ...interface{}) (interface{}, error) {
 	if ctx.Error != nil {
 		return values, errors.New(errorMessage)
 	}

@@ -51,7 +51,7 @@ const MyProfileComponent: React.FC<IProps> = (props: IProps) => {
     setUser(state.meReducer.data?.userData);
     setPosts(state.mePostsReducer?.data);
     setCounts(state.meReducer.data?.counts)
-  }, [state]);
+  }, [state.meReducer, state.mePostsReducer]);
 
   const renderPosts = () => {
     return posts.map((el, index) => {

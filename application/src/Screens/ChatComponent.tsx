@@ -11,6 +11,7 @@ import { PlainMessage } from '../Types/Models';
 import { MessageEntity } from '../BLL/entity/MessageEntity';
 import { KeyboardAvoidingComponent } from './Core/KeyboardAvoidingComponent';
 import PlainMessageView from './segments/MessageViews/PlainMessageView';
+import { HomePostEntity } from '../BLL/entity/HomePostEntity';
 
 type IProps = {
   onMessageSend(text: string): void;
@@ -29,7 +30,6 @@ const ChatComponent = (state: IProps) => {
     if (state.messages.length >= index) {
       state.scrollToEnd();
     }
-    console.log(item.created_at);
     return <PlainMessageView messageEntityProps={item} />;
   };
   console.log(state.chatWith, 'CHATWITH');
@@ -57,6 +57,7 @@ const ChatComponent = (state: IProps) => {
           fadingEdgeLength={0}
           extraData={state.chatWith}
           decelerationRate={'fast'}
+          initialNumToRender={50}
           ref={state.flatListRef}
           data={state.messages}
           renderItem={renderList}

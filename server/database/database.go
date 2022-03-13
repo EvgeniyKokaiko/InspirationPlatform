@@ -3,15 +3,16 @@ package database
 import (
 	"errors"
 	"fmt"
-	"golang.org/x/crypto/bcrypt"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
 	"log"
 	"math"
 	models "server/models"
 	typedDB "server/types"
 	"server/utils"
 	"time"
+
+	"golang.org/x/crypto/bcrypt"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
 
 type DB struct {
@@ -164,17 +165,21 @@ func (db *DB) CheckToken(username string) (string, error) {
 	return result.Username, nil
 }
 
-func (db *DB) GetNewsLine(_ string, page int) ([]*models.Post, int, error) {
-	var dbResult []*models.Post
+func (db *DB) GetNewsLine(initiator string, page int) ([]map[string]any, int, error) {
+	var dbResult []map[string]any
 	var dbPageResult = map[string]interface{}{}
 	const postBunch int = 30
-	dbResponse := db.database.Table(typedDB.TABLES.POSTS).Offset(postBunch * page).Limit(postBunch).Order("date_of_creation desc").Scan(&dbResult)
+	dbResponse := db.database.Raw(`
+	SELECT * FROM posts
+	LEFT JOIN (SELECT COUNT(*) as likesCount, post_hash FROM likes) as likes ON (posts.image = likes.post_hash)  
+	LEFT JOIN (SELECT * FROM likes WHERE initiator = ?) as likeData ON (posts.image = likes.post_hash)
+	 ORDER BY posts.date_of_creation DESC`, initiator).Offset(postBunch * page).Limit(postBunch).Scan(&dbResult)
 	dbPageCount := db.database.Raw("SELECT COUNT(*) FROM posts").Scan(&dbPageResult)
 	pageCount := math.Ceil(float64(dbPageResult["COUNT(*)"].(int64) / 30))
 	fmt.Println(dbPageCount, pageCount)
 	if dbResponse.Error != nil {
 		log.Println("GetNewsLine ex", dbResponse.Error)
-		return []*models.Post{}, 0, errors.New("ERROR! You got error on GetNewsLine method in DB")
+		return []map[string]any{}, 0, errors.New("ERROR! You got error on GetNewsLine method in DB")
 	}
 
 	return dbResult, int(pageCount), nil
@@ -236,7 +241,6 @@ func (db *DB) GetUserDataWithPosts(username string, name string, page int) (map[
 	return dbResult, nil
 }
 
-
 //status 0 - unknown
 //status 1 - private
 //status 2 - accepted
@@ -265,7 +269,7 @@ func (db *DB) SubscribeUser(owner string, subscriber string) (bool, error) {
 	}
 
 	if dbTwoWaySubscriptionResponse := db.database.Table(typedDB.TABLES.SUBSCRIPTIONS).Where("owner = ? AND subscriber = ? AND status > 1", subscriber, owner).Take(&isExists); isExists.Owner != subscriber && isExists.Subscriber != owner {
-		fmt.Println(1,2)
+		fmt.Println(1, 2)
 		if ownerUser.IsPrivate == 1 {
 			subscription.Status = 1
 		} else {
@@ -286,10 +290,9 @@ func (db *DB) SubscribeUser(owner string, subscriber string) (bool, error) {
 		}
 	}
 
-
 	if dbSubscriptionResponse := db.database.
 		Table(typedDB.TABLES.SUBSCRIPTIONS).
-		Create(&subscription); dbSubscriptionResponse.Error != nil  {
+		Create(&subscription); dbSubscriptionResponse.Error != nil {
 		return false, errors.New("ERROR!Something went wrong")
 	}
 	return true, nil
@@ -347,7 +350,6 @@ func (db *DB) GetRequestList(owner string) ([]map[string]interface{}, error) {
 	return subscriptionList, nil
 }
 
-
 func (db *DB) GetMyFriendList(owner string, page int) ([]map[string]interface{}, error) {
 	var subscriptionList []map[string]interface{}
 
@@ -362,7 +364,6 @@ func (db *DB) GetMyFriendList(owner string, page int) ([]map[string]interface{},
 	fmt.Println(subscriptionList)
 	return subscriptionList, nil
 }
-
 
 func (db *DB) GetMySubscriptionList(subscriber string, page int) ([]map[string]interface{}, error) {
 	var subscriptionList []map[string]interface{}
@@ -380,66 +381,66 @@ func (db *DB) GetMySubscriptionList(subscriber string, page int) ([]map[string]i
 }
 
 func (db *DB) GetMyNewsLine(subscriber string, page int) ([]map[string]interface{}, error) {
-		var myNewsLine =  []map[string]interface{}{}
-		if dbGetMyNewsLineResponse := db.database.Raw(`
-		SELECT * FROM posts INNER JOIN
-		(SELECT owner, subscriber, status FROM user_subscription 
-		WHERE STATUS = 2 AND subscriber = ?)
-		AS subs ON (posts.owner = subs.owner)
- 		ORDER BY posts.date_of_creation DESC
-		`, subscriber).Scan(&myNewsLine); dbGetMyNewsLineResponse.Error != nil && dbGetMyNewsLineResponse.Error != gorm.ErrRecordNotFound {
-			return []map[string]interface{}{}, errors.New("ERROR! On GetMyNewsLine reading")
-		}
-		return myNewsLine, nil
+	var myNewsLine = []map[string]any{}
+	if dbGetMyNewsLineResponse := db.database.Raw(`
+	SELECT * FROM posts INNER JOIN
+	(SELECT owner, subscriber, status FROM user_subscription 
+	WHERE STATUS > 1 AND subscriber = ?)
+	AS subs ON (posts.owner = subs.owner)
+	LEFT JOIN (SELECT COUNT(*) as likesCount, post_hash FROM likes) as likes ON (posts.image = likes.post_hash)  
+	LEFT JOIN (SELECT * FROM likes WHERE initiator = ?) as likeData ON (posts.image = likes.post_hash)
+	 ORDER BY posts.date_of_creation DESC
+		`, subscriber, subscriber).Scan(&myNewsLine); dbGetMyNewsLineResponse.Error != nil && dbGetMyNewsLineResponse.Error != gorm.ErrRecordNotFound {
+		return []map[string]interface{}{}, errors.New("ERROR! On GetMyNewsLine reading")
+	}
+	return myNewsLine, nil
 }
 
 //SELECT * FROM posts INNER JOIN (SELECT owner, subscriber, status FROM user_subscription WHERE STATUS = 2 AND subscriber = 'evgeniy') AS subs ON (posts.owner = subs.owner)
 
-func Da (base typedDB.DBMethods, a string) {
+func Da(base typedDB.DBMethods, a string) {
 	var b = 'A'
 	fmt.Println(base.Me(a))
 	fmt.Println(b)
 }
 
 const (
-	USERNAME string = "username"
-	PASSWORD        = "password"
-	TOKEN        	= "token"
-	Avatar       	= "avatar"
-	CREATEDaT 		= "created_at"
+	USERNAME  string = "username"
+	PASSWORD         = "password"
+	TOKEN            = "token"
+	Avatar           = "avatar"
+	CREATEDaT        = "created_at"
 )
 
 func (db *DB) SetUserParam(param string, value interface{}, username string) (bool, error) {
-	if param == USERNAME || param == PASSWORD || param == TOKEN || param == Avatar || param == CREATEDaT  {
+	if param == USERNAME || param == PASSWORD || param == TOKEN || param == Avatar || param == CREATEDaT {
 		return false, errors.New("ERROR! ON dbSetParamResponse. You can't change this param")
 	}
-		if dbSetParamResponse := db.database.
-			Table("users").
-			Where("username = ?", username).
-			Update(param, value); dbSetParamResponse.Error != nil {
-			return false, errors.New("ERROR! ON dbSetParamResponse")
-		}
-
+	if dbSetParamResponse := db.database.
+		Table("users").
+		Where("username = ?", username).
+		Update(param, value); dbSetParamResponse.Error != nil {
+		return false, errors.New("ERROR! ON dbSetParamResponse")
+	}
 
 	return true, nil
 }
 
 func (db *DB) AddMessage(data *models.FromClientData, owner string) (models.ChatData, error) {
 	newMessage := models.ChatData{
-		Sender:         owner,
-		Companion:      data.Companion,
-		CreatedAt:    	time.Now().UnixMilli(),
-		PlainMessage: 	data.PlainMessage,
-		Status:      	2,
-		Type:        	0,
-		MessageHash: 	data.MessageHash,
+		Sender:       owner,
+		Companion:    data.Companion,
+		CreatedAt:    time.Now().UnixMilli(),
+		PlainMessage: data.PlainMessage,
+		Status:       2,
+		Type:         0,
+		MessageHash:  data.MessageHash,
 	}
-	if dbMessageResponse :=  db.database.Table(typedDB.TABLES.USERToUSERChat).Create(&newMessage); dbMessageResponse.Error != nil {
+	if dbMessageResponse := db.database.Table(typedDB.TABLES.USERToUSERChat).Create(&newMessage); dbMessageResponse.Error != nil {
 		return models.ChatData{}, errors.New("ERROR! On Message Creating")
 	}
 	return newMessage, nil
 }
-
 
 func (db *DB) GetMessages(owner string, to string, page int) ([]*models.ChatData, error) {
 	var response []*models.ChatData
@@ -449,8 +450,6 @@ func (db *DB) GetMessages(owner string, to string, page int) ([]*models.ChatData
 
 	return response, nil
 }
-
-
 
 func (db *DB) UpdateMessageStatus(sender string, companion string, status int) (int, error) {
 	if updateMessageStatusResponse := db.database.Table(typedDB.TABLES.USERToUSERChat).
@@ -463,4 +462,29 @@ func (db *DB) UpdateMessageStatus(sender string, companion string, status int) (
 		}
 	}
 	return 200, nil
+}
+
+func (db *DB) LikePostHandler(initiator string, postHash string, owner string) (bool, error) {
+	var likeExist *models.Like
+	dbLikeResponse := db.database.Table(typedDB.TABLES.LIKES).Where("post_hash = ? AND creator = ? AND initiator = ?", postHash, owner, initiator).Take(&likeExist)
+	fmt.Println(likeExist)
+	if likeExist.Initiator == initiator || likeExist.PostHash == postHash {
+		dbLikeRemoveResponse := db.database.Table(typedDB.TABLES.LIKES).Where("post_hash = ? AND creator = ? AND initiator = ?", postHash, owner, initiator).Delete(&models.Like{})
+		if dbLikeResponse.Error != nil || dbLikeRemoveResponse.Error != nil {
+			return false, errors.New("LikePostHandler ex")
+		}
+		return false, nil
+	} else {
+		likeBody := models.Like{
+			Creator:   owner,
+			PostHash:  postHash,
+			Initiator: initiator,
+			CreatedAt: time.Time{},
+		}
+		dbLikeAddResponse := db.database.Table(typedDB.TABLES.LIKES).Create(&likeBody)
+		if dbLikeAddResponse.Error != nil {
+			return false, errors.New("LikePostHandler ex")
+		}
+		return true, nil
+	}
 }
