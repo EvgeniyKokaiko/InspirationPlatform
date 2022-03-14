@@ -36,6 +36,10 @@ const ExpandedPostContainer: React.FC<IProps> = (props: IProps): JSX.Element => 
     return result;
   };
 
+  const entity = {
+    likesCount: 2,
+  }
+
   const _renderItem = ({ item, index }: {item: number, index: number}) => {
     return <Image key={1} style={[St.image100modal]} source={{ uri: `${dataPath}${index}.png?${Date.now()}` }} />;
   }
@@ -67,7 +71,8 @@ const ExpandedPostContainer: React.FC<IProps> = (props: IProps): JSX.Element => 
     postData,
     ownerAvatar,
     postState,
-    onPostOwnerPress
+    onPostOwnerPress,
+    entity
   };
 
 

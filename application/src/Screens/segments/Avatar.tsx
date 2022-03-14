@@ -13,7 +13,7 @@ type IProps = {
 const Avatar: React.FC<IProps> = (props: IProps) => {
     return (
         <View style={[props.size ? {width: mockupWidthToDP(props.size), height: mockupWidthToDP(props.size)} : {}, St.avatar]}>
-             <Image style={[StylesOne.wh100, StylesOne.rm_c,St.borderRadius30]} source={props.icon} />
+             <Image style={[StylesOne.wh100,St.borderRadius14]} source={props.icon} />
         </View>
     )
 }

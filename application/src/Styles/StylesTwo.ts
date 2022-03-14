@@ -33,8 +33,12 @@ export const St = StyleSheet.create({
   borderRadius30: {
     borderRadius: 30,
   },
+
+  borderRadius14: {
+    borderRadius: 14,
+  },
   avatar: {
-    borderRadius: 30,
+    borderRadius: 14,
   },
 
   horizontalLine: {
@@ -119,7 +123,6 @@ export const St = StyleSheet.create({
     width: mockupWidthToDP(50),
     height: mockupWidthToDP(50),
     borderRadius: 999,
-    resizeMode: 'contain',
   },
 
   round100image35: {

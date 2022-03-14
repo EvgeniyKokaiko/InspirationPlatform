@@ -10,6 +10,7 @@ import Carousel from "react-native-snap-carousel";
 import {DEVICE_HEIGHT, DEVICE_WIDTH, mockupHeightToDP, mockupWidthToDP} from "../../Parts/utils";
 import {Post} from "../../Types/Models";
 import {SThree} from "../../Styles/StylesThree";
+import { HomeButtonView } from '../segments/HomeButtonView';
 
 type IProps = {
   onBackBtn?(): void;
@@ -57,6 +58,16 @@ const ExpandedPostComponent = (state: IProps) => {
             maximumZoomScale={0}
             activeAnimationType="spring"
         />
+            </View>
+            <View style={[StylesOne.flex_row, MP.mt10, MP.mb20, MP.ph6]}>
+            <HomeButtonView entity={state.entity} onLikePress={state.onLikePress} />
+          <TouchableOpacity onPress={state.onCommendPress} style={[{ width: mockupWidthToDP(40), height: mockupHeightToDP(30) }, StylesOne.flex_row, StylesOne.flex_ai_c, MP.mr20]}>
+            <Image style={[{ width: '100%', height: '100%', resizeMode: 'contain' }]} source={images.commend} />
+            <Text style={{ color: 'black' }}>0</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={state.onRepostPress} style={[{ width: mockupWidthToDP(40), height: mockupHeightToDP(30) }, StylesOne.flex_row, StylesOne.flex_ai_c, MP.mr20]}>
+            <Image style={[{ width: '100%', height: '100%', resizeMode: 'contain' }]} source={images.repost} />
+          </TouchableOpacity>
             </View>
             <View style={[MP.ph15]}>
                 <Text style={SThree.post_caption_word}>Caption:</Text>

@@ -345,6 +345,26 @@ class Actions extends BaseAction implements ActionMethods {
         });
     });
   };
+
+  public getMessages = (companion: string) => async (dispatch: Dispatch<Action>) => {
+    await this._useToken(async (el: string | null) => {
+      axios
+        .get(`http://${apiURL}/messaging/get-messages/${companion}`, {
+          headers: {
+            Authorization: `Bearer ${el}`,
+          },
+        })
+        .then((el) => {
+          console.log(el.data, 'messages response');
+          dispatch({ type: ActionTypes.U2UMessages, payload: el.data });
+        })
+        .catch((err) => {
+          console.log(err, 'messages response error');
+          dispatch({ type: ActionTypes.U2UMessages, payload: { statusCode: 423 } });
+        });
+    });
+  };
+
   public likePost = (imageHash: string, owner: string) => async (dispatch: Dispatch<Action>) => {
     await this._useToken(async (el: string | null) => {
       console.log(el, "TOKEN")
