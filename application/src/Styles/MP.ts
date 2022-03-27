@@ -32,6 +32,9 @@ export const MP = StyleSheet.create({
     pb15: {
         paddingBottom: mockupHeightToDP(15),
     },
+    pb80: {
+        paddingBottom: mockupHeightToDP(80),
+    },
     mb100: {
         marginBottom: mockupHeightToDP(100),
     },

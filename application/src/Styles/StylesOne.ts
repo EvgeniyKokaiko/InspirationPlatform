@@ -101,7 +101,6 @@ export const StylesOne = StyleSheet.create({
   },
 
   inputContainer: {
-    paddingHorizontal: mockupWidthToDP(45),
     marginBottom: mockupHeightToDP(32),
   },
   SignInButton: {
