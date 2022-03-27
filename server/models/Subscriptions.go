@@ -4,7 +4,7 @@ import "time"
 
 type Subscriptions struct {
 	Id         uint      `gorm:"primaryKey"`
-	Owner      string    `json:"owner"`
+	Maker      string    `json:"maker"`
 	Subscriber string    `json:"subscriber,required"`
 	Status     int       `json:"status,required" gorm:"default: 0"`
 	SocketHash string    `json:"socket_hash"`

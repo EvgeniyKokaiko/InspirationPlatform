@@ -57,7 +57,6 @@ const ChatComponent = (state: IProps) => {
           fadingEdgeLength={0}
           extraData={state.chatWith}
           decelerationRate={'fast'}
-          initialNumToRender={50}
           ref={state.flatListRef}
           data={state.messages}
           renderItem={renderList}

@@ -11,6 +11,7 @@ type Tables struct {
 	SUBSCRIPTIONS  string
 	USERToUSERChat string
 	LIKES          string
+	NOTIFICATIONS  string
 }
 
 var TABLES = Tables{
@@ -19,6 +20,7 @@ var TABLES = Tables{
 	SUBSCRIPTIONS:  "user_subscription",
 	USERToUSERChat: "chat_u2u",
 	LIKES:          "likes",
+	NOTIFICATIONS:  "notifications",
 }
 
 type DBMethods interface {

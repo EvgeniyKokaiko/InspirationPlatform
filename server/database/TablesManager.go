@@ -16,6 +16,7 @@ type TableCreator interface {
 	CreateLikesTable()
 	CreateU2UChatTable()
 	CreateGroupChatTable()
+	CreateNotificationTable()
 }
 
 func InitTables(db TableCreator) {
@@ -25,6 +26,7 @@ func InitTables(db TableCreator) {
 	db.CreateLikesTable()
 	db.CreateU2UChatTable()
 	db.CreateGroupChatTable()
+	db.CreateNotificationTable()
 }
 
 func (db *DB) BaseTableCreator(tableName string, callback func(name string)) {
@@ -74,6 +76,15 @@ func (db *DB) CreateU2UChatTable() {
 		err := db.database.Migrator().AutoMigrate(&models.ChatData{})
 		if err != nil {
 			log.Fatal("CreateU2UChatTable ex")
+		}
+	})
+}
+
+func (db *DB) CreateNotificationTable() {
+	db.BaseTableCreator(typedDB.TABLES.NOTIFICATIONS, func(tableName string) {
+		err := db.database.Migrator().AutoMigrate(&models.Notification{})
+		if err != nil {
+			log.Fatal("CreateNotificationTable ex")
 		}
 	})
 }

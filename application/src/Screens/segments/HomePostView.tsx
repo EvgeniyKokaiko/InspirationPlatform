@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import { images } from "../../assets/images";
+import { currentUser } from "../../BLL/CurrentUserProps";
 import { HomePostEntity } from "../../BLL/entity/HomePostEntity";
 import { dateParser, mockupWidthToDP, mockupHeightToDP } from "../../Parts/utils";
 import { apiURL } from "../../redux/actions";
@@ -8,6 +9,8 @@ import { MP } from "../../Styles/MP";
 import { StylesFour } from "../../Styles/StylesFour";
 import { StylesOne } from "../../Styles/StylesOne";
 import { St } from "../../Styles/StylesTwo";
+import { StackScreens } from "../Core/MainNavigationScreen";
+import { INavigation } from "../Core/OverrideNavigation";
 import { HomeButtonView } from "./HomeButtonView";
 
 type IProps = {
@@ -27,6 +30,18 @@ const HomePostView: React.FC<IProps> = (props: IProps): JSX.Element => {
     const [getState, setState] = useState<IState>({
         url: ''
     })
+    const onPostOwnerPress = (): void => {
+      const ownerId = props.entity.owner;
+      if (ownerId !== void 0) {
+        if (currentUser.currentUserId !== null || currentUser.currentUserId !== void 0) {
+          if (currentUser.currentUserId === ownerId) {
+            INavigation.navigate(StackScreens.MyProfile);
+          } else {
+            INavigation.navigate(StackScreens.UserProfile, { ownerId: ownerId });
+          }
+        }
+      }
+    };
     const src = `http://${apiURL}/storage/${props.entity.owner}/avatar/avatar.png`;
     useMemo(() => {
         console.log('memem')
@@ -37,7 +52,7 @@ const HomePostView: React.FC<IProps> = (props: IProps): JSX.Element => {
     return (
       <View style={[MP.mb20]}>
         <View style={[StylesOne.flex_row, StylesOne.flex_jc_sb, MP.mb10]}>
-          <View style={[StylesOne.flex_row]}>
+          <TouchableOpacity activeOpacity={0.6} onPress={onPostOwnerPress} style={[StylesOne.flex_row]}>
             <Image style={[StylesFour.myNewsLine_avatar]} source={{ uri: src }} />
             <View style={[StylesOne.flex_column, MP.ml5]}>
               <Text numberOfLines={1} style={[StylesFour.myNewsLine_owner]}>
@@ -47,7 +62,7 @@ const HomePostView: React.FC<IProps> = (props: IProps): JSX.Element => {
                 {date}
               </Text>
             </View>
-          </View>
+          </TouchableOpacity>
           <TouchableOpacity onPress={props.onBurgerPress} style={[StylesOne.flex_row, StylesOne.flex_ai_c]}>
             <Image style={St.image20} source={images.burgerBtn} />
           </TouchableOpacity>
@@ -61,11 +76,11 @@ const HomePostView: React.FC<IProps> = (props: IProps): JSX.Element => {
         <View style={[StylesOne.flex_row, MP.mt10, MP.mb20]}>
         <HomeButtonView entity={props.entity} onLikePress={props.onLikePress} />
           <TouchableOpacity onPress={props.onCommendPress} style={[{ width: mockupWidthToDP(40), height: mockupHeightToDP(30) }, StylesOne.flex_row, StylesOne.flex_ai_c, MP.mr20]}>
-            <Image style={[{ width: '100%', height: '100%', resizeMode: 'contain' }]} source={images.commend} />
+            <Image style={[StylesOne.wh100, StylesOne.rm_c]} source={images.commend} />
             <Text style={{ color: 'black' }}>0</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={props.onRepostPress} style={[{ width: mockupWidthToDP(40), height: mockupHeightToDP(30) }, StylesOne.flex_row, StylesOne.flex_ai_c, MP.mr20]}>
-            <Image style={[{ width: '100%', height: '100%', resizeMode: 'contain' }]} source={images.repost} />
+            <Image style={[StylesOne.wh100, StylesOne.rm_c]} source={images.repost} />
           </TouchableOpacity>
         </View>
           <View style={St.horizontalLine} />

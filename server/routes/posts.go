@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"reflect"
 	"server/database"
+	typedDB "server/types"
 	"server/utils"
 	"strconv"
 
@@ -180,6 +181,20 @@ func Posts(route *gin.Engine, db *database.DB) {
 					"pages":         0, //TODO paging
 				})
 			}
+		}
+	})
+	router.GET("/getPost/:post-hash", func(c *gin.Context) {
+		var postHash string = c.Param("post-hash")
+		if name, _, err := utils.ParseHeader(c); err == nil {
+			dbResponse, err := db.GetPostWithLikesByHash(postHash, name)
+			if err == nil {
+				c.JSON(http.StatusOK, typedDB.GiveOKResponseWithData(dbResponse))
+			} else {
+				c.JSON(http.StatusForbidden, typedDB.GiveResponse(http.StatusForbidden, "Forbidden"))
+			}
+
+		} else {
+			c.JSON(http.StatusForbidden, typedDB.GiveResponse(http.StatusForbidden, "Forbidden"))
 		}
 	})
 }

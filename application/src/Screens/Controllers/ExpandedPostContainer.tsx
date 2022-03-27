@@ -1,86 +1,110 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Image, View } from 'react-native';
 import ExpandedPostComponent from '../AdditionScreens/ExpandedPostComponent';
 import { BaseProps } from '../../Types/Types';
-import { StackScreens } from '../Core/MainNavigationScreen';
+import { onBlur, onFocus, StackScreens } from '../Core/MainNavigationScreen';
 import { St } from '../../Styles/StylesTwo';
 import { Post } from '../../Types/Models';
-import {actionImpl, apiURL} from '../../redux/actions';
-import {checkForAvatar} from "../../Parts/utils";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import {useDispatch} from "react-redux";
-import {INavigation} from "../Core/OverrideNavigation";
+import { actionImpl, apiURL } from '../../redux/actions';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useDispatch, useSelector } from 'react-redux';
+import { INavigation } from '../Core/OverrideNavigation';
+import { HomePostEntity } from '../../BLL/entity/HomePostEntity';
+import { currentUser } from '../../BLL/CurrentUserProps';
+import { ActionTypes } from '../../redux/types/ActionTypes';
 
 type IProps = {} & BaseProps;
+type IState = {
+  data: HomePostEntity | {};
+  isLoading: boolean;
+  carouselData: {
+    data_count: number;
+    owner: string;
+    post_hash: string;
+  };
+};
 //source={state.isAvatarIncluded === 999 ? images.standardAvatar : {uri: state.ownerAvatar}}
 const ExpandedPostContainer: React.FC<IProps> = (props: IProps): JSX.Element => {
-  const [postState, setPostState] = useState(0)
-  const dispatch = useDispatch()
-  let postData: Post = props.route.params.postData;
-  const dataPath = `http://${apiURL}/storage/${postData.owner}/posts/${
-    postData.image.length > 0 && postData.data_count > 0 ? postData.image : postData.video
-  }/`;
-  const ownerAvatar: string = `http://${apiURL}/storage/${postData.owner}/avatar/avatar.png`;
+  const [getState, setState] = useState<IState>({
+    data: {},
+    carouselData: {
+      data_count: 0,
+      owner: '',
+      post_hash: '',
+    },
+    isLoading: false,
+  });
+  console.log('rerender')
+  const dispatch = useDispatch();
+  const store: any = useSelector<any>((store) => store.getPostWithLikesReducer);
+  let post_hash: string = props.route.params.pHash;
+  console.log(post_hash, 'postdata');
+  const dataPath = `http://${apiURL}/storage/${getState.data?.owner}/posts/${getState.data?.image}/0.png`;
+  const ownerAvatar: string = `http://${apiURL}/storage/${getState.data.owner}/avatar/avatar.png`;
   const onBackBtn = () => {
-    postData = props.route.params.postData;
-    console.log(postData)
     INavigation.goBack();
   };
-  useEffect(() => {
-    postData = props.route.params.postData;
-  }, []);
 
-  const createList = () => {
-    const result: null[] = new Array(postData.data_count); for (let i=0; i<postData.data_count; ++i) result[i] = null;
-    console.log(result.length, result, postData.data_count)
-    return result;
-  };
-
-  const entity = {
-    likesCount: 2,
-  }
-
-  const _renderItem = ({ item, index }: {item: number, index: number}) => {
-    return <Image key={1} style={[St.image100modal]} source={{ uri: `${dataPath}${index}.png?${Date.now()}` }} />;
-  }
+  // const _renderItem = ({ item, index }: {item: number, index: number}) => {
+  //   return <Image key={1} style={[St.image100modal]} source={{ uri: `${dataPath}${index}.png?${Date.now()}` }} />;
+  // }
 
   const onPostOwnerPress = (): void => {
-    if (postData.owner !== void 0) {
-      AsyncStorage.getItem("currentUserId").then((el) => {
-          if (el !== null || el !== void 0) {
-              if (el === postData.owner) {
-                INavigation.navigate(StackScreens.MyProfile)
-              } else {
-                INavigation.navigate(StackScreens.UserProfile, {ownerId: postData.owner})
-              }
-          } else {
-              dispatch(actionImpl.logout())
-              dispatch(actionImpl.clear())
-              INavigation.navigate(StackScreens.SignIn)
-          }
-      })
+    const ownerId = (getState.data as HomePostEntity).owner;
+    if (ownerId !== void 0) {
+      if (currentUser.currentUserId !== null || currentUser.currentUserId !== void 0) {
+        if (currentUser.currentUserId === ownerId) {
+          INavigation.navigate(StackScreens.MyProfile);
+        } else {
+          INavigation.navigate(StackScreens.UserProfile, { ownerId: ownerId });
+        }
+      }
     }
-  }
+  };
+  const onLikePress = useCallback(() => {
+    const {image, owner} = getState.data as HomePostEntity;
+    dispatch(actionImpl.likePost(image, owner, ActionTypes.LikeSinglePost))
+   }, [getState.data]);
+
+  const onCommendPress = () => {};
+
+  const onRepostPress = () => {};
+
+  onFocus(() => {
+    if (dispatch !== void 0) {
+      dispatch(actionImpl.getPostWithLikesAndSub(post_hash));
+    }
+  }, [props.route.params, post_hash]);
 
 
+
+  useEffect(() => {
+    if (store.statusCode === 200) {
+      if (store.data instanceof HomePostEntity) {
+        console.log(store.data)
+        setState({
+          ...getState,
+          data: store.data,
+          carouselData: { data_count: store.data.data_count, owner: store.data.owner, post_hash: store.data.image },
+        });
+        console.log(store.data);
+      } else {
+        console.warn('Error! expanded post ex');
+      }
+    }
+  }, [store]);
 
   const STATE = {
     onBackBtn,
-    _renderItem,
-    createList,
-    postData,
     ownerAvatar,
-    postState,
     onPostOwnerPress,
-    entity
+    entity: getState.data as HomePostEntity,
+    dataPath,
+    onLikePress,
+    onCommendPress,
+    onRepostPress,
+    carouselData: getState.carouselData,
   };
-
-
-  useEffect(() => {
-    checkForAvatar(ownerAvatar).then((el) => {
-      setPostState(el)
-    })
-  }, [postData])
 
   return <ExpandedPostComponent {...STATE} />;
 };

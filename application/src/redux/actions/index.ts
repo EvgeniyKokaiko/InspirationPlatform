@@ -365,9 +365,8 @@ class Actions extends BaseAction implements ActionMethods {
     });
   };
 
-  public likePost = (imageHash: string, owner: string) => async (dispatch: Dispatch<Action>) => {
+  public likePost = (imageHash: string, owner: string, type: string) => async (dispatch: Dispatch<Action>) => {
     await this._useToken(async (el: string | null) => {
-      console.log(el, "TOKEN")
       axios
         .get(`http://${apiURL}/likes/${owner}/${imageHash}/like`, {
           headers: {
@@ -376,14 +375,31 @@ class Actions extends BaseAction implements ActionMethods {
         })
         .then((el) => {
           console.log(el.data, 'messages response');
-          dispatch({ type: ActionTypes.LikePost, payload: el.data });
+          dispatch({ type: type, payload: el.data });
         })
         .catch((err) => {
           console.log(err, 'messages response error');
-          dispatch({ type: ActionTypes.LikePost, payload: { statusCode: 423 } });
+          dispatch({ type: type, payload: { statusCode: 423 } });
         });
     });
   };
+  public getPostWithLikesAndSub = (imageHash: string) => async (dispatch: Dispatch<Action>) => {
+    await this._useToken(async (el: string | null) => {
+      axios
+        .get(`http://${apiURL}/posts/getPost/${imageHash}`, {
+          headers: {
+            Authorization: `Bearer ${el}`,
+          },
+        })
+        .then((el) => {
+          dispatch({ type: ActionTypes.GetPost, payload: el.data });
+        })
+        .catch((err) => {
+          console.log(err, 'messages response error');
+          dispatch({ type: ActionTypes.GetPost, payload: { statusCode: 423 } });
+        });
+    });
+  }
 }
 
 export const actionImpl = new Actions(apiURL);

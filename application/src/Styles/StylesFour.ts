@@ -108,5 +108,10 @@ export const StylesFour = StyleSheet.create({
     fontWeight: '400',
     lineHeight: 22,
   },
+  headerCarouselText: {
+    fontFamily: 'SFProDisplay-Bold',
+    fontSize: fontSizeDP(20),
+    color: 'white',
+  },
 
 });

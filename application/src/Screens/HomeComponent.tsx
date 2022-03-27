@@ -11,6 +11,7 @@ import { backgrounds } from '../Styles/Backgrounds';
 import { images } from '../assets/images';
 import { HomePostEntity } from '../BLL/entity/HomePostEntity';
 import { HomePostView } from './segments/HomePostView';
+import { HeaderSegment } from './segments/Header/HeaderSegment';
 
 type IProps = {
   onRefresh(): void;
@@ -20,6 +21,7 @@ type IProps = {
   onLikePress(postHash: string, owner: string): void;
   onCommendPress(): void;
   onRepostPress(): void;
+  onBackBtn(): void;
 };
 
 const HomeComponent: React.FC<IProps> = (state) => {
@@ -38,6 +40,7 @@ const HomeComponent: React.FC<IProps> = (state) => {
 
   return (
     <View style={[backgrounds.newsLine, StylesOne.wh100]}>
+     <HeaderSegment headerTitle='Home' />
       <FlatList
         data={state.data}
         renderItem={_renderItem}

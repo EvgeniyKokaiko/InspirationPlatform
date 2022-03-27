@@ -6,6 +6,8 @@ import {actionImpl} from "../../redux/actions";
 import {Post} from "../../Types/Models";
 import {onBlur, onFocus} from "../Core/MainNavigationScreen";
 import { HomePostEntity } from '../../BLL/entity/HomePostEntity';
+import { ActionTypes } from '../../redux/types/ActionTypes';
+import { INavigation } from '../Core/OverrideNavigation';
 
 type IProps = {};
 
@@ -35,14 +37,19 @@ const HomeContainer: React.FC<IProps> = (props) => {
   }
 
   const onLikePress = useCallback((postHash: string, owner: string) => {
-   dispatch(actionImpl.likePost(postHash, owner))
+   dispatch(actionImpl.likePost(postHash, owner, ActionTypes.LikePost))
   }, []);
+  
 
   const onCommendPress = () => {
     console.log('onCommendPress');
   }
   const onRepostPress = () => {
     console.log('onRepostPress');
+  }
+
+  const onBackBtn = () => {
+    INavigation.goBack();
   }
 
   onBlur(() => {
@@ -56,7 +63,8 @@ const HomeContainer: React.FC<IProps> = (props) => {
     onBurgerPress,
     onLikePress,
     onCommendPress,
-    onRepostPress
+    onRepostPress,
+    onBackBtn
   };
 
  

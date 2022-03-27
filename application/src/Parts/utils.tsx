@@ -61,18 +61,7 @@ export function fontSizeDP(fontSize: number, standardScreenHeight = 812) {
 }
 
 
-export async function checkForAvatar(avatarUrl: string): Promise<number> {
-    try {
-        if (avatarUrl !== void 0) {
-            const response = await axios.get(avatarUrl)
-            return response.status !== 200 ? 999 : response.status
-        }
-        return 999
-    } catch (e) {
-        console.log(e)
-        return 999
-    }
-}
+
 
 export const dateParser = (timestamp: any, localtime = 0): string => {
     const parser = new Date(Date.parse(timestamp));

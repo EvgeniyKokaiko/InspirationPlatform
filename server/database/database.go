@@ -98,7 +98,7 @@ func (db *DB) Me(username string) (utils.StandardMap, error) {
 	dbCounter := db.database.
 		Table(typedDB.TABLES.SUBSCRIPTIONS).
 		Raw(`SELECT x.owner_count, y.subscriber_count FROM
-		(SELECT COUNT(*) AS owner_count from user_subscription WHERE OWNER = ?) AS x, 
+		(SELECT COUNT(*) AS owner_count from user_subscription WHERE maker = ?) AS x, 
 		(SELECT COUNT(*) AS subscriber_count FROM user_subscription WHERE subscriber = ?) as y`, username, username).
 		Scan(&userCounts)
 	dbResult.AddToMap("userData", result)
@@ -197,12 +197,12 @@ func (db *DB) GetUserDataWithPosts(username string, name string, page int) (map[
 		Take(&userData)
 	dbSubscription := db.database.
 		Table(typedDB.TABLES.SUBSCRIPTIONS).
-		Where("owner = ? AND subscriber = ?", username, name).
+		Where("maker = ? AND subscriber = ?", username, name).
 		Find(&userSubscription)
 	dbCounter := db.database.
 		Table(typedDB.TABLES.SUBSCRIPTIONS).
 		Raw(`SELECT x.owner_count, y.subscriber_count FROM
-		(SELECT COUNT(*) AS owner_count from user_subscription WHERE OWNER = ?) AS x, 
+		(SELECT COUNT(*) AS owner_count from user_subscription WHERE maker = ?) AS x, 
 		(SELECT COUNT(*) AS subscriber_count FROM user_subscription WHERE subscriber = ?) as y`, username, username).
 		Scan(&userCounts)
 	if (userData.IsPrivate == 1 && userSubscription.Status > 2) || userData.IsPrivate == 0 {
@@ -224,7 +224,7 @@ func (db *DB) GetUserDataWithPosts(username string, name string, page int) (map[
 	}
 	dbResult.AddToMap("counts", userCounts)
 
-	if userSubscription.Owner == "" && userSubscription.Subscriber == "" {
+	if userSubscription.Maker == "" && userSubscription.Subscriber == "" {
 		dbResult.AddToMap("isSubscribe", false)
 	} else {
 		dbResult.AddToMap("isSubscribe", true)
@@ -249,7 +249,7 @@ func (db *DB) GetUserDataWithPosts(username string, name string, page int) (map[
 func (db *DB) SubscribeUser(owner string, subscriber string) (bool, error) {
 	subscription := models.Subscriptions{}
 	subscription.Subscriber = subscriber
-	subscription.Owner = owner
+	subscription.Maker = owner
 	subscription.CreatedAt = time.Now()
 	subscription.UpdatedAt = time.Now()
 	ownerUser := models.User{}
@@ -261,14 +261,14 @@ func (db *DB) SubscribeUser(owner string, subscriber string) (bool, error) {
 		Where("username = ?", owner).
 		Take(&ownerUser)
 	dbSubscriptionResponse := db.database.
-		Raw("Select COUNT(*) FROM user_subscription WHERE owner = ? AND subscriber = ?", owner, subscriber).
+		Raw("Select COUNT(*) FROM user_subscription WHERE maker = ? AND subscriber = ?", owner, subscriber).
 		Scan(&countOfResponses)
 
 	if dbUserResponse.Error != nil || countOfResponses != 0 || dbSubscriptionResponse.Error != nil || owner == subscriber {
 		return false, errors.New("ERROR!This user doesnt exists")
 	}
 
-	if dbTwoWaySubscriptionResponse := db.database.Table(typedDB.TABLES.SUBSCRIPTIONS).Where("owner = ? AND subscriber = ? AND status > 1", subscriber, owner).Take(&isExists); isExists.Owner != subscriber && isExists.Subscriber != owner {
+	if dbTwoWaySubscriptionResponse := db.database.Table(typedDB.TABLES.SUBSCRIPTIONS).Where("maker = ? AND subscriber = ? AND status > 1", subscriber, owner).Take(&isExists); isExists.Maker != subscriber && isExists.Subscriber != owner {
 		fmt.Println(1, 2)
 		if ownerUser.IsPrivate == 1 {
 			subscription.Status = 1
@@ -284,7 +284,7 @@ func (db *DB) SubscribeUser(owner string, subscriber string) (bool, error) {
 		fmt.Println(subscription.SocketHash, "BRUH0", updateSecondDimension, "BRUH")
 		if dbMySubscriptionResponse := db.database.
 			Table(typedDB.TABLES.SUBSCRIPTIONS).
-			Where("owner = ? AND subscriber = ? AND status > 1", subscriber, owner).
+			Where("maker = ? AND subscriber = ? AND status > 1", subscriber, owner).
 			Updates(&updateSecondDimension); dbMySubscriptionResponse.Error != nil {
 			return false, errors.New("ERROR!This user doesnt exists")
 		}
@@ -302,7 +302,7 @@ func (db *DB) UnfollowUser(owner string, subscriber string) (bool, error) {
 	subscription := models.Subscriptions{}
 	dbUnfollowResponse := db.database.
 		Table(typedDB.TABLES.SUBSCRIPTIONS).
-		Where("owner = ? AND subscriber = ?", owner, subscriber).
+		Where("maker = ? AND subscriber = ?", owner, subscriber).
 		Delete(&subscription)
 	if dbUnfollowResponse.Error != nil || dbUnfollowResponse.RowsAffected == 0 {
 		return false, errors.New("ERROR! Something went wrong")
@@ -315,7 +315,7 @@ func (db *DB) AcceptRequestOnSubscription(owner string, username string, accepte
 	if accepted {
 		if dbAcceptRequestResponse := db.database.
 			Table(typedDB.TABLES.SUBSCRIPTIONS).
-			Where("owner = ? AND subscriber = ?", owner, username).
+			Where("maker = ? AND subscriber = ?", owner, username).
 			Update("status", 2); dbAcceptRequestResponse.Error != nil || dbAcceptRequestResponse.RowsAffected == 0 {
 			fmt.Println(dbAcceptRequestResponse.Error, dbAcceptRequestResponse.RowsAffected, true)
 			return false, errors.New("ERROR! Something went wrong")
@@ -323,7 +323,7 @@ func (db *DB) AcceptRequestOnSubscription(owner string, username string, accepte
 	} else {
 		if dbDeclineRequestResponse := db.database.
 			Table(typedDB.TABLES.SUBSCRIPTIONS).
-			Where("owner = ? AND subscriber = ?", owner, username).
+			Where("maker = ? AND subscriber = ?", owner, username).
 			Delete(&subscription); dbDeclineRequestResponse.Error != nil || dbDeclineRequestResponse.RowsAffected == 0 {
 			fmt.Println(dbDeclineRequestResponse.Error, dbDeclineRequestResponse.RowsAffected, false, owner, username, accepted)
 			return false, errors.New("ERROR! Something went wrong")
@@ -342,7 +342,7 @@ func (db *DB) GetRequestList(owner string) ([]map[string]interface{}, error) {
 		SELECT * FROM user_subscription
 		INNER JOIN (SELECT full_name, username, email, description FROM users)
 		AS user_rows ON user_subscription.subscriber = user_rows.username
-		AND user_subscription.owner = ? AND user_subscription.status = 1`, owner).
+		AND user_subscription.maker = ? AND user_subscription.status = 1`, owner).
 		Take(&subscriptionList); dbGetRequestListResponse.Error != nil || dbGetRequestListResponse.RowsAffected == 0 {
 		return []map[string]interface{}{}, errors.New("ERROR! Something went wrong")
 	}
@@ -357,7 +357,7 @@ func (db *DB) GetMyFriendList(owner string, page int) ([]map[string]interface{},
 		SELECT * FROM user_subscription
 		INNER JOIN (SELECT full_name, username, email, description FROM users)
 		AS user_rows ON user_subscription.subscriber = user_rows.username
-		AND user_subscription.owner = ?`, owner).
+		AND user_subscription.maker = ?`, owner).
 		Find(&subscriptionList); dbGetRequestListResponse.Error != nil || dbGetRequestListResponse.RowsAffected == 0 {
 		return []map[string]interface{}{}, errors.New("ERROR! Something went wrong")
 	}
@@ -371,7 +371,7 @@ func (db *DB) GetMySubscriptionList(subscriber string, page int) ([]map[string]i
 	if dbGetRequestListResponse := db.database.Raw(`
 		SELECT * FROM user_subscription
 		INNER JOIN (SELECT full_name, username, email, description FROM users)
-		AS user_rows ON user_subscription.owner = user_rows.username
+		AS user_rows ON user_subscription.maker = user_rows.username
 		AND user_subscription.subscriber = ?`, subscriber).
 		Find(&subscriptionList); dbGetRequestListResponse.Error != nil || dbGetRequestListResponse.RowsAffected == 0 {
 		return []map[string]interface{}{}, errors.New("ERROR! Something went wrong")
@@ -382,11 +382,12 @@ func (db *DB) GetMySubscriptionList(subscriber string, page int) ([]map[string]i
 
 func (db *DB) GetMyNewsLine(subscriber string, page int) ([]map[string]interface{}, error) {
 	var myNewsLine = []map[string]any{}
+	//FIX likes (there is select * likes except likes to current post)
 	if dbGetMyNewsLineResponse := db.database.Raw(`
 	SELECT * FROM posts INNER JOIN
-	(SELECT owner, subscriber, status FROM user_subscription 
+	(SELECT maker, subscriber, status FROM user_subscription 
 	WHERE STATUS > 1 AND subscriber = ?)
-	AS subs ON (posts.owner = subs.owner)
+	AS subs ON (posts.owner = subs.maker)
 	LEFT JOIN (SELECT COUNT(*) as likesCount, post_hash FROM likes) as likes ON (posts.image = likes.post_hash)  
 	LEFT JOIN (SELECT * FROM likes WHERE initiator = ?) as likeData ON (posts.image = likes.post_hash)
 	 ORDER BY posts.date_of_creation DESC
@@ -487,4 +488,18 @@ func (db *DB) LikePostHandler(initiator string, postHash string, owner string) (
 		}
 		return true, nil
 	}
+}
+
+func (db *DB) GetPostWithLikesByHash(postHash string, initiator string) (map[string]any, error) {
+	var dbData = map[string]any{}
+
+	if dbGetPostResponse := db.database.Raw(`
+	SELECT * FROM (SELECT * FROM posts WHERE posts.image = ?) as posts2 LEFT JOIN (SELECT maker, subscriber, status FROM user_subscription 
+		WHERE subscriber = ?)
+		AS subs ON (posts2.owner = subs.maker) LEFT JOIN (SELECT COUNT(*) as likesCount, post_hash FROM likes WHERE likes.post_hash = ?) as likes ON (posts2.image = likes.post_hash)  
+		LEFT JOIN (SELECT * FROM likes WHERE initiator = ?) as likeData ON (posts2.image = likes.post_hash)
+		 ORDER BY posts2.date_of_creation DESC`, postHash, initiator, postHash, initiator).Take(&dbData); dbGetPostResponse.Error != nil {
+		return map[string]any{}, errors.New("ERROR! GetPostWithLikesByHash ex")
+	}
+	return dbData, nil
 }

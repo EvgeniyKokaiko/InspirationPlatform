@@ -8,6 +8,7 @@ import { Post } from '../../Types/Models';
 import {Alert, NativeScrollEvent, NativeSyntheticEvent} from 'react-native';
 import {mockupHeightToDP} from "../../Parts/utils";
 import {INavigation} from "../Core/OverrideNavigation";
+import { homeEntityProps, HomePostEntity } from '../../BLL/entity/HomePostEntity';
 
 export interface menuState {
   search: string;
@@ -35,8 +36,8 @@ const MenuContainer: React.FC<IProps> = (props: IProps): JSX.Element => {
     setMenuState({ ...menuState, search: v });
   }
 
-  const onPostPress = (postData: Post) => {
-    INavigation.navigate(StackScreens.PostDetails, { postData });
+  const onPostPress = (postHash: string) => {
+    INavigation.navigate(StackScreens.PostDetails, { pHash: postHash });
   }
 
   const onRefresh = useCallback(() => {

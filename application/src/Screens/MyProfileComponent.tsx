@@ -8,7 +8,6 @@ import { images } from '../assets/images';
 import { St } from '../Styles/StylesTwo';
 import { backgrounds } from '../Styles/Backgrounds';
 import Avatar from './segments/Avatar';
-import {checkForAvatar, mockupHeightToDP} from '../Parts/utils';
 import { useDispatch, useSelector } from 'react-redux';
 import { Reducers } from '../redux/reducers/reducers';
 import {actionImpl, apiURL} from '../redux/actions';
@@ -16,6 +15,7 @@ import { User } from '../Types/Models';
 import MyPost from './segments/MyPost';
 import FullScreenPreloader from './segments/FullScreenPreloader';
 import {INavigation} from "./Core/OverrideNavigation";
+import { mockupHeightToDP } from '../Parts/utils';
 
 type IProps = BaseProps & {};
 
@@ -59,13 +59,6 @@ const MyProfileComponent: React.FC<IProps> = (props: IProps) => {
     });
   };
 
-  useEffect(() => {
-    if (user !== void 0) {
-      checkForAvatar(`http://${apiURL}/storage/${user!.username}/avatar/avatar.png?ab=${Date.now()}`).then((el) => {
-        setAvatar(el)
-      })
-    }
-  }, [refresh , user])
 
   async function onPersonalSitePress() {
     await Linking.openURL((user as unknown as User).personal_site);

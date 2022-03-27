@@ -27,6 +27,8 @@ export enum ActionTypes {
     SetNewStatus = "SET_NEW_MESSAGE_STATUS",
     SetAllReadMessages = "SET_ABSOLUTE_ALL_MESSAGES_AS_READ",
     LikePost = "LIKE_POST_OR_UNLIKE_POST",
+    LikeSinglePost = "LIKE_POST_OR_UNLIKE_SINGLE_POST",
+    GetPost = "GET_POST_WITH_LIKES_AND_SUBSCRIPTION",
 }
 
 

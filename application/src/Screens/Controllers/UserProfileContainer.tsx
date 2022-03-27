@@ -6,7 +6,6 @@ import {actionImpl, apiURL} from "../../redux/actions";
 import {StackScreens} from "../Core/MainNavigationScreen";
 import {Linking} from "react-native";
 import {User} from "../../Types/Models";
-import {checkForAvatar} from "../../Parts/utils";
 import {INavigation} from "../Core/OverrideNavigation";
 
 type IProps = {} & BaseProps

@@ -1,10 +1,16 @@
-import { StyleSheet } from 'react-native';
-import { fontSizeDP, mockupHeightToDP, mockupWidthToDP } from '../Parts/utils';
+import { Platform, StyleSheet } from 'react-native';
+import { DEVICE_HEIGHT, DEVICE_WIDTH, fontSizeDP, mockupHeightToDP, mockupWidthToDP } from '../Parts/utils';
 import { colors } from '../Parts/colors';
+import StaticSafeAreaInsets from 'react-native-static-safe-area-insets';
 
+export const safeAreaInsetsTop = Platform.OS === 'ios' ? StaticSafeAreaInsets.safeAreaInsetsTop : 0;
 export const StylesOne = StyleSheet.create({
   screenContainer: {
     flex: 1,
+  },
+
+  absolute: {
+    position: 'absolute',
   },
 
   logoAddition: {
@@ -12,8 +18,40 @@ export const StylesOne = StyleSheet.create({
     color: colors.SignIn_Font2,
   },
 
+
+  w15: {
+    width: '15%',
+  },
+
+  w70: {
+    width: '70%',
+  },
+
   rounded: {
     borderRadius: 999,
+  },
+
+  flex1: {
+    flex: 1,
+  },
+
+  minWidth15: {
+    minWidth: '15%',
+  },
+
+  width70: {
+    minWidth: '70%',
+    maxWidth: '70%',
+  },
+
+  wImageCarousel: {
+    width: DEVICE_WIDTH,
+    height: DEVICE_HEIGHT,
+  },
+
+  width15: {
+    minWidth: '15%',
+    maxWidth: '15%',
   },
 
   searchPane: {
@@ -208,6 +246,12 @@ export const StylesOne = StyleSheet.create({
     fontSize: fontSizeDP(18),
     fontWeight: '800',
     fontFamily: 'Metropolis',
+  },
+
+  horizontalLine: {
+    height: 1,
+    width: '100%',
+    backgroundColor: colors.inactive_btn,
   },
 
   flex_center: {

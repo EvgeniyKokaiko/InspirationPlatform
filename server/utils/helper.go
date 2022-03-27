@@ -53,7 +53,9 @@ func GenerateHashWithSalt(salt ...interface{}) (string, error) {
 
 	byteResult, _ := json.Marshal(result)
 	hash, _ := bcrypt.GenerateFromPassword(byteResult, 8)
-	return string(hash), nil
+	validHashString := strings.Replace(string(hash), "/", ".", 15)
+
+	return validHashString, nil
 }
 
 const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"

@@ -216,6 +216,53 @@ class ReducersImpl {
         return state
     }
 
+    public GetPostWithLikesReducer(state: any = {}, action: Action) {
+        if (action.type === ActionTypes.GetPost) {
+            if (action.payload.statusCode === 200) {
+                const newPostEntity = new HomePostEntity({...action.payload.data || {}})
+                return {
+                    isModify: state.isModify + 1 || 1,
+                    statusCode: action.payload.statusCode,
+                    statusMessage: action.payload.statusMessage,
+                    data: newPostEntity as HomePostEntity,
+                }
+            } else {
+               return {
+                isModify: state.isModify + 1 || 1,
+                statusCode: action.payload.statusCode,
+                statusMessage: action.payload.statusMessage,
+                data: {},
+               }
+            }
+        } else if (action.type === ActionTypes.LikeSinglePost) {
+            console.log('actioned')
+            if (action.payload.statusCode !== 200) {
+                return state
+            }
+                if (state.data.image === action.payload.data.post_hash) {
+                    if (action.payload.data.is_like) {
+                        state.data.likesCount = state.data.likesCount + 1;
+                        state.data.post_hash = action.payload.post_hash;
+                    } else {
+                        state.data.likesCount = state.data.likesCount - 1;
+                        state.data.post_hash = null;
+                    }
+                }
+                return {
+                    isModify: state.isModify,
+                    statusCode: action.payload.statusCode,
+                    statusMessage: action.payload.statusMessage,
+                    data: state.data as HomePostEntity,
+                }
+    }
+        return {
+                    isModify: 0,
+                    statusCode: 0,
+                    statusMessage: '',
+                    data: {},
+        }
+    }
+
 
     public GetMessagesReducer(state: any = {}, action: Action) {
         if (action.type === ActionTypes.U2UMessages) {
@@ -326,6 +373,7 @@ class ReducersImpl {
             followerListReducer: this.FollowerListReducer,
             getMessagesReducer: this.GetMessagesReducer,
             getTokenReducer: this.GetTokenReducer,
+            getPostWithLikesReducer: this.GetPostWithLikesReducer,
         })
     }
 }
