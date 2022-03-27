@@ -49,7 +49,7 @@ class ReducersImpl {
         return state
     }
 
-    public MeReducer(state = [], action: Action) {
+    public MeReducer(state = {}, action: Action) {
         if (action.type === ActionTypes.Me) {
             return action.payload
         } else if (action.type === ActionTypes.Clear) {
@@ -58,7 +58,7 @@ class ReducersImpl {
         return state
     }
 
-    public MePostsReducer(state = [], action: Action) {
+    public MePostsReducer(state = {}, action: Action) {
         if (action.type === ActionTypes.MePosts) {
             return action.payload
         } else if (action.type === ActionTypes.Clear) {

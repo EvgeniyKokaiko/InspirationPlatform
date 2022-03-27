@@ -85,7 +85,7 @@ const ExpandedPostComponent = (state: IProps) => {
         </View>
         <View style={[MP.ph15]}>
           <Text style={SThree.post_caption_word}>Caption:</Text>
-          <Text style={[SThree.post_caption_expanded]}>{state.entity.caption}</Text>
+          <Text selectable style={[SThree.post_caption_expanded]}>{state.entity.caption}</Text>
         </View>
       </ScrollView>
     </View>

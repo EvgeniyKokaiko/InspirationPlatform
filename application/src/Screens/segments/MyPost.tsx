@@ -35,6 +35,8 @@ type myPostProps = {
   onCommendPress(): void;
   onLikePress(postHash: string, owner: string): void;
   onRepostPress(): void;
+  reload: number;
+  setReload: React.Dispatch<React.SetStateAction<number>>
 } & Post;
 
 type IState = {
@@ -81,7 +83,7 @@ const MyPost = (props: myPostProps) => {
         style: 'cancel',
       },
     ]);
-  }, []);
+  }, [props]);
 
   const showModal = () => {
     setState({ ...getState, showModal: true, index: props.index });
@@ -100,12 +102,13 @@ const MyPost = (props: myPostProps) => {
 
   const onAlertDeletePost = useCallback(() => {
     dispatch(actionImpl.deletePost(props.image, props.owner));
-  }, []);
+    props.setReload(prev => prev + 1);
+  }, [props.image, props.owner]);
 
   useEffect(() => {
     if (state?.statusCode !== void 0) {
       if (state?.statusCode === 200 && getState.index === props.index) {
-        setState({ ...getState, showModal: false });
+        setState({ ...getState, showModal: false, index: -1 });
         Alert.alert('Accepted', 'Post was delete successfully');
         dispatch(actionImpl.getMe());
       }
@@ -116,7 +119,7 @@ const MyPost = (props: myPostProps) => {
         return;
       }
     }
-  }, [state.statusCode]);
+  }, [state]);
 
   return (
     <View key={props.id} style={[St.postListItem, St.zIndex2]}>
@@ -155,7 +158,7 @@ const MyPost = (props: myPostProps) => {
             </TouchableOpacity>
           </View>
           <View style={[StylesOne.flex1, StylesOne.flexCenter]}>
-            <SingleCarouselComponent onMomentumScrollEnd={onMomentumScrollEnd} carouselData={getState.carouselData} />
+            <SingleCarouselComponent reload={props.reload} onMomentumScrollEnd={onMomentumScrollEnd} carouselData={getState.carouselData} />
           </View>
           <View style={[StylesOne.flex_row, MP.mt10, MP.mb20]}>
             <HomeButtonView textColor={'white'} entity={entity as HomePostEntity} onLikePress={props.onLikePress} />
@@ -174,7 +177,7 @@ const MyPost = (props: myPostProps) => {
             </TouchableOpacity>
           </View>
           <View style={[StylesOne.flex_row, StylesOne.flex_jc_fs, StylesOne.w100, MP.ph15]}>
-            <Text style={[SThree.post_caption, { color: 'white' }]}>{props.caption}</Text>
+            <Text selectable style={[SThree.post_caption, { color: 'white' }]}>{props.caption}</Text>
           </View>
         </ScrollView>
       </Modal>

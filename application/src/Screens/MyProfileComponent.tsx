@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { BaseProps } from '../Types/Types';
 import { View, Text, TouchableOpacity, Image, Linking, ScrollView, RefreshControl, FlatList } from 'react-native';
-import { goBack, noGoBack, StackScreens } from './Core/MainNavigationScreen';
+import { goBack, noGoBack, onFocus, StackScreens } from './Core/MainNavigationScreen';
 import { StylesOne } from '../Styles/StylesOne';
 import { MP } from '../Styles/MP';
 import { images } from '../assets/images';
@@ -24,6 +24,7 @@ const MyProfileComponent: React.FC<IProps> = (props: IProps) => {
   const [refresh, setRefresh] = useState(false);
   const [avatar, setAvatar] = useState(-1)
   const [posts, setPosts] = useState([]);
+  const [reload, setReload] = useState(0);
   const isMe = true;
   const [counts, setCounts] = useState({
     owner_count: 0,
@@ -34,12 +35,20 @@ const MyProfileComponent: React.FC<IProps> = (props: IProps) => {
   noGoBack();
 
 
-
-  useEffect(() => {
+  onFocus(() => {
     dispatch(actionImpl.getMe());
     dispatch(actionImpl.getMyPosts());
     setRefresh(false);
-  }, []);
+  }, [])
+
+
+  useEffect(() => {
+    setUser({});
+    setPosts([]);
+    setCounts({owner_count: 0, subscriber_count: 0})
+    dispatch(actionImpl.getMe());
+    dispatch(actionImpl.getMyPosts());
+  }, [reload])
 
   const makeRequest = useCallback(() => {
     dispatch(actionImpl.getMe());
@@ -55,7 +64,7 @@ const MyProfileComponent: React.FC<IProps> = (props: IProps) => {
 
   const renderPosts = () => {
     return posts.map((el, index) => {
-      return <MyPost isMe={isMe} {...el} key={index} />;
+      return <MyPost setReload={setReload} reload={reload} isMe={isMe} {...el} key={index} />;
     });
   };
 
