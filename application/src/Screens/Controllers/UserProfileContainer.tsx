@@ -7,6 +7,7 @@ import {StackScreens} from "../Core/MainNavigationScreen";
 import {Linking} from "react-native";
 import {User} from "../../Types/Models";
 import {INavigation} from "../Core/OverrideNavigation";
+import { ActionTypes } from '../../redux/types/ActionTypes';
 
 type IProps = {} & BaseProps
 
@@ -63,6 +64,10 @@ const UserProfileContainer = (props: IProps) => {
     }
 
 
+    const onLikePress = useCallback((postHash: string, owner: string) => {
+        dispatch(actionImpl.likePost(postHash, owner, ActionTypes.LikeUserPosts))
+       }, []);
+
 
     const STATE = {
         ownerId,
@@ -79,6 +84,7 @@ const UserProfileContainer = (props: IProps) => {
         goToChatScreen,
         onFollowingPress,
         onFollowersPress,
+        onLikePress,
     }
 
 

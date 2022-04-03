@@ -11,44 +11,66 @@ import Avatar from './segments/Avatar';
 import { useDispatch, useSelector } from 'react-redux';
 import { Reducers } from '../redux/reducers/reducers';
 import {actionImpl, apiURL} from '../redux/actions';
-import { User } from '../Types/Models';
+import { Post, User } from '../Types/Models';
 import MyPost from './segments/MyPost';
 import FullScreenPreloader from './segments/FullScreenPreloader';
 import {INavigation} from "./Core/OverrideNavigation";
 import { mockupHeightToDP } from '../Parts/utils';
+import { HomePostEntity } from '../BLL/entity/HomePostEntity';
+import { ActionTypes } from '../redux/types/ActionTypes';
 
 type IProps = BaseProps & {};
 
+type IState = {
+  user: any;
+  refresh: boolean;
+  avatar: 1;
+  posts: Post[];
+  reload: number;
+  counts: {
+    owner_count: number,
+    subscriber_count: number
+  }
+};
+
 const MyProfileComponent: React.FC<IProps> = (props: IProps) => {
-  const [user, setUser] = useState<any>({});
-  const [refresh, setRefresh] = useState(false);
-  const [avatar, setAvatar] = useState(-1)
-  const [posts, setPosts] = useState([]);
-  const [reload, setReload] = useState(0);
   const isMe = true;
-  const [counts, setCounts] = useState({
-    owner_count: 0,
-    subscriber_count: 0
+  const [getState, setState] = useState({
+    user: {},
+    refresh: false,
+    avatar: -1,
+    posts: [],
+    reload: 0,
+    counts: {
+      owner_count: 0,
+      subscriber_count: 0
+    }
   })
   const dispatch = useDispatch();
   const state: any = useSelector<Reducers>((state) => state);
   noGoBack();
 
 
+  const onLikePress = useCallback((postHash: string, owner: string) => {
+    dispatch(actionImpl.likePost(postHash, owner, ActionTypes.LikeMyPosts))
+   }, []);
+
+  const setReload = (value: number) => {
+    setState({...getState, reload: value});
+  }
+
   onFocus(() => {
     dispatch(actionImpl.getMe());
     dispatch(actionImpl.getMyPosts());
-    setRefresh(false);
+    setState({...getState, refresh: false});
   }, [])
 
 
   useEffect(() => {
-    setUser({});
-    setPosts([]);
-    setCounts({owner_count: 0, subscriber_count: 0})
+    setState({...getState, user: {}, posts: [], counts: {owner_count: 0, subscriber_count: 0}})
     dispatch(actionImpl.getMe());
     dispatch(actionImpl.getMyPosts());
-  }, [reload])
+  }, [getState.reload])
 
   const makeRequest = useCallback(() => {
     dispatch(actionImpl.getMe());
@@ -57,64 +79,63 @@ const MyProfileComponent: React.FC<IProps> = (props: IProps) => {
 
   useEffect(() => {
     console.log(state.meReducer?.data)
-    setUser(state.meReducer.data?.userData);
-    setPosts(state.mePostsReducer?.data);
-    setCounts(state.meReducer.data?.counts)
+    setState({...getState, user: state.meReducer.data?.userData, posts: state.mePostsReducer?.data, counts: state.meReducer.data?.counts})
   }, [state.meReducer, state.mePostsReducer]);
 
   const renderPosts = () => {
-    return posts.map((el, index) => {
-      return <MyPost setReload={setReload} reload={reload} isMe={isMe} {...el} key={index} />;
+    return getState.posts.map((el: HomePostEntity, index) => {
+      console.log(getState.posts, 'sdasas')
+      return <MyPost onLikePress={onLikePress} entity={el} setReload={setReload} reload={getState.reload} isMe={isMe} index={index} />;
     });
   };
 
 
   async function onPersonalSitePress() {
-    await Linking.openURL((user as unknown as User).personal_site);
+    await Linking.openURL((getState.user as unknown as User).personal_site);
   }
 
   function onSettingsPress() {
-    INavigation.navigate(StackScreens.Settings, {isPrivate: user.is_private});
+    INavigation.navigate(StackScreens.Settings, {isPrivate: (getState.user! as any).is_private});
   }
 
 //0 - мои подписки
 //1 - мои подписчики
   function onFollowingPress() {
-    INavigation.navigate(StackScreens.Following, {userId: user!.username, listType: 1})
+    INavigation.navigate(StackScreens.Following, {userId: (getState.user! as any).username, listType: 1})
   }
 
   function onFollowersPress() {
-    INavigation.navigate(StackScreens.Following, {userId: user!.username, listType: 0})
+    INavigation.navigate(StackScreens.Following, {userId: (getState.user! as any).username, listType: 0})
   }
 
 
-  return user && posts ? (
-    <ScrollView style={[StylesOne.screenContainer, MP.ph25]} refreshControl={<RefreshControl refreshing={refresh} onRefresh={makeRequest} />}>
+  return getState.user && getState.posts ? (
+    <ScrollView style={[StylesOne.screenContainer, MP.ph25]} refreshControl={<RefreshControl refreshing={getState.refresh} onRefresh={makeRequest} />}>
       <View style={[StylesOne.w100]}>
         <View style={[StylesOne.flex_row, StylesOne.flex_jc_sb, StylesOne.flex_ai_c, MP.mv20]}>
           <View />
-          <View><Image source={images.logo} style={[StylesOne.image40, { tintColor: 'black' }]} /><Text style={St.ownerTextWithoutOffsets}>{user!.username}</Text></View>
+          <View><Image source={images.logo} style={[StylesOne.image40, { tintColor: 'black' }]} /><Text style={St.ownerTextWithoutOffsets}>{(getState.user! as any).username}</Text></View>
           <View />
         </View>
       </View>
       <View style={[MP.mt20, StylesOne.w100, St.borderRadius30, backgrounds.myProfileBlocks, MP.pv20, MP.ph20]}>
         <View style={[StylesOne.flex_row]}>
           <View style={[MP.mb20]}>
-            <Avatar icon={avatar === 999 ? images.standardAvatar : {uri: `http://${apiURL}/storage/${user!.username}/avatar/avatar.png?asd=${Date.now()}`}} size={60} />
+            <Avatar icon={getState.avatar === 999 ? images.standardAvatar : {uri: `http://${apiURL}/storage/${(getState.user! as any).username}/avatar/avatar.png?asd=${Date.now()}`}} size={60} />
           </View>
           <View style={[StylesOne.flex_row, StylesOne.flex_ai_c, { height: mockupHeightToDP(75) }]}>
             <TouchableOpacity onPress={onFollowingPress} style={[MP.mh15, StylesOne.flex_column, StylesOne.flex_ai_c]}>
-              <Text style={St.myAccButtonsHeader}>{counts.subscriber_count}</Text>
+              <Text style={St.myAccButtonsHeader}>{getState.counts.subscriber_count}</Text>
               <Text style={St.myAccButtonsDescr}>Following</Text>
             </TouchableOpacity>
             <View style={[St.verticalLine]} />
             <TouchableOpacity onPress={onFollowersPress} style={[MP.mh15, StylesOne.flex_column, StylesOne.flex_ai_c]}>
-              <Text style={St.myAccButtonsHeader}>{counts.owner_count}</Text>
+              <Text style={St.myAccButtonsHeader}>{getState.counts.owner_count}</Text>
               <Text style={St.myAccButtonsDescr}>Followers</Text>
             </TouchableOpacity>
             <View style={[St.verticalLine]} />
             <View style={[MP.mh15, StylesOne.flex_column, StylesOne.flex_ai_c]}>
-              <Text style={St.myAccButtonsHeader}>{posts.length}</Text>
+              <Text style={St.myAccButtonsHeader}>{getState.posts.length}</Text>
               <Text style={St.myAccButtonsDescr}>Posts</Text>
             </View>
           </View>
@@ -123,12 +144,12 @@ const MyProfileComponent: React.FC<IProps> = (props: IProps) => {
           <View style={[St.w240]}>
             <View>
               <Text numberOfLines={1} style={St.myAccName}>
-                {(user as User).full_name}
+                {(getState.user as User).full_name}
               </Text>
             </View>
             <View>
               <Text numberOfLines={1} style={St.myAccDescr}>
-                {(user as User).description}
+                {(getState.user as User).description}
               </Text>
             </View>
           </View>
@@ -156,7 +177,7 @@ const MyProfileComponent: React.FC<IProps> = (props: IProps) => {
   ) : (
     <ScrollView
       contentContainerStyle={[StylesOne.screenContainer, MP.ph25]}
-      refreshControl={<RefreshControl refreshing={refresh} onRefresh={makeRequest} />}
+      refreshControl={<RefreshControl refreshing={getState.refresh} onRefresh={makeRequest} />}
     >
 
       <View style={[StylesOne.flex_row, StylesOne.flex_jc_sb, StylesOne.flex_ai_c, MP.mv20, St.zIndex999]}>

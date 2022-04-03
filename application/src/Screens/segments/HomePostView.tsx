@@ -1,3 +1,4 @@
+import axios from "axios";
 import React, { useEffect, useMemo, useState } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import { images } from "../../assets/images";
@@ -24,27 +25,48 @@ type IProps = {
 
 type IState = {
     url: string;
+    likesData: any,
+    refreshOrUpdate: number,
 }
 
 const HomePostView: React.FC<IProps> = (props: IProps): JSX.Element => {
     const [getState, setState] = useState<IState>({
-        url: ''
+        url: '',
+        likesData: null,
+        refreshOrUpdate: 0,
     })
     const onPostOwnerPress = (): void => {
       const ownerId = props.entity.owner;
-      if (ownerId !== void 0) {
-        if (currentUser.currentUserId !== null || currentUser.currentUserId !== void 0) {
+        if (ownerId !== void 0 && (currentUser.currentUserId !== null || currentUser.currentUserId !== void 0)) {
           if (currentUser.currentUserId === ownerId) {
             INavigation.navigate(StackScreens.MyProfile);
           } else {
             INavigation.navigate(StackScreens.UserProfile, { ownerId: ownerId });
           }
         }
-      }
     };
+
+    const getLikes = async () => {
+     const response = await axios.get(`http://${apiURL}/likes/getLikes/${props.entity.image}`, {
+       headers: {
+         Authorization: `Bearer ${currentUser.token}`
+       }
+     })
+     if (response.data.statusCode === 200) {
+       const data: {isLiked: boolean; likesData: {likesCount: number; post_hash: string}} = response.data.data;
+       props.entity.likesCount = data.likesData.likesCount;
+       props.entity.post_hash = data.isLiked ?  data.likesData.post_hash : null;
+       setState({...getState, likesData: data, refreshOrUpdate: getState.refreshOrUpdate + 1});
+     }
+    }
+
+   useEffect(() => {
+    getLikes();
+    console.log(props.entity.likesCount, getState)
+   }, [props.entity])
+
     const src = `http://${apiURL}/storage/${props.entity.owner}/avatar/avatar.png`;
     useMemo(() => {
-        console.log('memem')
       setState({...getState, url: `http://${apiURL}/storage/${props.entity.owner}/posts/${props.entity.image}/0.png?ab=${Date.now()}`})
     }, [props.refresh])
 
@@ -74,7 +96,7 @@ const HomePostView: React.FC<IProps> = (props: IProps): JSX.Element => {
           <Image style={StylesFour.myNewsLine_img} source={{ uri: getState.url }} />
         </View>
         <View style={[StylesOne.flex_row, MP.mt10, MP.mb20]}>
-        <HomeButtonView entity={props.entity} onLikePress={props.onLikePress} />
+        <HomeButtonView refreshOrUpdate={getState.refreshOrUpdate} entity={props.entity} onLikePress={props.onLikePress} />
           <TouchableOpacity onPress={props.onCommendPress} style={[{ width: mockupWidthToDP(40), height: mockupHeightToDP(30) }, StylesOne.flex_row, StylesOne.flex_ai_c, MP.mr20]}>
             <Image style={[StylesOne.wh100, StylesOne.rm_c]} source={images.commend} />
             <Text style={{ color: 'black' }}>0</Text>

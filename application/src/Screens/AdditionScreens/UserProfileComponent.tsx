@@ -11,6 +11,7 @@ import {Post, User} from "../../Types/Models";
 import FullScreenPreloader from "../segments/FullScreenPreloader";
 import MyPost from "../segments/MyPost";
 import {colors} from "../../Parts/colors";
+import { HomePostEntity } from '../../BLL/entity/HomePostEntity';
 
 type IProps = {
     ownerId: string;
@@ -27,6 +28,7 @@ type IProps = {
     goToChatScreen():void;
     onFollowersPress():void;
     onFollowingPress(): void;
+    onLikePress(post_hash: string, owner: string): void;
 }
 
 const UserProfileComponent = (state: IProps) => {
@@ -35,8 +37,8 @@ const UserProfileComponent = (state: IProps) => {
         if (!Array.isArray(state.user?.userPosts) || state.user?.isPrivate) {
             return
         }
-        return state.user.userPosts?.map((el: Post, index: number) => {
-            return <MyPost isMe={state.isMe} {...el} index={index} key={index} />;
+        return state.user.userPosts?.map((el: HomePostEntity, index: number) => {
+            return <MyPost onLikePress={state.onLikePress} entity={el} isMe={state.isMe} index={index} key={index} />;
         });
     };
 

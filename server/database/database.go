@@ -170,10 +170,7 @@ func (db *DB) GetNewsLine(initiator string, page int) ([]map[string]any, int, er
 	var dbPageResult = map[string]interface{}{}
 	const postBunch int = 30
 	dbResponse := db.database.Raw(`
-	SELECT * FROM posts
-	LEFT JOIN (SELECT COUNT(*) as likesCount, post_hash FROM likes) as likes ON (posts.image = likes.post_hash)  
-	LEFT JOIN (SELECT * FROM likes WHERE initiator = ?) as likeData ON (posts.image = likes.post_hash)
-	 ORDER BY posts.date_of_creation DESC`, initiator).Offset(postBunch * page).Limit(postBunch).Scan(&dbResult)
+	SELECT * FROM posts ORDER BY posts.date_of_creation DESC`, initiator).Offset(postBunch * page).Limit(postBunch).Scan(&dbResult)
 	dbPageCount := db.database.Raw("SELECT COUNT(*) FROM posts").Scan(&dbPageResult)
 	pageCount := math.Ceil(float64(dbPageResult["COUNT(*)"].(int64) / 30))
 	fmt.Println(dbPageCount, pageCount)
@@ -388,8 +385,6 @@ func (db *DB) GetMyNewsLine(subscriber string, page int) ([]map[string]interface
 	(SELECT maker, subscriber, status FROM user_subscription 
 	WHERE STATUS > 1 AND subscriber = ?)
 	AS subs ON (posts.owner = subs.maker)
-	LEFT JOIN (SELECT COUNT(*) as likesCount, post_hash FROM likes) as likes ON (posts.image = likes.post_hash)  
-	LEFT JOIN (SELECT * FROM likes WHERE initiator = ?) as likeData ON (posts.image = likes.post_hash)
 	 ORDER BY posts.date_of_creation DESC
 		`, subscriber, subscriber).Scan(&myNewsLine); dbGetMyNewsLineResponse.Error != nil && dbGetMyNewsLineResponse.Error != gorm.ErrRecordNotFound {
 		return []map[string]interface{}{}, errors.New("ERROR! On GetMyNewsLine reading")
@@ -502,4 +497,22 @@ func (db *DB) GetPostWithLikesByHash(postHash string, initiator string) (map[str
 		return map[string]any{}, errors.New("ERROR! GetPostWithLikesByHash ex")
 	}
 	return dbData, nil
+}
+
+func (db *DB) GetLikesByHash(post_hash string, initiator string) (map[string]any, error) {
+	var response = map[string]any{}
+	var likesData = map[string]any{}
+	dbGetIsLikedResponse := db.database.Raw("select * from likes where likes.post_hash = ? and likes.initiator = ?", post_hash, initiator).Take(&map[string]any{})
+	fmt.Println(dbGetIsLikedResponse.Error)
+	if dbGetIsLikedResponse.Error != nil {
+		response["isLiked"] = false
+	} else {
+		response["isLiked"] = true
+	}
+	if dbGetLikesCount := db.database.Raw("select post_hash, count(*) as likesCount from likes where post_hash = ?", post_hash).Take(&likesData); dbGetLikesCount.Error != nil {
+		return map[string]any{}, errors.New("Error! GetLikesByHash ex")
+	}
+	response["likesData"] = likesData
+
+	return response, nil
 }

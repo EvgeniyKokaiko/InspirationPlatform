@@ -28,16 +28,20 @@ import { SingleCarouselComponent } from './Carousel/SingleCarouselComponent';
 import { ImageStyles } from '../../Styles/Images';
 import { StylesFour } from '../../Styles/StylesFour';
 import { LabelView } from './LabelView';
+import { ActionTypes } from '../../redux/types/ActionTypes';
+import axios from 'axios';
+import { currentUser } from '../../BLL/CurrentUserProps';
 
 type myPostProps = {
   index: number;
   isMe: boolean;
   onCommendPress(): void;
-  onLikePress(postHash: string, owner: string): void;
   onRepostPress(): void;
-  reload: number;
-  setReload: React.Dispatch<React.SetStateAction<number>>
-} & Post;
+  reload?: number;
+  setReload?(value: number): void;
+  onLikePress?(post_hash: string, owner: string): void;
+  entity: HomePostEntity
+};
 
 type IState = {
   showModal: boolean;
@@ -49,27 +53,25 @@ type IState = {
     post_hash: string;
   };
   labelText: string;
+  refreshOrUpdate: number;
 };
 
 const MyPost = (props: myPostProps) => {
   const dispatch = useDispatch();
-  const dataPath = `http://${apiURL}/storage/${props.owner}/posts/${props.image.length > 0 && props.data_count > 0 ? props.image : props.video}/`;
+  const dataPath = `http://${apiURL}/storage/${props.entity.owner}/posts/${props.entity.image.length > 0 && props.entity.data_count > 0 ? props.entity.image : props.entity.video}/`;
   const [getState, setState] = useState<IState>({
     showModal: false,
     index: -1,
     longPressed: false,
     carouselData: {
-      data_count: props.data_count,
-      owner: props.owner,
-      post_hash: props.image,
+      data_count: props.entity.data_count,
+      owner: props.entity.owner,
+      post_hash: props.entity.image,
     },
-    labelText: `1 of ${props.data_count}`,
+    labelText: `1 of ${props.entity.data_count}`,
+    refreshOrUpdate: 0,
   });
   const state: any = useSelector<any>((state) => state.postDelete);
-
-  const entity = {
-    likesCount: 54,
-  };
 
   const onPostDelete = useCallback(() => {
     Alert.alert('Warning', 'This move irreversibly', [
@@ -93,17 +95,38 @@ const MyPost = (props: myPostProps) => {
     setState({ ...getState, showModal: false, index: -1 });
   };
 
+  const getLikes = async () => {
+    const response = await axios.get(`http://${apiURL}/likes/getLikes/${props.entity.image}`, {
+      headers: {
+        Authorization: `Bearer ${currentUser.token}`
+      }
+    })
+    if (response.data.statusCode === 200) {
+      const data: {isLiked: boolean; likesData: {likesCount: number; post_hash: string}} = response.data.data;
+      props.entity.likesCount = data.likesData.likesCount;
+      props.entity.post_hash = data.isLiked ?  data.likesData.post_hash : null;
+      setState({...getState, refreshOrUpdate: getState.refreshOrUpdate + 1});
+    }
+   }
+
+  useEffect(() => {
+   getLikes();
+   console.log(props.entity.likesCount, getState)
+  }, [props.entity])
+
+
   const onMomentumScrollEnd = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const viewSize = event.nativeEvent.layoutMeasurement.width;
     const contentOffset = event.nativeEvent.contentOffset.x;
     let selected = Math.round(contentOffset / viewSize);
-    setState({ ...getState, labelText: `${selected + 1} of ${props.data_count}` });
+    setState({ ...getState, labelText: `${selected + 1} of ${props.entity.data_count}` });
   };
 
   const onAlertDeletePost = useCallback(() => {
-    dispatch(actionImpl.deletePost(props.image, props.owner));
-    props.setReload(prev => prev + 1);
-  }, [props.image, props.owner]);
+    dispatch(actionImpl.deletePost(props.entity.image, props.entity.owner));
+    props.setReload!(2);
+  }, [props.entity.image, props.entity.owner]);
+
 
   useEffect(() => {
     if (state?.statusCode !== void 0) {
@@ -122,11 +145,11 @@ const MyPost = (props: myPostProps) => {
   }, [state]);
 
   return (
-    <View key={props.id} style={[St.postListItem, St.zIndex2]}>
-      <TouchableOpacity onPress={showModal} key={props.id} style={St.image100}>
+    <View key={props.index} style={[St.postListItem, St.zIndex2]}>
+      <TouchableOpacity onPress={showModal} key={props.index} style={St.image100}>
         <Image style={[StylesOne.wh100, St.borderImage]} source={{ uri: `${dataPath}0.png` }} />
       </TouchableOpacity>
-      <Modal visible={getState.showModal} animationType={'fade'} style={[]}>
+      <Modal transparent={true} visible={getState.showModal} animationType={'fade'} style={[]}>
         <ScrollView style={[styles.modalView, { paddingTop: safeAreaInsetsTop }]}>
           <View style={[StylesOne.w100, StylesOne.flex_row, StylesOne.flex_ai_c, MP.pv15]}>
             <TouchableOpacity
@@ -161,7 +184,7 @@ const MyPost = (props: myPostProps) => {
             <SingleCarouselComponent reload={props.reload} onMomentumScrollEnd={onMomentumScrollEnd} carouselData={getState.carouselData} />
           </View>
           <View style={[StylesOne.flex_row, MP.mt10, MP.mb20]}>
-            <HomeButtonView textColor={'white'} entity={entity as HomePostEntity} onLikePress={props.onLikePress} />
+            <HomeButtonView refreshOrUpdate={getState.refreshOrUpdate} textColor={'white'} entity={props.entity} onLikePress={props.onLikePress!} />
             <TouchableOpacity
               onPress={props.onCommendPress}
               style={[{ width: mockupWidthToDP(40), height: mockupHeightToDP(30) }, StylesOne.flex_row, StylesOne.flex_ai_c, MP.mr20]}
@@ -177,7 +200,7 @@ const MyPost = (props: myPostProps) => {
             </TouchableOpacity>
           </View>
           <View style={[StylesOne.flex_row, StylesOne.flex_jc_fs, StylesOne.w100, MP.ph15]}>
-            <Text selectable style={[SThree.post_caption, { color: 'white' }]}>{props.caption}</Text>
+            <Text selectable style={[SThree.post_caption, { color: 'white' }]}>{props.entity.caption}</Text>
           </View>
         </ScrollView>
       </Modal>
@@ -207,24 +230,5 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
 });
-
-/***
- *   <View style={[StylesOne.flex_row, MP.mt10, MP.mb20]}>
-                  <HomeButtonView entity={entity as HomePostEntity} onLikePress={props.onLikePress} />
-                  <TouchableOpacity
-                    onPress={props.onCommendPress}
-                    style={[{ width: mockupWidthToDP(40), height: mockupHeightToDP(30) }, StylesOne.flex_row, StylesOne.flex_ai_c, MP.mr20]}
-                  >
-                    <Image style={[{ width: '100%', height: '100%', resizeMode: 'contain' }]} source={images.commend} />
-                    <Text style={{ color: 'black' }}>0</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={props.onRepostPress}
-                    style={[{ width: mockupWidthToDP(40), height: mockupHeightToDP(30) }, StylesOne.flex_row, StylesOne.flex_ai_c, MP.mr20]}
-                  >
-                    <Image style={[{ width: '100%', height: '100%', resizeMode: 'contain' }]} source={images.repost} />
-                  </TouchableOpacity>
-                </View>
- */
 
 export default MyPost;

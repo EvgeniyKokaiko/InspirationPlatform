@@ -87,7 +87,7 @@ export class HomePostEntity {
     }
 
     public get likesCount(): number {
-        return this._likesCount;
+        return this._likesCount === void 0 ? 0 : this._likesCount;
     }
 
     public set likesCount(value: number) {
