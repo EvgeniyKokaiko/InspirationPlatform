@@ -37,6 +37,12 @@ class Actions extends BaseAction implements ActionMethods {
     };
   };
 
+  public ClearComments = () => {
+    return {
+      type: ActionTypes.ClearComments,
+    };
+  };
+
   public register = (username: string, email: string, password: string) => async (dispatch: Dispatch<Action>) => {
     try {
       axios
@@ -400,6 +406,87 @@ class Actions extends BaseAction implements ActionMethods {
         });
     });
   }
+  public searchUserByName = (searchVal: string) => async (dispatch: Dispatch<Action>) => {
+    axios.put(`http://${apiURL}/search/search_user?search=${searchVal}`).then((el) => {
+      dispatch({ type: ActionTypes.SearchUser, payload: el.data });
+    })
+    .catch((err) => {
+      console.log(err, 'messages response error');
+      dispatch({ type: ActionTypes.SearchUser, payload: { statusCode: 423 } });
+    });
+  }
+
+  public getComments = (post_hash: string) => async (dispatch: Dispatch<Action>) => {
+    await this._useToken(async (el: string | null) => {
+      axios
+        .get(`http://${apiURL}/comments/${post_hash}/get`, {
+          headers: {
+            Authorization: `Bearer ${el}`,
+          },
+        })
+        .then((el) => {
+          dispatch({ type: ActionTypes.GetComments, payload: el.data });
+        })
+        .catch((err) => {
+          console.log(err, 'messages response error');
+          dispatch({ type: ActionTypes.GetComments, payload: { statusCode: 423 } });
+        });
+    });
+    }
+
+    public addComment = (post_hash: string, body: {comment: string}) => async (dispatch: Dispatch<Action>) => {
+      await this._useToken(async (el: string | null) => {
+        axios
+          .post(`http://${apiURL}/comments/${post_hash}/add`, body, {
+            headers: {
+              Authorization: `Bearer ${el}`,
+            },
+          })
+          .then((el) => {
+            dispatch({ type: ActionTypes.CreateComment, payload: el.data });
+          })
+          .catch((err) => {
+            console.log(err, 'messages response error');
+            dispatch({ type: ActionTypes.CreateComment, payload: { statusCode: 423 } });
+          });
+      });
+      }
+
+      public deleteComment = (post_hash: string, comment_hash: string) => async (dispatch: Dispatch<Action>) => {
+        await this._useToken(async (el: string | null) => {
+          axios
+            .delete(`http://${apiURL}/comments/${post_hash}/${comment_hash}/delete`, {
+              headers: {
+                Authorization: `Bearer ${el}`,
+              },
+            })
+            .then((el) => {
+              dispatch({ type: ActionTypes.RemoveComment, payload: {...el.data, comment_hash: comment_hash} });
+            })
+            .catch((err) => {
+              console.log(err, 'messages response error');
+              dispatch({ type: ActionTypes.RemoveComment, payload: { statusCode: 423 } });
+            });
+        });
+        }
+
+        public updateComment = (post_hash: string, comment_hash: string, body: {comment: string}) => async (dispatch: Dispatch<Action>) => {
+          await this._useToken(async (el: string | null) => {
+            axios
+              .put(`http://${apiURL}/comments/${post_hash}/${comment_hash}/update`, body, {
+                headers: {
+                  Authorization: `Bearer ${el}`,
+                },
+              })
+              .then((el) => {
+                dispatch({ type: ActionTypes.UpdateComment, payload: {body, comment_hash, ...el.data} });
+              })
+              .catch((err) => {
+                console.log(err, 'messages response error');
+                dispatch({ type: ActionTypes.UpdateComment, payload: { statusCode: 423 } });
+              });
+          });
+          }
 }
 
 export const actionImpl = new Actions(apiURL);

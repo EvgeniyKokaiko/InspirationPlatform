@@ -26,6 +26,7 @@ import U2UChatContainer from "../Controllers/U2UChatContainer";
 import ManageAccountContainer from "../Controllers/ManageAccountContainer";
 import {INavigation, OverrideNavigation} from "./OverrideNavigation";
 import FollowingListContainer from "../Controllers/FollowingListContainer";
+import { CommentListContainer } from '../Controllers/CommentListContainer';
 
 interface IProps {}
 
@@ -47,6 +48,7 @@ export enum StackScreens {
   U2UChat = 'UserToUserChatComponent',
   Manage = 'ManageAccountComponent',
   Following = 'FollowingListComponent',
+  Comments = 'CommentListComponent',
 }
 
 export const noGoBack = () => {
@@ -96,7 +98,7 @@ const MainNavigationScreen: React.FC = (props: IProps) => {
   const Tab = createBottomTabNavigator();
   let defaultScreen = 'SplashComponent';
   const withoutNavigation = [StackScreens.SignIn, StackScreens.SignUp, StackScreens.SetupAccount];
-  const withoutNavigationIndex = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  const withoutNavigationIndex = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
   const Screens: { name: string; component: Component; options?: any }[] = [
     // Service screens
     { name: StackScreens.Splash, component: SplashComponent, options: { headerShown: false } },
@@ -107,6 +109,7 @@ const MainNavigationScreen: React.FC = (props: IProps) => {
     { name: StackScreens.Settings, component: SettingsComponent, options: { headerShown: false } },
     { name: StackScreens.Manage, component: ManageAccountContainer, options: {headerShown: false} },
     { name: StackScreens.Following, component: FollowingListContainer, options: {headerShown: false} },
+    {name: StackScreens.Comments, component: CommentListContainer, options: {headerShown: false} },
     //Main screens
     { name: StackScreens.U2UChat, component: U2UChatContainer, options: {headerShown: false} },
     { name: StackScreens.PostDetails, component: ExpandedPostContainer, options: { headerShown: false } },

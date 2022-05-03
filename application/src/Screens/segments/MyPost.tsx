@@ -31,11 +31,13 @@ import { LabelView } from './LabelView';
 import { ActionTypes } from '../../redux/types/ActionTypes';
 import axios from 'axios';
 import { currentUser } from '../../BLL/CurrentUserProps';
+import { StackScreens } from '../Core/MainNavigationScreen';
+import { INavigation } from '../Core/OverrideNavigation';
 
 type myPostProps = {
   index: number;
   isMe: boolean;
-  onCommendPress(): void;
+  onCommendPress(hash: string): void;
   onRepostPress(): void;
   reload?: number;
   setReload?(value: number): void;
@@ -73,6 +75,8 @@ const MyPost = (props: myPostProps) => {
   });
   const state: any = useSelector<any>((state) => state.postDelete);
 
+
+
   const onPostDelete = useCallback(() => {
     Alert.alert('Warning', 'This move irreversibly', [
       {
@@ -88,6 +92,7 @@ const MyPost = (props: myPostProps) => {
   }, [props]);
 
   const showModal = () => {
+    console.warn('showed');
     setState({ ...getState, showModal: true, index: props.index });
   };
 
@@ -186,11 +191,11 @@ const MyPost = (props: myPostProps) => {
           <View style={[StylesOne.flex_row, MP.mt10, MP.mb20]}>
             <HomeButtonView refreshOrUpdate={getState.refreshOrUpdate} textColor={'white'} entity={props.entity} onLikePress={props.onLikePress!} />
             <TouchableOpacity
-              onPress={props.onCommendPress}
+              onPress={() => props.onCommendPress(props.entity.image)}
               style={[{ width: mockupWidthToDP(40), height: mockupHeightToDP(30) }, StylesOne.flex_row, StylesOne.flex_ai_c, MP.mr20]}
             >
               <Image style={[StylesOne.wh100, StylesOne.rm_c]} source={images.commend} />
-              <Text style={{ color: 'white' }}>0</Text>
+              <Text style={{ color: 'white' }}></Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={props.onRepostPress}

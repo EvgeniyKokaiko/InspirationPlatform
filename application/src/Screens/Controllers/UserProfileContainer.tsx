@@ -3,7 +3,7 @@ import UserProfileComponent from "../AdditionScreens/UserProfileComponent";
 import {BaseProps} from "../../Types/Types";
 import {useDispatch, useSelector} from "react-redux";
 import {actionImpl, apiURL} from "../../redux/actions";
-import {StackScreens} from "../Core/MainNavigationScreen";
+import {onFocus, StackScreens} from "../Core/MainNavigationScreen";
 import {Linking} from "react-native";
 import {User} from "../../Types/Models";
 import {INavigation} from "../Core/OverrideNavigation";
@@ -68,6 +68,19 @@ const UserProfileContainer = (props: IProps) => {
         dispatch(actionImpl.likePost(postHash, owner, ActionTypes.LikeUserPosts))
        }, []);
 
+       const onCommendPress = (post_hash: string) => {
+        const data = {
+          post_hash: post_hash,
+        }
+        INavigation.navigate(StackScreens.Comments, data);
+      };
+    
+
+      onFocus(() => {
+          setUserState({...userState, userData: {...userState.userData, userPosts: []}});
+        dispatch(actionImpl.getUser(ownerId))
+      }, [ownerId])
+
 
     const STATE = {
         ownerId,
@@ -77,6 +90,7 @@ const UserProfileContainer = (props: IProps) => {
         isFollowed: userState.isFollowed,
         onPersonalSitePress,
         ownerAvatar,
+        onCommendPress,
         onBackBtn,
         onSubscribePress,
         onUnfollowPress,
@@ -106,9 +120,6 @@ const UserProfileContainer = (props: IProps) => {
         }
     }, [store.subscribeReducer])
 
-    useEffect(() => {
-        dispatch(actionImpl.getUser(ownerId))
-    }, [ownerId])
 
 
 

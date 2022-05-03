@@ -11,7 +11,6 @@ import {INavigation} from "../Core/OverrideNavigation";
 import { homeEntityProps, HomePostEntity } from '../../BLL/entity/HomePostEntity';
 
 export interface menuState {
-  search: string;
   page: number;
   data: Post[];
   refresh: boolean;
@@ -21,7 +20,6 @@ type IProps = {} & BaseProps;
 
 const MenuContainer: React.FC<IProps> = (props: IProps): JSX.Element => {
   const [menuState, setMenuState]: [menuState, Function] = useState({
-    search: '',
     page: 0,
     data: [],
     refresh: false,
@@ -30,11 +28,6 @@ const MenuContainer: React.FC<IProps> = (props: IProps): JSX.Element => {
   //{data: Post[], statusCode: number, statusMessage: string}
   const dispatch = useDispatch();
   const state: any = useSelector<any>((state) => state.getNewsLineReducer);
-
-
-  function onChange(v: string) {
-    setMenuState({ ...menuState, search: v });
-  }
 
   const onPostPress = (postHash: string) => {
     INavigation.navigate(StackScreens.PostDetails, { pHash: postHash });
@@ -65,7 +58,6 @@ const MenuContainer: React.FC<IProps> = (props: IProps): JSX.Element => {
   const STATE = {
     menuState,
     setMenuState,
-    onChange,
     onPostPress,
     onRefresh,
     onScroll,

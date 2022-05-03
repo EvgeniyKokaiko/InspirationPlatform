@@ -4,7 +4,7 @@ import HomeComponent from '../HomeComponent';
 import {useDispatch, useSelector} from "react-redux";
 import {actionImpl} from "../../redux/actions";
 import {Post} from "../../Types/Models";
-import {onBlur, onFocus} from "../Core/MainNavigationScreen";
+import {onBlur, onFocus, StackScreens} from "../Core/MainNavigationScreen";
 import { HomePostEntity } from '../../BLL/entity/HomePostEntity';
 import { ActionTypes } from '../../redux/types/ActionTypes';
 import { INavigation } from '../Core/OverrideNavigation';
@@ -41,9 +41,13 @@ const HomeContainer: React.FC<IProps> = (props) => {
   }, []);
   
 
-  const onCommendPress = () => {
-    console.log('onCommendPress');
-  }
+  const onCommendPress = (id: string) => {
+    const data = {
+      post_hash: id,
+    }
+    INavigation.navigate(StackScreens.Comments, data);
+  };
+  
   const onRepostPress = () => {
     console.log('onRepostPress');
   }

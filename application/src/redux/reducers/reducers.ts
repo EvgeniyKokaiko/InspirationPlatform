@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux';
 import { Action, ActionTypes, ClassicPayload } from '../types/ActionTypes';
 import { act } from 'react-test-renderer';
-import { PlainMessage } from '../../Types/Models';
+import { Comment, PlainMessage } from '../../Types/Models';
 import { MessageEntity } from '../../BLL/entity/MessageEntity';
 import { MessageStatus } from '../../Types/enums';
 import { homeEntityProps, HomePostEntity } from '../../BLL/entity/HomePostEntity';
@@ -160,7 +160,7 @@ class ReducersImpl {
   public GetUserData(state: any = {}, action: Action) {
     if (action.type === ActionTypes.User) {
         console.log(action.payload);
-        const entities = action.payload.data.userPosts.map((el: homeEntityProps) => {
+        const entities = action.payload.data?.userPosts.map((el: homeEntityProps) => {
             return new HomePostEntity({...el});
         })
         console.log({ userPosts: entities, ...action.payload }, 'zxcxzczx')
@@ -168,13 +168,13 @@ class ReducersImpl {
       return { 
           data: {
               counts: {
-                  owner_count: ls.counts.owner_count,
-                  subscriber_count: ls.counts.subscriber_count,
+                  owner_count: ls?.counts?.owner_count,
+                  subscriber_count: ls?.counts?.subscriber_count,
               },
-              isPrivate: ls.isPrivate,
-              isSubscribe: ls.isSubscribe,
-              isSubscribed: ls.isSubscribed,
-              userData: ls.userData,
+              isPrivate: ls?.isPrivate,
+              isSubscribe: ls?.isSubscribe,
+              isSubscribed: ls?.isSubscribed,
+              userData: ls?.userData,
               userPosts: entities,
           }
        };
@@ -407,6 +407,57 @@ class ReducersImpl {
     };
   }
 
+  private SearchUserByNameReducer(state: any = {}, action: Action) {
+    if (action.type === ActionTypes.SearchUser) {
+      return action.payload
+    }
+    return state
+  }
+
+  private CommentsReducer(state: {statusCode: number; statusMessage: string; data: Array<Comment>, isModify: number} = {
+    statusCode: 0,
+    statusMessage: '',
+    data: [],
+    isModify: 0,
+  }, action: Action) {
+    switch (action.type) {
+      case ActionTypes.GetComments:
+        console.log(action.payload);
+          return {...action.payload, isModify: state.isModify + 1};
+      case ActionTypes.CreateComment:
+        if (action.payload.statusCode === 200 && typeof action.payload.data === 'object') {
+          state.data.push(action.payload.data);
+          console.log(action.payload.data);
+          return {...state, isModify: state.isModify + 1}
+        }
+        return state;
+      case ActionTypes.RemoveComment:
+        if (action.payload.statusCode === 200) {
+          const items = state.data.filter((item) => item.comment_hash !== action.payload.comment_hash);
+          return {...state, data: items};
+        }
+        return state;
+      case ActionTypes.UpdateComment:
+        if (action.payload.statusCode === 200) {
+          const index = state.data.findIndex((comment) => comment.comment_hash == action.payload.comment_hash)
+          if (index !== -1 && state.data.at(index) !== void 0) {
+            state.data.at(index)!.comment_string = action.payload.body.comment;
+            return {...state, isModify: state.isModify + 1}
+          }
+          return state;
+        }
+      case ActionTypes.ClearComments: 
+      const initialState = {
+        statusCode: 200,
+        statusMessage: '',
+        data: [],
+        isModify: 0,
+      }
+      return {...initialState}
+    }
+    return state;
+  }
+
   public getAllReducers = () => {
     return combineReducers({
       registerReducer: this.RegisterReducer,
@@ -429,6 +480,8 @@ class ReducersImpl {
       getMessagesReducer: this.GetMessagesReducer,
       getTokenReducer: this.GetTokenReducer,
       getPostWithLikesReducer: this.GetPostWithLikesReducer,
+      searchUserByNameReducer: this.SearchUserByNameReducer,
+      commentsReducer: this.CommentsReducer,
     });
   };
 }

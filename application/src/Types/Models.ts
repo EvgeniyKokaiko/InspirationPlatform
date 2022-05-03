@@ -53,3 +53,16 @@ export interface PlainMessage {
   type: number;
   message_hash?: string;
 }
+
+
+export interface Comment {
+  creator: string;
+  comment_hash: string;
+  post_hash: string;
+  comment_string: string;
+  created_at: string;
+  updated_at: string;
+  location?: string;
+  full_name?: string;
+  username?: string;
+}

@@ -66,7 +66,12 @@ const ExpandedPostContainer: React.FC<IProps> = (props: IProps): JSX.Element => 
     dispatch(actionImpl.likePost(image, owner, ActionTypes.LikeSinglePost))
    }, [getState.data]);
 
-  const onCommendPress = () => {};
+  const onCommendPress = () => {
+    const id = {
+      post_hash: getState.carouselData.post_hash
+    }
+    INavigation.navigate(StackScreens.Comments, id);
+  };
 
   const onRepostPress = () => {};
 

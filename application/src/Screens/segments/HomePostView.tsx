@@ -18,7 +18,7 @@ type IProps = {
     entity: HomePostEntity;
     onBurgerPress(): void;
     onLikePress(postHash: string, owner: string): void;
-    onCommendPress(): void;
+    onCommendPress(id: string): void;
     onRepostPress(): void;
     refresh: boolean;
 };
@@ -97,9 +97,9 @@ const HomePostView: React.FC<IProps> = (props: IProps): JSX.Element => {
         </View>
         <View style={[StylesOne.flex_row, MP.mt10, MP.mb20]}>
         <HomeButtonView refreshOrUpdate={getState.refreshOrUpdate} entity={props.entity} onLikePress={props.onLikePress} />
-          <TouchableOpacity onPress={props.onCommendPress} style={[{ width: mockupWidthToDP(40), height: mockupHeightToDP(30) }, StylesOne.flex_row, StylesOne.flex_ai_c, MP.mr20]}>
+          <TouchableOpacity onPress={() => props.onCommendPress(props.entity.post_hash as string)} style={[{ width: mockupWidthToDP(40), height: mockupHeightToDP(30) }, StylesOne.flex_row, StylesOne.flex_ai_c, MP.mr20]}>
             <Image style={[StylesOne.wh100, StylesOne.rm_c]} source={images.commend} />
-            <Text style={{ color: 'black' }}>0</Text>
+            <Text style={{ color: 'black' }}>{/** Counter here */}</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={props.onRepostPress} style={[{ width: mockupWidthToDP(40), height: mockupHeightToDP(30) }, StylesOne.flex_row, StylesOne.flex_ai_c, MP.mr20]}>
             <Image style={[StylesOne.wh100, StylesOne.rm_c]} source={images.repost} />

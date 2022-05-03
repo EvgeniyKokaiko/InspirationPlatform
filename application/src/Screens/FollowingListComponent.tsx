@@ -7,6 +7,7 @@ import { St } from '../Styles/StylesTwo';
 import { images } from '../assets/images';
 import { fontSizeDP, mockupWidthToDP } from '../Parts/utils';
 import { Requests } from '../Types/Models';
+import { UserListItem } from './segments/UserListItem';
 
 type IProps = {
   onRefresh(): void;
@@ -21,35 +22,15 @@ type IProps = {
 const FollowingListComponent = (state: IProps) => {
   const renderList = () => {
     return state.data.map((el, index) => {
-      console.log(el, index, "RENDER");
-      let avatar = `http://${apiURL}/storage/${el!.username}/avatar/avatar.png?ab=${Date.now()}`;
-      return (
-        <View key={index} style={[StylesOne.flex_row, StylesOne.flex_jc_sb, StylesOne.flex_ai_c ,MP.mv10, MP.ph15, { width: '100%' }]}>
-          <TouchableOpacity onPress={() => state.onFollowingItemPress(el.username)} style={[StylesOne.flex_row]}>
-            <View style={[MP.mr10]}>
-              <Image style={[St.round100image40]} source={{uri : avatar}} />
-            </View>
-            <View style={[StylesOne.flex_column, StylesOne.flex_jc_c, { width: mockupWidthToDP(120) }]}>
-              <Text numberOfLines={1} style={[StylesOne.requests_username]}>
-                {el.username}
-              </Text>
-              <Text numberOfLines={1} style={[StylesOne.requests_fullName]}>
-                {el.full_name}
-              </Text>
-            </View>
-          </TouchableOpacity>
-          {typeof state.isMe === 'string' && state.isMe === state.params.userId ? <View style={[StylesOne.flex_row, { justifyContent: 'flex-end', alignItems: 'center' }]}>
-            {state.params.listType === 1 ? <TouchableOpacity style={[MP.mr5, StylesOne.followerListButton]}>
-              <Text style={[StylesOne.following_title, { fontSize: fontSizeDP(12)}]}>{'Unfollow'}</Text>
-            </TouchableOpacity>
-                :
-            <TouchableOpacity style={[MP.mr5, StylesOne.followerListButton]}>
-              <Text style={[StylesOne.following_title, { fontSize: fontSizeDP(12)}]}>{'Remove'}</Text>
-            </TouchableOpacity>}
-          </View>
-          : null}
-        </View>
-      );
+      const body = {
+        ...el,
+        index: index,
+        isMe: state.isMe as string,
+        params: state.params,
+        onFollowingItemPress: state.onFollowingItemPress,
+        showButtons: true,
+      }
+      return <UserListItem key={index} {...body}   />
     });
   };
 

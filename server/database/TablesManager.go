@@ -17,6 +17,7 @@ type TableCreator interface {
 	CreateU2UChatTable()
 	CreateGroupChatTable()
 	CreateNotificationTable()
+	CreateCommentsTable()
 }
 
 func InitTables(db TableCreator) {
@@ -27,6 +28,7 @@ func InitTables(db TableCreator) {
 	db.CreateU2UChatTable()
 	db.CreateGroupChatTable()
 	db.CreateNotificationTable()
+	db.CreateCommentsTable()
 }
 
 func (db *DB) BaseTableCreator(tableName string, callback func(name string)) {
@@ -91,4 +93,13 @@ func (db *DB) CreateNotificationTable() {
 
 func (db *DB) CreateGroupChatTable() {
 
+}
+
+func (db *DB) CreateCommentsTable() {
+	db.BaseTableCreator(typedDB.TABLES.COMMENTS, func(tableName string) {
+		err := db.database.Migrator().AutoMigrate(&models.Comment{})
+		if err != nil {
+			log.Fatal("CreateCommentsTable ex")
+		}
+	})
 }

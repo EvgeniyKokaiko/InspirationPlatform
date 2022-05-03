@@ -31,6 +31,13 @@ export enum ActionTypes {
     LikeMyPosts = "LIKE_MY_POSTS",
     LikeUserPosts = "LIKE_USER_POSTS",
     GetPost = "GET_POST_WITH_LIKES_AND_SUBSCRIPTION",
+    SearchUser = "SEARCH_USER_BY_NAME",
+    ClearComments = "CLEAR_ALL_COMMENTS",
+    //Comments
+    GetComments = "GET_COMMENTS_BY_POST_HASH",
+    CreateComment = "CREATE_COMMENT",
+    UpdateComment = "UPDATE_COMMENT",
+    RemoveComment = "REMOVE_COMMENT",
 }
 
 

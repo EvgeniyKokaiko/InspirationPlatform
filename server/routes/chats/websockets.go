@@ -65,7 +65,7 @@ func handleWS(w http.ResponseWriter, r http.Request, h http.Header, dataSet map[
 			fmt.Println(value, SocketRoomer, "SOCKET ROOMER")
 			fmt.Println("Emitter")
 			ownConnect := false
-			if newConnection.Username == value.Username {
+			if newConnection.Username == value.Username && newConnection.Connector == value.Connector {
 				ownConnect = true
 			}
 			err := SocketEmitter(currentEvent, mT, message, &value, dataSet["db"].(*database.DB), dataSet["username"].(string), ownConnect)
@@ -125,7 +125,7 @@ func CloseEveryConnection(cHash string, myConnection models.SocketConnection) {
 	for key, value := range SocketRoomer[cHash] {
 		if value.Username == myConnection.Username {
 			value.Connector.Close()
-			SocketRoomer[cHash] = remove[models.SocketConnection](SocketRoomer[cHash], key)
+			SocketRoomer[cHash] = remove(SocketRoomer[cHash], key)
 		}
 	}
 	fmt.Println(SocketRoomer[cHash], "ROOMER")

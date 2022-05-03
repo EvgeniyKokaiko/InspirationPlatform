@@ -18,6 +18,8 @@ func main() {
 	routes.Settings(server, db)
 	routes.Likes(server, db)
 	routes.Service(server, db)
+	routes.Search(server, db)
+	routes.Comments(server, db)
 	chats.Chats(server, db)
 	StaticServer(server)
 	database.InitTables(db)

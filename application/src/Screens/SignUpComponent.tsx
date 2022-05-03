@@ -11,6 +11,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {actionImpl} from "../redux/actions";
 import {BaseProps} from "../Types/Types";
 import {Reducers} from "../redux/reducers/reducers";
+import { INavigation } from "./Core/OverrideNavigation";
 
 type IProps = {} & BaseProps
  //dispatch(Register(username, email, password))
@@ -26,7 +27,7 @@ const SignUpComponent = (props: IProps) => {
     })
 
     const goBack = () => {
-        props.navigation.navigate(StackScreens.SignIn)
+        INavigation.navigate(StackScreens.SignIn);
     }
 
 

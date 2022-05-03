@@ -213,10 +213,7 @@ func (db *DB) GetUserDataWithPosts(username string, name string, page int) (map[
 		dbResult.AddToMap("userPosts", userPosts)
 		dbResult.AddToMap("isPrivate", false)
 	} else {
-		dbResult.AddToMap("userPosts", map[string]interface{}{
-			"status":     "Locked.User doesn't give permission",
-			"statusCode": 1,
-		})
+		dbResult.AddToMap("userPosts", []models.Post{})
 		dbResult.AddToMap("isPrivate", true)
 	}
 	dbResult.AddToMap("counts", userCounts)
@@ -515,4 +512,83 @@ func (db *DB) GetLikesByHash(post_hash string, initiator string) (map[string]any
 	response["likesData"] = likesData
 
 	return response, nil
+}
+
+func (db *DB) SearchUserByName(pattern string) ([]map[string]any, error) {
+	var result = []map[string]any{}
+
+	dbSearchUserResponse := db.database.Raw("Select username, full_name, description from users where LOWER(users.username) like ?", pattern+"%").Scan(&result)
+	if dbSearchUserResponse.Error != nil {
+		return []map[string]any{}, errors.New("Error! SearchUserByName ex")
+	}
+
+	if dbSearchUserResponse.RowsAffected == 0 {
+		dbSearchEveryResponse := db.database.Raw("Select username, full_name, description from users where LOWER(users.username) like ?", "%"+pattern+"%").Scan(&result)
+		if dbSearchEveryResponse.Error != nil {
+			return []map[string]any{}, errors.New("Error! SearchUserByName ex")
+		}
+	}
+	return result, nil
+}
+
+func (db *DB) AddComment(username, posthash string, request map[string]string) (any, error) {
+	commentString := request["comment"]
+	if len(commentString) < 5 {
+		return "Comment Length can not be less than 5 characters!", errors.New("Error! AddComment ex")
+	}
+	commentHash, err := utils.GenerateHashWithSalt(username, posthash, commentString, time.Now())
+	if err != nil {
+		return "Something went wrong on comment hash generating", errors.New("Error! AddComment ex")
+	}
+	comment := models.Comment{
+		Creator:       username,
+		Post_Hash:     posthash,
+		CommentString: commentString,
+		Comment_Hash:  commentHash,
+	}
+	addCommentDBResponse := db.database.Table(typedDB.TABLES.COMMENTS).Create(&comment)
+	if addCommentDBResponse.Error != nil {
+		return "Something went wrong on database creating", errors.New("Error! AddComment ex")
+	}
+	newComment := map[string]any{}
+	if getNewCommentDBResponse := db.database.Raw(`select * from (select * from comments where post_hash = ? AND comment_hash = ? AND creator = ?) as co
+	left join (select username, location, full_name from users) as us on co.creator = us.username GROUP BY id`, posthash, commentHash, username).Take(&newComment); getNewCommentDBResponse.Error != nil {
+		return "Something went wrong on database getting", errors.New("Error! AddComment ex")
+	}
+	return newComment, nil
+}
+
+func (db *DB) DeleteComment(posthash, commenthash, creator string) error {
+	dbRemoveCommentResponse := db.database.Table(typedDB.TABLES.COMMENTS).
+		Where("post_hash = ? AND comment_hash = ? AND creator = ?", posthash, commenthash, creator).Delete(&models.Comment{})
+	if dbRemoveCommentResponse.Error != nil {
+		return errors.New("Error!DeleteComment ex")
+	}
+	return nil
+}
+
+func (db *DB) GetComments(posthash, username string) ([]map[string]any, error) {
+	dbData := []map[string]any{}
+
+	dbGetCommentsResponse := db.database.
+		Raw(`select * from (select * from comments where post_hash = ?) as co
+	 left join (select username, location, full_name from users) as us on co.creator = us.username GROUP BY id`, posthash).Scan(&dbData)
+	if dbGetCommentsResponse.Error != nil {
+		return []map[string]any{}, errors.New("Error!GetComments ex")
+	}
+	return dbData, nil
+}
+
+func (db *DB) UpdateComment(posthash, commenthash, username string, requestdata map[string]string) (string, error) {
+	newValue := requestdata["comment"]
+	if newValue == "" {
+		return "Error! New value of comment can not be less than 5 characters!", errors.New("Error!UpdateComment ex")
+	}
+	dbUpdateCommentResponse := db.database.Table(typedDB.TABLES.COMMENTS).
+		Where("post_hash = ? AND comment_hash = ? AND creator = ?", posthash, commenthash, username).
+		Update("comment_string", newValue)
+	if dbUpdateCommentResponse.Error != nil {
+		return "Error! Something went wrong :(", errors.New("Error!UpdateComment ex")
+	}
+	return "", nil
 }

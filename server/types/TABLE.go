@@ -12,6 +12,7 @@ type Tables struct {
 	USERToUSERChat string
 	LIKES          string
 	NOTIFICATIONS  string
+	COMMENTS       string
 }
 
 var TABLES = Tables{
@@ -21,6 +22,7 @@ var TABLES = Tables{
 	USERToUSERChat: "chat_u2u",
 	LIKES:          "likes",
 	NOTIFICATIONS:  "notifications",
+	COMMENTS:       "comments",
 }
 
 type DBMethods interface {

@@ -74,7 +74,7 @@ const ExpandedPostComponent = (state: IProps) => {
             style={[{ width: mockupWidthToDP(40), height: mockupHeightToDP(30) }, StylesOne.flex_row, StylesOne.flex_ai_c, MP.mr20]}
           >
             <Image style={[{ width: '100%', height: '100%', resizeMode: 'contain' }]} source={images.commend} />
-            <Text style={{ color: 'black' }}>0</Text>
+            <Text style={{ color: 'black' }}>{/**  counter here */}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={state.onRepostPress}

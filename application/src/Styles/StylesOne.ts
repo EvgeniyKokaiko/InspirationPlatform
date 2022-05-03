@@ -27,6 +27,28 @@ export const StylesOne = StyleSheet.create({
     width: '70%',
   },
 
+  w55: {
+    width: '55%',
+  },
+  w58: {
+    width: '58%',
+  },
+
+  w30: {
+    width: '30%',
+  },
+  w25: {
+    width: '25%',
+  },
+
+  w28: {
+    width: '28%',
+  },
+
+  w85: {
+    width: '85%',
+  },
+
   rounded: {
     borderRadius: 999,
   },
@@ -69,6 +91,12 @@ export const StylesOne = StyleSheet.create({
     width: '90%',
   },
 
+  commentInput: {
+    borderColor: colors.WhiteChalk,
+    width: '100%',
+    backgroundColor: colors.WhiteChalk,
+  },
+
   fontLogo: {
     fontFamily: 'Metropolis-Bold',
     letterSpacing: 5,
@@ -102,6 +130,7 @@ export const StylesOne = StyleSheet.create({
 
   inputContainer: {
     marginBottom: mockupHeightToDP(32),
+    paddingHorizontal: mockupWidthToDP(15),
   },
   SignInButton: {
     borderRadius: 60,

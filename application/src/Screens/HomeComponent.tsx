@@ -19,7 +19,7 @@ type IProps = {
   data: HomePostEntity[];
   onBurgerPress(): void;
   onLikePress(postHash: string, owner: string): void;
-  onCommendPress(): void;
+  onCommendPress(id: string): void;
   onRepostPress(): void;
   onBackBtn(): void;
 };

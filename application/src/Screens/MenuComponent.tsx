@@ -8,11 +8,11 @@ import { mockupHeightToDP } from '../Parts/utils';
 import { SThree } from '../Styles/StylesThree';
 import { Post } from '../Types/Models';
 import { menuState } from './Controllers/MenuContainer';
+import { SearchUserModal } from './segments/SearchUserModal';
 
 type IProps = {
   menuState: menuState;
   setMenuState: Function;
-  onChange(e: any): void;
   onPostPress(postData: string): void;
   onRefresh(): void;
   onScroll(e: NativeSyntheticEvent<NativeScrollEvent>): void;
@@ -35,14 +35,15 @@ const MenuComponent: React.FC<IProps> = (state) => {
   };
 
   return (
-    <View style={[StylesOne.screenContainer, MP.ph15]}>
+    <View style={[StylesOne.screenContainer]}>
       <View>
-        <Input placeholder="Search" currentValue={state.menuState.search} onChange={state.onChange} />
+        <SearchUserModal />
       </View>
       <ScrollView
         onScroll={(e) => state.onScroll(e)}
         refreshControl={<RefreshControl refreshing={state.menuState.refresh} onRefresh={state.onRefresh} />}
         contentContainerStyle={SThree.menuPostsContainer}
+        style={MP.ph15}
       >
         {renderPosts()}
       </ScrollView>

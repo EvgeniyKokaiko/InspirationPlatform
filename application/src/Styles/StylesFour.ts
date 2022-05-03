@@ -114,4 +114,34 @@ export const StylesFour = StyleSheet.create({
     color: 'white',
   },
 
+  commentName_title: {
+    fontFamily: 'SFProDisplay-Regular',
+    fontSize: fontSizeDP(16),
+    color: colors.SignIn_BG,
+  },
+
+  commentfName_title: {
+    fontFamily: 'SFProDisplay-Regular',
+    fontSize: fontSizeDP(14),
+    color: colors.SignIn_BG,
+  },
+
+  commentDate_title: {
+    fontFamily: 'SFProDisplay-Regular',
+    fontSize: fontSizeDP(11),
+    color: colors.inactive,
+  },
+
+  commentComment_title: {
+    fontFamily: 'SFProDisplay-Regular',
+    fontSize: fontSizeDP(13),
+    color: colors.classicBlack,
+  },
+  commentRemoveBtn_title: {
+    fontFamily: 'SFProDisplay-Regular',
+    fontSize: fontSizeDP(15),
+    color: colors.PurpleRed,
+  },
+  
+
 });

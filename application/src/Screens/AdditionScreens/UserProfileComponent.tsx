@@ -28,6 +28,7 @@ type IProps = {
     goToChatScreen():void;
     onFollowersPress():void;
     onFollowingPress(): void;
+    onCommendPress(hash: string): void;
     onLikePress(post_hash: string, owner: string): void;
 }
 
@@ -37,8 +38,8 @@ const UserProfileComponent = (state: IProps) => {
         if (!Array.isArray(state.user?.userPosts) || state.user?.isPrivate) {
             return
         }
-        return state.user.userPosts?.map((el: HomePostEntity, index: number) => {
-            return <MyPost onLikePress={state.onLikePress} entity={el} isMe={state.isMe} index={index} key={index} />;
+        return state.user?.userPosts?.map((el: HomePostEntity, index: number) => {
+            return <MyPost onCommendPress={state.onCommendPress} onLikePress={state.onLikePress} entity={el} isMe={state.isMe} index={index} key={index} />;
         });
     };
 

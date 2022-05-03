@@ -77,6 +77,13 @@ const MyProfileComponent: React.FC<IProps> = (props: IProps) => {
     dispatch(actionImpl.getMyPosts());
   }, []);
 
+  const onCommendPress = (post_hash: string) => {
+    const data = {
+      post_hash: post_hash,
+    }
+    INavigation.navigate(StackScreens.Comments, data);
+  };
+
   useEffect(() => {
     console.log(state.meReducer?.data)
     setState({...getState, user: state.meReducer.data?.userData, posts: state.mePostsReducer?.data, counts: state.meReducer.data?.counts})
@@ -85,7 +92,7 @@ const MyProfileComponent: React.FC<IProps> = (props: IProps) => {
   const renderPosts = () => {
     return getState.posts.map((el: HomePostEntity, index) => {
       console.log(getState.posts, 'sdasas')
-      return <MyPost onLikePress={onLikePress} entity={el} setReload={setReload} reload={getState.reload} isMe={isMe} index={index} />;
+      return <MyPost onCommendPress={onCommendPress} onLikePress={onLikePress} entity={el} setReload={setReload} reload={getState.reload} isMe={isMe} index={index} />;
     });
   };
 
