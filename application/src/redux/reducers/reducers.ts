@@ -68,19 +68,6 @@ class ReducersImpl {
           data: entities,
         };
       }
-    } else if (action.type === ActionTypes.LikeMyPosts) {
-        state.data.forEach((el: HomePostEntity) => {
-          if (el.image === action.payload.data.post_hash) {
-            if (action.payload.data.is_like) {
-              el.likesCount = el.likesCount + 1;
-              el.post_hash = action.payload.post_hash;
-            } else {
-              el.likesCount = el.likesCount - 1;
-              el.post_hash = null;
-            }
-          }
-        });
-        return state;
       }  else if (action.type === ActionTypes.Clear) {
       return [];
     }
@@ -123,23 +110,8 @@ class ReducersImpl {
         result.data.push(newHomePost);
       });
       return result;
-    } else if (action.type === ActionTypes.LikePost) {
-      if (action.payload.statusCode !== 200) {
-        return state;
-      }
-      state.data.forEach((el: HomePostEntity) => {
-        if (el.image === action.payload.data.post_hash) {
-          if (action.payload.data.is_like) {
-            el.likesCount = el.likesCount + 1;
-            el.post_hash = action.payload.post_hash;
-          } else {
-            el.likesCount = el.likesCount - 1;
-            el.post_hash = null;
-          }
-        }
-      });
-      return state;
-    } else if (action.type === ActionTypes.Clear) {
+    }
+    else if (action.type === ActionTypes.Clear) {
       return {
         isModify: state.isModify + 1,
         pages: 0,
@@ -160,9 +132,13 @@ class ReducersImpl {
   public GetUserData(state: any = {}, action: Action) {
     if (action.type === ActionTypes.User) {
         console.log(action.payload);
-        const entities = action.payload.data?.userPosts.map((el: homeEntityProps) => {
+        const posts = action.payload.data?.userPosts;
+        let entities = [];
+        if (Array.isArray(posts)) {
+         entities = action.payload.data?.userPosts.map((el: homeEntityProps) => {
             return new HomePostEntity({...el});
         })
+        }
         console.log({ userPosts: entities, ...action.payload }, 'zxcxzczx')
         const ls = action.payload.data;
       return { 
@@ -178,21 +154,7 @@ class ReducersImpl {
               userPosts: entities,
           }
        };
-    } else if (action.type === ActionTypes.LikeUserPosts) {
-        console.log(state, 'zxcc')
-        state.data.userPosts.forEach((el: HomePostEntity) => {
-          if (el.image === action.payload.data.post_hash) {
-            if (action.payload.data.is_like) {
-              el.likesCount = el.likesCount + 1;
-              el.post_hash = action.payload.post_hash;
-            } else {
-              el.likesCount = el.likesCount - 1;
-              el.post_hash = null;
-            }
-          }
-        });
-        return state;
-      }
+     }
     return state;
   }
 
@@ -290,26 +252,6 @@ class ReducersImpl {
           data: {},
         };
       }
-    } else if (action.type === ActionTypes.LikeSinglePost) {
-      console.log('actioned');
-      if (action.payload.statusCode !== 200) {
-        return state;
-      }
-      if (state.data.image === action.payload.data.post_hash) {
-        if (action.payload.data.is_like) {
-          state.data.likesCount = state.data.likesCount + 1;
-          state.data.post_hash = action.payload.post_hash;
-        } else {
-          state.data.likesCount = state.data.likesCount - 1;
-          state.data.post_hash = null;
-        }
-      }
-      return {
-        isModify: state.isModify,
-        statusCode: action.payload.statusCode,
-        statusMessage: action.payload.statusMessage,
-        data: state.data as HomePostEntity,
-      };
     }
     return {
       isModify: 0,
@@ -318,8 +260,9 @@ class ReducersImpl {
       data: {},
     };
   }
-
+  //rename to messageReducer!
   public GetMessagesReducer(state: any = {}, action: Action) {
+    console.log(action, 'messages')
     if (action.type === ActionTypes.U2UMessages) {
       const Messages: MessageEntity[] = [];
       const messageProps: PlainMessage[] = action.payload.data;

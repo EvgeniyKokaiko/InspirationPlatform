@@ -43,8 +43,7 @@ const UserProfileComponent = (state: IProps) => {
         });
     };
 
-console.log(state, "STATE")
-    return state.user?.userData !== void 0 && state.user?.userData !== null && state?.user?.userData  ? (
+    return state?.user !== void 0 && state?.user !== null && state?.user?.userData  ? (
         <ScrollView style={[StylesOne.screenContainer, MP.ph25]} refreshControl={<RefreshControl refreshing={state.refresh} onRefresh={state.makeRequest} />}>
             <View style={[StylesOne.w100]}>
                 <View style={[StylesOne.flex_row, StylesOne.flex_jc_sb, StylesOne.flex_ai_c, MP.mv20]}>

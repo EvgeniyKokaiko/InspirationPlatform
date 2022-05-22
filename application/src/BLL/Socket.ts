@@ -18,7 +18,7 @@ class Socket {
   private readonly _cHash: string;
   private _socket: WebSocket;
   private _makeDispatch: Function;
-  private readonly serverURL: string = 'ws://192.168.1.92:8080/messaging';
+  private readonly serverURL: string = 'ws://192.168.1.90:8080/messaging';
   private readonly _handlers: SocketHandlers;
   private _userName: string;
   constructor(cHash: string, token: string | null, dispatch: Function, userName: string) {

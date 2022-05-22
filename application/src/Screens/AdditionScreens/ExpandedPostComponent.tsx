@@ -10,7 +10,7 @@ import Carousel from 'react-native-snap-carousel';
 import { DEVICE_HEIGHT, DEVICE_WIDTH, mockupHeightToDP, mockupWidthToDP } from '../../Parts/utils';
 import { Post } from '../../Types/Models';
 import { SThree } from '../../Styles/StylesThree';
-import { HomeButtonView } from '../segments/HomeButtonView';
+import { LikeButton } from '../segments/LikeButton';
 import { HomePostEntity } from '../../BLL/entity/HomePostEntity';
 import { apiURL } from '../../redux/actions';
 import { SingleCarouselComponent } from '../segments/Carousel/SingleCarouselComponent';
@@ -68,7 +68,7 @@ const ExpandedPostComponent = (state: IProps) => {
             </View> */}
         <SingleCarouselComponent carouselData={state.carouselData} />
         <View style={[StylesOne.flex_row, MP.mt10, MP.mb20, MP.ph6]}>
-          <HomeButtonView entity={state.entity} onLikePress={state.onLikePress} />
+          <LikeButton owner={state.entity.owner} textColor={'black'} postHash={state.entity.image as string} />
           <TouchableOpacity
             onPress={state.onCommendPress}
             style={[{ width: mockupWidthToDP(40), height: mockupHeightToDP(30) }, StylesOne.flex_row, StylesOne.flex_ai_c, MP.mr20]}

@@ -22,13 +22,8 @@ func Posts(route *gin.Engine, db *database.DB) {
 		router.POST("/add", func(c *gin.Context) {
 			var requestData = map[string]interface{}{}
 			form, err := c.MultipartForm()
-			fmt.Println(form, "val")
 			val := form.Value
-			fmt.Println("image", form.Value)
 			files := form.File["image"]
-			for key, val := range form.File {
-				fmt.Println(key, val, "abobb")
-			}
 			name, _, _ := utils.ParseHeader(c)
 			postName, _ := utils.GenerateHashWithSalt(name, files[0].Filename)
 			var a = 0

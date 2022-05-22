@@ -104,6 +104,9 @@ func SocketEmitter(eventName interface{}, mT int, message []byte, user *models.S
 		fmt.Println("read all messages sf[olewokfoke")
 		handlers.ReadAllMessagesHandler(sendMessageModelProps)
 		break
+	case "RemoveOneMessage":
+		handlers.ReadAllMessagesHandler(sendMessageModelProps)
+		break
 	default:
 		fmt.Println("default")
 	}

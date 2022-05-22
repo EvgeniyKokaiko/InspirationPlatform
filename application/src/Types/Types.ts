@@ -17,3 +17,16 @@ export enum AsyncStorageKeys {
 export type PropChildren = {
     children?: ReactNode;
 };
+
+
+export type BaseResponse = {
+    statusCode: number;
+    statusMessage: string;
+    data: any
+}
+
+export type TypedBaseResponse<T> = {
+    statusCode: number;
+    statusMessage: string;
+    data: T
+}

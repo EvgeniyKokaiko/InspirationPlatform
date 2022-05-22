@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, FlatList, ScrollView, TouchableOpacity, Image, ImageBackground } from 'react-native';
+import { View, Text, FlatList, ScrollView, TouchableOpacity, Image, ImageBackground, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import { StylesOne } from '../Styles/StylesOne';
 import { chatStyles } from '../Styles/ChatStyles';
 import { FormTextBoxSegment } from './segments/FormTextBoxSegment';
@@ -23,10 +23,12 @@ type IProps = {
   messages: MessageEntity[];
   flatListRef: React.MutableRefObject<FlatList>;
   scrollToEnd(): void;
+  onScroll(event: NativeSyntheticEvent<NativeScrollEvent>): void;
 };
 
 const ChatComponent = (state: IProps) => {
   const renderList = ({ item, index }: { item: MessageEntity; index: number }) => {
+    console.log(item);
     if (state.messages.length >= index) {
       state.scrollToEnd();
     }
@@ -59,6 +61,7 @@ const ChatComponent = (state: IProps) => {
           decelerationRate={'fast'}
           ref={state.flatListRef}
           data={state.messages}
+          onScroll={state.onScroll}
           renderItem={renderList}
           style={[chatStyles.chatContainer]}
           onContentSizeChange={state.scrollToEnd}

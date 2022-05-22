@@ -23,6 +23,7 @@ const MenuComponent: React.FC<IProps> = (state) => {
     const expandedIndex = 8;
     return (state.menuState.data.length < 0 ? [] : state.menuState.data).map((post, index) => {
       const onPostPress = () => state.onPostPress(post.image)
+      console.log(post.image);
       return (
         <UserMenuPost
           key={`${post.image}${index}`}

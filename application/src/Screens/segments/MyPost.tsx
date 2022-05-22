@@ -22,7 +22,7 @@ import { DEVICE_WIDTH, mockupHeightToDP, mockupWidthToDP } from '../../Parts/uti
 import { useDispatch, useSelector } from 'react-redux';
 import { SThree } from '../../Styles/StylesThree';
 import { MP } from '../../Styles/MP';
-import { HomeButtonView } from './HomeButtonView';
+import { LikeButton } from './LikeButton';
 import { HomePostEntity } from '../../BLL/entity/HomePostEntity';
 import { SingleCarouselComponent } from './Carousel/SingleCarouselComponent';
 import { ImageStyles } from '../../Styles/Images';
@@ -100,24 +100,6 @@ const MyPost = (props: myPostProps) => {
     setState({ ...getState, showModal: false, index: -1 });
   };
 
-  const getLikes = async () => {
-    const response = await axios.get(`http://${apiURL}/likes/getLikes/${props.entity.image}`, {
-      headers: {
-        Authorization: `Bearer ${currentUser.token}`
-      }
-    })
-    if (response.data.statusCode === 200) {
-      const data: {isLiked: boolean; likesData: {likesCount: number; post_hash: string}} = response.data.data;
-      props.entity.likesCount = data.likesData.likesCount;
-      props.entity.post_hash = data.isLiked ?  data.likesData.post_hash : null;
-      setState({...getState, refreshOrUpdate: getState.refreshOrUpdate + 1});
-    }
-   }
-
-  useEffect(() => {
-   getLikes();
-   console.log(props.entity.likesCount, getState)
-  }, [props.entity])
 
 
   const onMomentumScrollEnd = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -189,7 +171,7 @@ const MyPost = (props: myPostProps) => {
             <SingleCarouselComponent reload={props.reload} onMomentumScrollEnd={onMomentumScrollEnd} carouselData={getState.carouselData} />
           </View>
           <View style={[StylesOne.flex_row, MP.mt10, MP.mb20]}>
-            <HomeButtonView refreshOrUpdate={getState.refreshOrUpdate} textColor={'white'} entity={props.entity} onLikePress={props.onLikePress!} />
+            <LikeButton owner={props.entity.owner} textColor={'white'} postHash={props.entity.image as string} />
             <TouchableOpacity
               onPress={() => props.onCommendPress(props.entity.image)}
               style={[{ width: mockupWidthToDP(40), height: mockupHeightToDP(30) }, StylesOne.flex_row, StylesOne.flex_ai_c, MP.mr20]}

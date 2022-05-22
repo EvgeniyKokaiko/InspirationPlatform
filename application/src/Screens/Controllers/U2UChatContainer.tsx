@@ -9,9 +9,9 @@ import {useDispatch, useSelector} from 'react-redux';
 import {MessageEntity} from '../../BLL/entity/MessageEntity';
 import {modulesImpl} from '../../redux/actions/modules';
 import {currentUser} from '../../BLL/CurrentUserProps';
-import {FlatList, Keyboard, LayoutAnimation} from 'react-native';
+import {FlatList, Keyboard, LayoutAnimation, NativeScrollEvent, NativeSyntheticEvent} from 'react-native';
 import {Utilities} from "../../BLL/Utilities";
-
+import { useUpdate } from '../../BLL/hooks';
 type IProps = {} & BaseProps;
 type IState = {
   messages: MessageEntity[];
@@ -75,6 +75,10 @@ const U2UChatContainer = (props: IProps) => {
     }
   }
 
+  function onScroll(event: NativeSyntheticEvent<NativeScrollEvent>) {
+    const nev = event.nativeEvent;
+  }
+
   const onEmojiPress = () => {};
   const onBurgerPress = () => {};
   const onBackBtn = () => {
@@ -91,6 +95,7 @@ const U2UChatContainer = (props: IProps) => {
     messages: getState.messages,
     flatListRef: flatListRef as React.MutableRefObject<FlatList>,
     scrollToEnd: scrollToEnd,
+    onScroll
   };
 
   onFocus(async () => {
@@ -132,6 +137,7 @@ const U2UChatContainer = (props: IProps) => {
       return;
     } else {
       LayoutAnimation.configureNext(LayoutAnimation.create(250, 'linear', 'opacity'));
+      console.log(store.getMessagesReducer, 'messages');
       setState({ ...getState, messages: store.getMessagesReducer.data });
     }
   }, [store.getMessagesReducer.isModify]);

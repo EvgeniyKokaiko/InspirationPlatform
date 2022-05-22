@@ -12,7 +12,6 @@ import { ActionTypes } from '../../redux/types/ActionTypes';
 type IProps = {} & BaseProps
 
 type userDataProps = {
-    userData: any;
     refresh: boolean;
     isFollowed: boolean;
 }
@@ -23,9 +22,9 @@ const UserProfileContainer = (props: IProps) => {
     const dispatch = useDispatch()
     const ownerAvatar: string = `http://${apiURL}/storage/${ownerId}/avatar/avatar.png`;
     const store: any = useSelector<any>(state => state)
+    const userData: any = useSelector<any>(state => state.getUserDataReducer.data);
     const isMe = false;
     const [userState, setUserState] = useState<userDataProps>({
-        userData: {},
         refresh: false,
         isFollowed: false,
     });
@@ -35,7 +34,7 @@ const UserProfileContainer = (props: IProps) => {
 
 
     async function onPersonalSitePress() {
-        await Linking.openURL((userState.userData.userData as User).personal_site);
+        await Linking.openURL((userData as User).personal_site);
     }
 
     const onBackBtn = () => {
@@ -51,8 +50,8 @@ const UserProfileContainer = (props: IProps) => {
     }, [ownerId])
 
     const goToChatScreen = () => {
-        console.log(userState.userData)
-        INavigation.navigate(StackScreens.U2UChat, {userId: ownerId, socketHash: userState.userData.isSubscribed.socket_hash})
+        console.log(userData)
+        INavigation.navigate(StackScreens.U2UChat, {userId: ownerId, socketHash: userData.isSubscribed.socket_hash})
     }
 
     function onFollowingPress() {
@@ -77,7 +76,6 @@ const UserProfileContainer = (props: IProps) => {
     
 
       onFocus(() => {
-          setUserState({...userState, userData: {...userState.userData, userPosts: []}});
         dispatch(actionImpl.getUser(ownerId))
       }, [ownerId])
 
@@ -85,7 +83,7 @@ const UserProfileContainer = (props: IProps) => {
     const STATE = {
         ownerId,
         makeRequest,
-        user: userState.userData,
+        user: userData,
         refresh: userState.refresh,
         isFollowed: userState.isFollowed,
         onPersonalSitePress,
@@ -103,10 +101,11 @@ const UserProfileContainer = (props: IProps) => {
 
 
     useEffect(() => {
-        if (!userState.userData?.isSubscribe) {
+        console.log(userData, store);
+        if (!userData?.isSubscribe) {
             setUserState({...userState, isFollowed: false})
         }
-    }, [userState.userData])
+    }, [userData])
 
     useEffect(() => {
         if (store.unfollowReducer.statusCode === 200) {
@@ -124,8 +123,7 @@ const UserProfileContainer = (props: IProps) => {
 
 
     useEffect(() => {
-        setUserState({...userState, userData: store.getUserDataReducer.data, isFollowed: store.getUserDataReducer.data?.isSubscribe})
-        console.log(store, userState.userData, "DATA")
+        setUserState({...userState, isFollowed: store.getUserDataReducer.data?.isSubscribe})
     }, [store.getUserDataReducer])
 
     return <UserProfileComponent {...STATE} />

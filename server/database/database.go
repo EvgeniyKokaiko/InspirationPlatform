@@ -435,10 +435,31 @@ func (db *DB) AddMessage(data *models.FromClientData, owner string) (models.Chat
 	return newMessage, nil
 }
 
-func (db *DB) GetMessages(owner string, to string, page int) ([]*models.ChatData, error) {
-	var response []*models.ChatData
-	if getMessagesResponse := db.database.Table(typedDB.TABLES.USERToUSERChat).Where("sender = ? AND companion = ? OR sender = ? AND companion = ?", owner, to, to, owner).Scan(&response); getMessagesResponse.Error != nil {
-		return []*models.ChatData{}, errors.New("Error!On GetMessages Method")
+func (db *DB) GetMessages(owner string, to string, page int) (map[string]any, error) {
+	var storage []*models.ChatData
+	var counter int64 = 0
+	const limit = 30
+	if getMessagesCounter := db.database.Table(typedDB.TABLES.USERToUSERChat).Where("sender = ? and companion = ? OR sender = ? and companion = ?", owner, to, to, owner).Count(&counter); getMessagesCounter.Error != nil {
+		return map[string]any{}, errors.New("Error!On GetMessages Method")
+	}
+	if counter <= limit {
+		if getMessagesResponse := db.database.Table(typedDB.TABLES.USERToUSERChat).Where("sender = ? AND companion = ? OR sender = ? AND companion = ?", owner, to, to, owner).Scan(&storage); getMessagesResponse.Error != nil {
+			return map[string]any{}, errors.New("Error!On GetMessages Method")
+		}
+	} else {
+		offset := counter - limit
+		if getMessagesResponse := db.database.Table(typedDB.TABLES.USERToUSERChat).Where("sender = ? AND companion = ? OR sender = ? AND companion = ?", owner, to, to, owner).Offset(int(offset)).Limit(limit).Scan(&storage); getMessagesResponse.Error != nil {
+			return map[string]any{}, errors.New("Error!On GetMessages Method")
+		}
+	}
+
+	totalPages := math.Ceil(float64(counter) / limit)
+
+	response := map[string]any{
+		"items":      storage,
+		"pageSize":   limit,
+		"pageIndex":  page,
+		"totalPages": totalPages,
 	}
 
 	return response, nil
@@ -488,17 +509,16 @@ func (db *DB) GetPostWithLikesByHash(postHash string, initiator string) (map[str
 	if dbGetPostResponse := db.database.Raw(`
 	SELECT * FROM (SELECT * FROM posts WHERE posts.image = ?) as posts2 LEFT JOIN (SELECT maker, subscriber, status FROM user_subscription 
 		WHERE subscriber = ?)
-		AS subs ON (posts2.owner = subs.maker) LEFT JOIN (SELECT COUNT(*) as likesCount, post_hash FROM likes WHERE likes.post_hash = ?) as likes ON (posts2.image = likes.post_hash)  
-		LEFT JOIN (SELECT * FROM likes WHERE initiator = ?) as likeData ON (posts2.image = likes.post_hash)
-		 ORDER BY posts2.date_of_creation DESC`, postHash, initiator, postHash, initiator).Take(&dbData); dbGetPostResponse.Error != nil {
+		AS subs ON (posts2.owner = subs.maker)`, postHash, initiator, postHash, initiator).Take(&dbData); dbGetPostResponse.Error != nil {
 		return map[string]any{}, errors.New("ERROR! GetPostWithLikesByHash ex")
 	}
 	return dbData, nil
 }
 
+// переписати, і вертати каунтер а не обьект с каунтером (дерьмова типізація)!
 func (db *DB) GetLikesByHash(post_hash string, initiator string) (map[string]any, error) {
 	var response = map[string]any{}
-	var likesData = map[string]any{}
+	var likesData int64 = 0
 	dbGetIsLikedResponse := db.database.Raw("select * from likes where likes.post_hash = ? and likes.initiator = ?", post_hash, initiator).Take(&map[string]any{})
 	fmt.Println(dbGetIsLikedResponse.Error)
 	if dbGetIsLikedResponse.Error != nil {
@@ -506,10 +526,10 @@ func (db *DB) GetLikesByHash(post_hash string, initiator string) (map[string]any
 	} else {
 		response["isLiked"] = true
 	}
-	if dbGetLikesCount := db.database.Raw("select post_hash, count(*) as likesCount from likes where post_hash = ?", post_hash).Take(&likesData); dbGetLikesCount.Error != nil {
+	if dbGetLikesCount := db.database.Table(typedDB.TABLES.LIKES).Where("post_hash = ?", post_hash).Count(&likesData); dbGetLikesCount.Error != nil {
 		return map[string]any{}, errors.New("Error! GetLikesByHash ex")
 	}
-	response["likesData"] = likesData
+	response["likesCount"] = likesData
 
 	return response, nil
 }

@@ -1,3 +1,4 @@
+import { MessageStorage } from "../MessageStorage";
 
 export type messageProps = {
     sender: string;
@@ -17,7 +18,8 @@ class MessageEntity  {
     private _status: number;
     private _type: number;
     public _message_hash: string;
-    constructor(messageProps: messageProps) {
+    private readonly _storage: MessageStorage;
+    constructor(messageProps: messageProps, storage: MessageStorage) {
         this._sender = messageProps.sender;
         this._companion = messageProps.companion;
         this._created_at = messageProps.created_at ? new Date(messageProps.created_at).toString() : new Date().toString();
@@ -25,32 +27,37 @@ class MessageEntity  {
         this._status = messageProps.status;
         this._type = messageProps.type;
         this._message_hash = messageProps.message_hash as string
+        this._storage = storage;
     }
 
 
-    get sender(): string {
+    public get sender(): string {
         return this._sender;
     }
 
-    get companion(): string {
+    public get storage(): MessageStorage {
+        return this._storage;
+    }
+
+    public get companion(): string {
         return this._companion;
     }
-    get created_at() {
+    public get created_at() {
         return this._created_at;
     }
-    set status(value: number) {
+    public set status(value: number) {
         this._status = value;
     }
-    get plain_message(): string {
+    public get plain_message(): string {
         return this._plain_message;
     }
-    get status(): number {
+    public get status(): number {
         return this._status;
     }
-    get type(): number {
+    public get type(): number {
         return this._type;
     }
-    get message_hash(): string {
+    public get message_hash(): string {
         return this._message_hash;
     }
 

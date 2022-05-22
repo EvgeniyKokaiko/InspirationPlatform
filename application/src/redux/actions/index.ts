@@ -3,8 +3,8 @@ import axios from 'axios';
 import { Action, ActionTypes } from '../types/ActionTypes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BaseAction } from './BaseAction';
-
-export const apiURL = '192.168.1.92:8080';
+//90 - 92 = MAC OS
+export const apiURL = '192.168.1.90:8080';
 
 interface ActionMethods {
   register(username: string, email: string, password: string): (dispatch: Dispatch<Action>) => {};
@@ -259,8 +259,8 @@ class Actions extends BaseAction implements ActionMethods {
         .then((el) => {
           dispatch({ type: ActionTypes.User, payload: el.data });
         })
-        .catch(() => {
-          dispatch({ type: ActionTypes.User, payload: { statusCode: 423 } });
+        .catch((ex) => {
+          dispatch({ type: ActionTypes.User, payload: { statusCode: 423, statusMessage: ex } });
         });
     });
   };
