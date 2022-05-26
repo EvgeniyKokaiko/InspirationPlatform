@@ -23,9 +23,9 @@ const BottomNavigation: React.FC<IProps> = (props) => {
             <TouchableOpacity onPress={() => {INavigation.navigate(StackScreens.Add)}} style={St.BottomNavigationItem}>
                 <Image style={[StylesOne.wh100]} source={images.add} />
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => {INavigation.navigate(StackScreens.Notifications)}} style={St.BottomNavigationItem}>
+            {/* <TouchableOpacity onPress={() => {INavigation.navigate(StackScreens.Notifications)}} style={St.BottomNavigationItem}>
                 <Image style={[StylesOne.wh100]} source={images.notifications} />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             <TouchableOpacity onPress={() => {INavigation.navigate(StackScreens.MyProfile)}} style={St.BottomNavigationItem}>
                 <Image style={[StylesOne.wh100]} source={images.me} />
             </TouchableOpacity>

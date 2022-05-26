@@ -10,11 +10,11 @@ import { backgrounds } from '../Styles/Backgrounds';
 import Avatar from './segments/Avatar';
 import { useDispatch, useSelector } from 'react-redux';
 import { Reducers } from '../redux/reducers/reducers';
-import {actionImpl, apiURL} from '../redux/actions';
+import { actionImpl, apiURL } from '../redux/actions';
 import { Post, User } from '../Types/Models';
 import MyPost from './segments/MyPost';
 import FullScreenPreloader from './segments/FullScreenPreloader';
-import {INavigation} from "./Core/OverrideNavigation";
+import { INavigation } from "./Core/OverrideNavigation";
 import { mockupHeightToDP } from '../Parts/utils';
 import { HomePostEntity } from '../BLL/entity/HomePostEntity';
 import { ActionTypes } from '../redux/types/ActionTypes';
@@ -53,21 +53,21 @@ const MyProfileComponent: React.FC<IProps> = (props: IProps) => {
 
   const onLikePress = useCallback((postHash: string, owner: string) => {
     dispatch(actionImpl.likePost(postHash, owner, ActionTypes.LikeMyPosts))
-   }, []);
+  }, []);
 
   const setReload = (value: number) => {
-    setState({...getState, reload: value});
+    setState({ ...getState, reload: value });
   }
 
   onFocus(() => {
     dispatch(actionImpl.getMe());
     dispatch(actionImpl.getMyPosts());
-    setState({...getState, refresh: false});
+    setState({ ...getState, refresh: false });
   }, [])
 
 
   useEffect(() => {
-    setState({...getState, user: {}, posts: [], counts: {owner_count: 0, subscriber_count: 0}})
+    setState({ ...getState, user: {}, posts: [], counts: { owner_count: 0, subscriber_count: 0 } })
     dispatch(actionImpl.getMe());
     dispatch(actionImpl.getMyPosts());
   }, [getState.reload])
@@ -85,12 +85,13 @@ const MyProfileComponent: React.FC<IProps> = (props: IProps) => {
   };
 
   useEffect(() => {
-    setState({...getState, user: state.meReducer.data?.userData, posts: state.mePostsReducer?.data, counts: state.meReducer.data?.counts})
+    setState({ ...getState, user: state.meReducer.data?.userData, posts: state.mePostsReducer?.data, counts: state.meReducer.data?.counts })
   }, [state.meReducer, state.mePostsReducer]);
 
   const renderPosts = () => {
     return getState.posts.map((el: HomePostEntity, index) => {
-      return <MyPost  onCommendPress={onCommendPress} onLikePress={onLikePress} entity={el} setReload={setReload} reload={getState.reload} isMe={isMe} index={index} />;
+
+      return <React.Fragment key={index}><MyPost onCommendPress={onCommendPress} onLikePress={onLikePress} entity={el} setReload={setReload} reload={getState.reload} isMe={isMe} index={index} /></React.Fragment>;
     });
   };
 
@@ -100,22 +101,22 @@ const MyProfileComponent: React.FC<IProps> = (props: IProps) => {
   }
 
   function onSettingsPress() {
-    INavigation.navigate(StackScreens.Settings, {isPrivate: (getState.user! as any).is_private});
+    INavigation.navigate(StackScreens.Settings, { isPrivate: (getState.user! as any).is_private });
   }
 
-//0 - мои подписки
-//1 - мои подписчики
+  //0 - мои подписки
+  //1 - мои подписчики
   function onFollowingPress() {
-    INavigation.navigate(StackScreens.Following, {userId: (getState.user! as any).username, listType: 1})
+    INavigation.navigate(StackScreens.Following, { userId: (getState.user! as any).username, listType: 1 })
   }
 
   function onFollowersPress() {
-    INavigation.navigate(StackScreens.Following, {userId: (getState.user! as any).username, listType: 0})
+    INavigation.navigate(StackScreens.Following, { userId: (getState.user! as any).username, listType: 0 })
   }
 
 
   return getState.user && getState.posts ? (
-    <ScrollView style={[StylesOne.screenContainer, MP.ph25]} refreshControl={<RefreshControl refreshing={getState.refresh} onRefresh={makeRequest} />}>
+    <ScrollView nestedScrollEnabled style={[StylesOne.screenContainer, MP.ph25]} refreshControl={<RefreshControl refreshing={getState.refresh} onRefresh={makeRequest} />}>
       <View style={[StylesOne.w100]}>
         <View style={[StylesOne.flex_row, StylesOne.flex_jc_sb, StylesOne.flex_ai_c, MP.mv20]}>
           <View />
@@ -126,7 +127,7 @@ const MyProfileComponent: React.FC<IProps> = (props: IProps) => {
       <View style={[MP.mt20, StylesOne.w100, St.borderRadius30, backgrounds.myProfileBlocks, MP.pv20, MP.ph20]}>
         <View style={[StylesOne.flex_row]}>
           <View style={[MP.mb20]}>
-            <Avatar icon={getState.avatar === 999 ? images.standardAvatar : {uri: `http://${apiURL}/storage/${(getState.user! as any).username}/avatar/avatar.png?asd=${Date.now()}`}} size={60} />
+            <Avatar icon={getState.avatar === 999 ? images.standardAvatar : { uri: `http://${apiURL}/storage/${(getState.user! as any).username}/avatar/avatar.png?asd=${Date.now()}` }} size={60} />
           </View>
           <View style={[StylesOne.flex_row, StylesOne.flex_ai_c, { height: mockupHeightToDP(75) }]}>
             <TouchableOpacity onPress={onFollowingPress} style={[MP.mh15, StylesOne.flex_column, StylesOne.flex_ai_c]}>
@@ -175,7 +176,7 @@ const MyProfileComponent: React.FC<IProps> = (props: IProps) => {
       {/*    <TouchableOpacity>*/}
       {/*    </TouchableOpacity>*/}
       {/*</View>*/}
-      <ScrollView showsVerticalScrollIndicator={false} style={[St.postListStyles]} contentContainerStyle={St.listContainer}>
+      <ScrollView nestedScrollEnabled showsVerticalScrollIndicator={false} style={[St.postListStyles]} contentContainerStyle={St.listContainer}>
         {renderPosts()}
       </ScrollView>
     </ScrollView>

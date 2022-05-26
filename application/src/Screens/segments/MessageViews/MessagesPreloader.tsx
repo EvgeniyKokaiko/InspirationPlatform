@@ -1,6 +1,7 @@
 import React, { forwardRef, useImperativeHandle, useState } from 'react'
 import { ActivityIndicator, Text, View } from 'react-native'
 import { colors } from '../../../Parts/colors'
+import { chatStyles } from '../../../Styles/ChatStyles'
 import { StylesOne } from '../../../Styles/StylesOne'
 
 type IProps = {}
@@ -30,7 +31,7 @@ const MessagesPreloader = forwardRef<unknown, IProps>(({ }, _ref) => {
 
     return (
         <>
-            {getState.show ? <View style={[StylesOne.w100, { height: 50, backgroundColor: 'red', top: 50, zIndex: 999 }, StylesOne.flexCenter, StylesOne.absolute]}>
+            {getState.show ? <View style={[StylesOne.w100, chatStyles.ChatPreloader , StylesOne.flexCenter, StylesOne.absolute]}>
                 <View>
                     <Text>Loading...</Text>
                 </View>

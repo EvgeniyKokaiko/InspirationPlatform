@@ -31,6 +31,8 @@ export const StylesOne = StyleSheet.create({
     width: '70%',
   },
 
+  
+
   w55: {
     width: '55%',
   },

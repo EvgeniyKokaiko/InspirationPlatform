@@ -21,4 +21,6 @@ export const chatStyles = StyleSheet.create({
     borderTopWidth: 0.5,
     borderTopColor: colors.WhiteChalk,
   },
+
+  ChatPreloader: { height: mockupHeightToDP(50), backgroundColor: 'rgba(0,0,0,0.4)', top: mockupHeightToDP(50), zIndex: 999 }
 });
