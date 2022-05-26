@@ -25,7 +25,6 @@ const HomeContainer: React.FC<IProps> = (props) => {
   });
   const dispatch = useDispatch();
   const store: any = useSelector(store => store);
-  console.log('modified')
   const onRefresh = useCallback(() => {
     setState({...getState, refresh: true})
     dispatch(actionImpl.getMyNewsLine(getState.page))
@@ -33,7 +32,6 @@ const HomeContainer: React.FC<IProps> = (props) => {
   }, [getState.page])
 
   const onBurgerPress = () => {
-    console.log('onBurgerPress');
   }
 
   const onLikePress = useCallback((postHash: string, owner: string) => {
@@ -49,7 +47,6 @@ const HomeContainer: React.FC<IProps> = (props) => {
   };
   
   const onRepostPress = () => {
-    console.log('onRepostPress');
   }
 
   const onBackBtn = () => {
@@ -73,7 +70,6 @@ const HomeContainer: React.FC<IProps> = (props) => {
 
  
   useEffect(() => {
-    console.log(store.GetMyNewsLineReducer.isModify, 'focusde')
   }, [props])
 
 
@@ -82,11 +78,9 @@ const HomeContainer: React.FC<IProps> = (props) => {
   }, [getState.page])
 
   useEffect(() => {
-    console.log('modified2')
     const news = store.GetMyNewsLineReducer
     if (news !== void 0 && news.statusCode === 200) {
       setState({...getState, data: news.data})
-      console.log(news);
     }
   }, [store.GetMyNewsLineReducer.isModify])
 

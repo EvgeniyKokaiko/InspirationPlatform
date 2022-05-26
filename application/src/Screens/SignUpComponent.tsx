@@ -33,7 +33,7 @@ const SignUpComponent = (props: IProps) => {
 
 
     function onTermOfUserHandler() {
-        console.log("onTermOfUserHandler");
+        Alert.alert('Be carefully on using this app :)')
     }
 
 
@@ -54,7 +54,6 @@ const SignUpComponent = (props: IProps) => {
     }
 
     useLayoutEffect(() => {
-        console.log(state, 5427)
         if (state.statusCode === 200) {
             props.navigation.navigate(StackScreens.SetupAccount)
         } else if (state.statusCode === 208) {

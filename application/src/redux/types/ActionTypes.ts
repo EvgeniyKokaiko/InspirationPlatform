@@ -22,6 +22,7 @@ export enum ActionTypes {
     Following = "FOLLOWING_LIST",
     ClearFollowing = "CLEAR_FOLLOWING_LIST",
     U2UMessages = "GET_MY_WITH_COMPANION_MESSAGES",
+    U2UMessagesPage = "GET_MY_WITH_COMPANION_MESSAGES_PAGINATION",
     AddFakeMessage = 'ADD_NEW_MESSAGE',
     ClearMessages = 'CLEAR_ALL_MESSAGES',
     SetNewStatus = "SET_NEW_MESSAGE_STATUS",
@@ -38,6 +39,9 @@ export enum ActionTypes {
     CreateComment = "CREATE_COMMENT",
     UpdateComment = "UPDATE_COMMENT",
     RemoveComment = "REMOVE_COMMENT",
+    //Messages
+    RemoveMessage = "REMOVE_ONE_MESSAGE",
+    RemoveLotMessages = "REMOVE_SOME_MESSAGES",
 }
 
 

@@ -2,6 +2,7 @@ import { Socket, SocketData, SocketEvents } from './Socket';
 import { modulesImpl } from '../redux/actions/modules';
 import { MessageEntity } from './entity/MessageEntity';
 import {MessageStatus} from "../Types/enums";
+import { PlainMessage } from '../Types/Models';
 
 class SocketHandlers {
   private readonly _dispatch: Function;
@@ -12,11 +13,10 @@ class SocketHandlers {
   }
 
   public getMessage = async (socketData: SocketData) => {
-    console.log(socketData, 'socketData');
     if (socketData.data === void 0 || socketData.data === null) {
         return;
     }
-    const newMessage = new MessageEntity({
+    const newMessage: PlainMessage = {
       companion: socketData.data.companion,
       created_at: socketData.data.created_at,
       plain_message: socketData.data.plain_message,
@@ -24,7 +24,7 @@ class SocketHandlers {
       status: socketData.data.status,
       type: socketData.data.type,
       message_hash: socketData.data.message_hash
-    });
+    };
     this._dispatch(modulesImpl.addMessageToStack(newMessage))
     if (this._socketImpl.socket.readyState === 1) {
       this._socketImpl.emitByEvent(SocketEvents.readAllMessages, socketData.data.sender)
@@ -37,7 +37,6 @@ class SocketHandlers {
 
 
     public readAllMessages = async (socketData: SocketData) => {
-      console.log(socketData, 'socketdata')
       if (socketData)
     if (socketData.data.statusCode === 200) {
       this._dispatch(modulesImpl.setAllReadMessages(MessageStatus.ReadByUser, socketData.data.type))
@@ -45,6 +44,16 @@ class SocketHandlers {
       console.log('error! readAllMessages ex')
     }
     }
+
+    public deleteMessage = async (socketData : SocketData) => {
+      if (socketData) {
+        if (socketData.data.isRemoved) {
+          const mHash = socketData.data.message_hash;
+          this._dispatch(modulesImpl.removeMessage())
+        }
+      }
+    }
+
 }
 
 export { SocketHandlers };

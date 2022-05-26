@@ -1,22 +1,23 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import ChatComponent from '../ChatComponent';
-import {BaseProps} from '../../Types/Types';
-import {actionImpl, apiURL} from '../../redux/actions';
-import {Socket, SocketEvents} from '../../BLL/Socket';
-import {INavigation} from '../Core/OverrideNavigation';
-import {onBlur, onFocus} from '../Core/MainNavigationScreen';
-import {useDispatch, useSelector} from 'react-redux';
-import {MessageEntity} from '../../BLL/entity/MessageEntity';
-import {modulesImpl} from '../../redux/actions/modules';
-import {currentUser} from '../../BLL/CurrentUserProps';
-import {FlatList, Keyboard, LayoutAnimation, NativeScrollEvent, NativeSyntheticEvent} from 'react-native';
-import {Utilities} from "../../BLL/Utilities";
+import { BaseProps } from '../../Types/Types';
+import { actionImpl, apiURL } from '../../redux/actions';
+import { Socket, SocketEvents } from '../../BLL/Socket';
+import { INavigation } from '../Core/OverrideNavigation';
+import { onBlur, onFocus } from '../Core/MainNavigationScreen';
+import { useDispatch, useSelector } from 'react-redux';
+import { MessageEntity } from '../../BLL/entity/MessageEntity';
+import { modulesImpl } from '../../redux/actions/modules';
+import { currentUser } from '../../BLL/CurrentUserProps';
+import { FlatList, Keyboard, LayoutAnimation, NativeScrollEvent, NativeSyntheticEvent, ToastAndroid } from 'react-native';
+import { Utilities } from "../../BLL/Utilities";
 import { useUpdate } from '../../BLL/hooks';
+import { MessageStorage } from '../../BLL/MessageStorage';
+import { PlainMessage } from '../../Types/Models';
+import { MessageOptionsModal, MessageOptionsModalForward } from '../segments/MessageViews/MessageOptionsModal';
+import { MessagesPreloader } from '../segments/MessageViews/MessagesPreloader';
 type IProps = {} & BaseProps;
-type IState = {
-  messages: MessageEntity[];
-  // socket: Socket;
-};
+type IState = {};
 
 enum MessageType {
   PlainMessage = 0,
@@ -27,18 +28,17 @@ enum MessageType {
 const U2UChatContainer = (props: IProps) => {
   const dispatch = useDispatch();
   let { userId, socketHash } = props.route.params;
-  const [getState, setState] = useState<IState>({
-    messages: [],
-  });
   const flatListRef = useRef<FlatList>(null);
-  const store: any = useSelector((store: any) => store);
+  const store: any = useSelector<any>((store: any) => store.getMessagesReducer);
+  const storage = store.data;
   const avatarURL: string = `http://${apiURL}/storage/${userId}/avatar/avatar.png`;
-  console.log(userId, socketHash, props.route.params);
   let socket: Socket | null = null;
-
+  let messageOptionsModel: any = React.createRef<MessageOptionsModalForward>();
+  let messagePreloader: any = React.createRef<typeof MessagesPreloader>();
+  let isLoading = false;
   const onMessageSend = useCallback(
     async (text: string) => {
-      const mHash = Utilities.stingToBase64({text: Math.random(), companion: userId, date: Date.now()});
+      const mHash = Utilities.stingToBase64({ text: Math.random(), companion: userId, date: Date.now() });
       const socketData = {
         plain_message: text,
         companion: userId,
@@ -47,7 +47,7 @@ const U2UChatContainer = (props: IProps) => {
         message_hash: mHash,
       };
 
-      const newMessage = new MessageEntity({
+      const plainMessage: PlainMessage = {
         companion: userId,
         created_at: Date.now(),
         plain_message: text,
@@ -55,32 +55,67 @@ const U2UChatContainer = (props: IProps) => {
         status: 1,
         message_hash: mHash,
         type: 0,
-      });
+      }
 
-      dispatch(modulesImpl.addMessageToStack(newMessage));
+      dispatch(modulesImpl.addMessageToStack(plainMessage));
       flatListRef.current!.scrollToEnd({
         animated: true,
       });
-      console.log(socket,'SOCKET CDJIFGRWIJOGWRJIOPG');
       await (socket as Socket).emitByEvent(SocketEvents.sendMessage, socketData);
     },
     [socket, userId]
   );
 
-  function scrollToEnd() {
-    if (flatListRef !== null) {
-      flatListRef.current!.scrollToEnd({
-        animated: true,
-      });
-    }
+  const onDeleteMessagePress = (message: MessageEntity) => {
+    ToastAndroid.show("onDeleteMessagePress", 2000);
   }
+
+  const onUpdateMessagePress = (message: MessageEntity) => {
+    ToastAndroid.show("onUpdateMessagePress", 2000);
+  }
+
+  const scrollToEnd = useCallback(() => {
+    if (flatListRef !== null) {
+      setTimeout(() => {
+        flatListRef.current!.scrollToEnd({
+          animated: true,
+        })
+      }, 1000)
+    }
+  }, [flatListRef])
 
   function onScroll(event: NativeSyntheticEvent<NativeScrollEvent>) {
     const nev = event.nativeEvent;
+    if (nev.contentOffset.y <= 150) {
+      if (store.pageIndex <= 0) {
+        return;
+      }
+      const totalPages = store.pageIndex - 1;
+      dispatch(actionImpl.getMessages(userId, totalPages, false));
+      showPreloader();
+    }
   }
 
-  const onEmojiPress = () => {};
-  const onBurgerPress = () => {};
+  function showOptionsModal(message: MessageEntity, coords: { x: number; y: number }) {
+    if (messageOptionsModel !== null) {
+      messageOptionsModel.current.show(message, coords);
+    }
+  }
+
+  function hideOptionsModal() {
+    messageOptionsModel.current.hide();
+  }
+
+  function showPreloader() {
+    messagePreloader.current.show();
+  }
+
+  function hidePreloader() {
+    messagePreloader.current.hide();
+  }
+
+  const onEmojiPress = () => { };
+  const onBurgerPress = () => { };
   const onBackBtn = () => {
     INavigation.goBack();
   };
@@ -92,19 +127,22 @@ const U2UChatContainer = (props: IProps) => {
     chatWith: props.route.params.userId,
     avatarURL,
     onBackBtn,
-    messages: getState.messages,
+    messages: storage,
     flatListRef: flatListRef as React.MutableRefObject<FlatList>,
     scrollToEnd: scrollToEnd,
-    onScroll
+    onScroll,
+    messageOptionsModel,
+    showOptionsModal,
+    onDeleteMessagePress,
+    onUpdateMessagePress,
+    messagePreloader
   };
 
   onFocus(async () => {
-    dispatch(actionImpl.getMessages(userId));
+    dispatch(actionImpl.getMessages(userId, 0, true));
     socket = new Socket(socketHash, currentUser.token, dispatch, userId);
     if (socket !== null) {
-      console.log('read')
     }
-    console.log(socket, 'SOCKET SADAS')
   }, [socketHash, userId]);
 
   async function closeSocket() {
@@ -112,35 +150,31 @@ const U2UChatContainer = (props: IProps) => {
   }
 
   onBlur(() => {
-    setState({ ...getState, messages: [] });
     dispatch(modulesImpl.clearAllMessages());
     closeSocket();
   });
 
   useEffect(() => {
-    Keyboard.addListener('keyboardDidChangeFrame', () => {
-      if (flatListRef !== null) {
-        flatListRef.current!.scrollToEnd({
-          animated: true,
-        });
-      }
-    });
+  }, [messageOptionsModel])
+
+  useEffect(() => {
+    // Keyboard.addListener('keyboardDidChangeFrame', () => {
+    //   if (flatListRef !== null && flatListRef.current !== null) {
+    //     flatListRef.current!.scrollToEnd({
+    //       animated: true,
+    //     });
+    //   }
+    // });
   }, [flatListRef]);
 
-
+  useEffect(() => {
+    hidePreloader();
+  }, [store])
 
 
   useEffect(() => {
-    console.log('updates flatlist')
-    console.log(store);
-    if (store.getMessagesReducer.statusCode !== 200) {
-      return;
-    } else {
-      LayoutAnimation.configureNext(LayoutAnimation.create(250, 'linear', 'opacity'));
-      console.log(store.getMessagesReducer, 'messages');
-      setState({ ...getState, messages: store.getMessagesReducer.data });
-    }
-  }, [store.getMessagesReducer.isModify]);
+    LayoutAnimation.configureNext(LayoutAnimation.create(250, 'linear', 'opacity'));
+  }, [store.isModify]);
 
   return <ChatComponent {...STATE} />;
 };

@@ -85,14 +85,12 @@ const MyProfileComponent: React.FC<IProps> = (props: IProps) => {
   };
 
   useEffect(() => {
-    console.log(state.meReducer?.data)
     setState({...getState, user: state.meReducer.data?.userData, posts: state.mePostsReducer?.data, counts: state.meReducer.data?.counts})
   }, [state.meReducer, state.mePostsReducer]);
 
   const renderPosts = () => {
     return getState.posts.map((el: HomePostEntity, index) => {
-      console.log(getState.posts, 'sdasas')
-      return <MyPost onCommendPress={onCommendPress} onLikePress={onLikePress} entity={el} setReload={setReload} reload={getState.reload} isMe={isMe} index={index} />;
+      return <MyPost  onCommendPress={onCommendPress} onLikePress={onLikePress} entity={el} setReload={setReload} reload={getState.reload} isMe={isMe} index={index} />;
     });
   };
 

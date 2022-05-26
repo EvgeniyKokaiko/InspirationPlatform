@@ -43,17 +43,14 @@ const SettingsComponent: React.FC<IProps> = (props: IProps) => {
                 return false
             }
     }
-    console.log(isPrivate)
 
 
     const onLogoutPress = async () => {
             dispatch(actionImpl.logout())
-            console.log(state, "STATE")
             await AsyncStorage.setItem("Access_TOKEN", "")
     }
 
     useEffect(() => {
-            console.log(state.logoutReducer)
         if (state.logoutReducer.statusCode === 200) {
             dispatch(actionImpl.clear())
             INavigation.navigate(StackScreens.SignIn)

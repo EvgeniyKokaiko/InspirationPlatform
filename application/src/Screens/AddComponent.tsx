@@ -54,7 +54,6 @@ const AddComponent: React.FC<IProps> = (props) => {
       if (response.didCancel) {
         return Alert.alert('Oops,', 'Something went wrong');
       }
-      console.log(response.assets, 'asssetedasd');
       const nonIndex = validatePhotos(response.assets as Asset[]);
       if (nonIndex !== 0) {
         Alert.alert('Warning!', 'You push non photos to a post, and it was removed');

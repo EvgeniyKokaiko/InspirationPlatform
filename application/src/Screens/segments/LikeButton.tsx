@@ -31,7 +31,6 @@ export const LikeButton: React.FC<IProps> = ({ textColor, postHash, owner }) => 
 
     const onLikePress = async () => {
         const response = await Requests.onLikePress(owner, postHash)
-        console.log(response);
         if (response.statusCode === 200) {
             const isLike = response.data.is_like;
             if (isLike) {
@@ -44,7 +43,6 @@ export const LikeButton: React.FC<IProps> = ({ textColor, postHash, owner }) => 
 
     useEffect(() => {
         Requests.getLikesCount(postHash).then((response) => {
-            console.log(response, 'response');
             if (response.statusCode === 200) {
                 const data = response.data;
                 setState({...getState, likesCount: data.likesCount, isLiked: data.isLiked})

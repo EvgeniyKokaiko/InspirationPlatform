@@ -435,29 +435,37 @@ func (db *DB) AddMessage(data *models.FromClientData, owner string) (models.Chat
 	return newMessage, nil
 }
 
-func (db *DB) GetMessages(owner string, to string, page int) (map[string]any, error) {
+func (db *DB) GetMessages(owner string, to string, page int, init bool) (map[string]any, error) {
 	var storage []*models.ChatData
 	var counter int64 = 0
 	const limit = 30
 	if getMessagesCounter := db.database.Table(typedDB.TABLES.USERToUSERChat).Where("sender = ? and companion = ? OR sender = ? and companion = ?", owner, to, to, owner).Count(&counter); getMessagesCounter.Error != nil {
 		return map[string]any{}, errors.New("Error!On GetMessages Method")
 	}
+	totalPages := math.Ceil(float64(counter) / limit)
 	if counter <= limit {
 		if getMessagesResponse := db.database.Table(typedDB.TABLES.USERToUSERChat).Where("sender = ? AND companion = ? OR sender = ? AND companion = ?", owner, to, to, owner).Scan(&storage); getMessagesResponse.Error != nil {
 			return map[string]any{}, errors.New("Error!On GetMessages Method")
 		}
 	} else {
-		offset := counter - limit
-		if getMessagesResponse := db.database.Table(typedDB.TABLES.USERToUSERChat).Where("sender = ? AND companion = ? OR sender = ? AND companion = ?", owner, to, to, owner).Offset(int(offset)).Limit(limit).Scan(&storage); getMessagesResponse.Error != nil {
-			return map[string]any{}, errors.New("Error!On GetMessages Method")
+		if page == 0 && init {
+			page = int(totalPages) - 1
+			offset := limit * (totalPages - 1)
+			if getMessagesResponse := db.database.Table(typedDB.TABLES.USERToUSERChat).Offset(int(offset)).Limit(limit).Where("sender = ? AND companion = ? OR sender = ? AND companion = ?", owner, to, to, owner).Scan(&storage); getMessagesResponse.Error != nil {
+				return map[string]any{}, errors.New("Error!On GetMessages Method")
+			}
+		} else {
+			offset := limit * page
+			if getMessagesResponse := db.database.Table(typedDB.TABLES.USERToUSERChat).Offset(int(offset)).Limit(limit).Where("sender = ? AND companion = ? OR sender = ? AND companion = ?", owner, to, to, owner).Scan(&storage); getMessagesResponse.Error != nil {
+				return map[string]any{}, errors.New("Error!On GetMessages Method")
+			}
 		}
 	}
-
-	totalPages := math.Ceil(float64(counter) / limit)
 
 	response := map[string]any{
 		"items":      storage,
 		"pageSize":   limit,
+		"isInit":     init,
 		"pageIndex":  page,
 		"totalPages": totalPages,
 	}
@@ -611,4 +619,24 @@ func (db *DB) UpdateComment(posthash, commenthash, username string, requestdata 
 		return "Error! Something went wrong :(", errors.New("Error!UpdateComment ex")
 	}
 	return "", nil
+}
+
+//Messages
+
+func (db *DB) DeleteMessage(owner, message_hash any) bool {
+	dbRemoveMessageResponse := db.database.Table(typedDB.TABLES.USERToUSERChat).Where("sender = ? AND message_hash = ?", owner, message_hash).Delete(&models.ChatData{})
+	if dbRemoveMessageResponse != nil {
+		return false
+	}
+	return true
+}
+
+func (db *DB) DeleteMessageBunch(owner string, message_hashes []string) bool {
+	for _, value := range message_hashes {
+		dbRemoveMessageResponse := db.database.Table(typedDB.TABLES.USERToUSERChat).Where("sender = ? AND message_hash = ?", owner, value).Delete(&models.ChatData{})
+		if dbRemoveMessageResponse != nil {
+			return false
+		}
+	}
+	return true
 }

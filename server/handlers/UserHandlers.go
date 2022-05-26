@@ -14,28 +14,30 @@ func HandleByUser() {
 }
 
 const (
-	sendMessage = "SendMessage"
-	connect = "Connect"
-	close = "Close"
-	addedMessage = "AddedMessage"
+	sendMessage         = "SendMessage"
+	connect             = "Connect"
+	close               = "Close"
+	addedMessage        = "AddedMessage"
+	removeOneMessage    = "RemoveOneMessage"
+	removeBunchMessages = "RemoveBunchMessages"
 )
 
-func SendMessageHandlerByUser(h mutable.SocketHandler, message models.ChatData)  error {
+func SendMessageHandlerByUser(h mutable.SocketHandler, message models.ChatData) error {
 	switch h.Me {
 	case true:
 		ownResponse := map[string]any{
-			"event": addedMessage,
+			"event":      addedMessage,
 			"statusCode": http.StatusOK,
-			"username": h.User.Username,
-			"message": message,
+			"username":   h.User.Username,
+			"message":    message,
 		}
 		byteResponse, err := json.Marshal(ownResponse)
 		if err != nil {
 			fmt.Println(err)
 			return errors.New("ERROR! SendMessageHandlerByUser ex")
 		}
-		err2 := h.User.Connector.WriteMessage(h.MT,byteResponse)
-		if err2 != nil  {
+		err2 := h.User.Connector.WriteMessage(h.MT, byteResponse)
+		if err2 != nil {
 			fmt.Println(err2)
 			return errors.New("ERROR! SendMessageHandlerByUser ex")
 		}
@@ -43,7 +45,7 @@ func SendMessageHandlerByUser(h mutable.SocketHandler, message models.ChatData) 
 	case false:
 		response := map[string]any{
 			"event": sendMessage,
-			"data": message,
+			"data":  message,
 		}
 		messageBytes, err := json.Marshal(response)
 		err2 := h.User.Connector.WriteMessage(h.MT, messageBytes)

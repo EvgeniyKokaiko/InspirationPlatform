@@ -14,7 +14,6 @@ type IProps = {
 const BaseButton = (props: IProps) => {
     const onPress = useCallback(() => {
         props.onPress!()
-        console.log('adasdasd')
     }, [props.onPress])
 
     return (

@@ -32,7 +32,6 @@ const ManageAccountContainer: React.FC<ManageAccountState> = (props: IProps) => 
         if (flag === getState.modalVisible) {
             return
         }
-        console.log(getState, "GETSTATE")
         setState({...getState, modalVisible: flag, type: type})
     }
 

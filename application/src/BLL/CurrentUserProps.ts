@@ -22,7 +22,6 @@ class CurrentUserProps {
         await AsyncStorage.getItem('currentUserId').then((el) => {
             try {
                 this._currentUserId = el;
-                console.log(el, 'currentUserId')
             } catch (ex) {
                 console.log('_useToken ex', ex);
             }
@@ -30,7 +29,6 @@ class CurrentUserProps {
         await AsyncStorage.getItem('Access_TOKEN').then((el) => {
             try {
                this._token = el;
-               console.log(el, 'token')
             } catch (ex) {
                 console.log('_useToken ex', ex);
             }

@@ -1,3 +1,4 @@
+import { timeParse } from "../../Parts/utils";
 import { MessageStorage } from "../MessageStorage";
 
 export type messageProps = {
@@ -50,6 +51,12 @@ class MessageEntity  {
     }
     public get plain_message(): string {
         return this._plain_message;
+    }
+    public get messageMapping(): string {
+        const date = timeParse(this._created_at)
+        const name = this._sender
+        const message = this._plain_message;
+        return `${name} at ${date}: ${message}`
     }
     public get status(): number {
         return this._status;

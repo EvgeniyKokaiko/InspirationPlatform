@@ -6,6 +6,7 @@ export enum SocketEvents {
   connect = 'Connect',
   close = 'Close',
   addedMessage = 'AddedMessage',
+  removeOneMessage = 'RemoveOneMessage',
 }
 
 export type SocketData = {
@@ -22,7 +23,6 @@ class Socket {
   private readonly _handlers: SocketHandlers;
   private _userName: string;
   constructor(cHash: string, token: string | null, dispatch: Function, userName: string) {
-    console.log('new');
     this._handlers = new SocketHandlers(dispatch, this);
     this._cHash = cHash;
     this._userName = userName;
@@ -44,7 +44,6 @@ class Socket {
   }
 
   public closeSocket = async () => {
-    console.log('close socket');
     await this._socket.close(1000, 'Socket Closed By User');
   };
 
@@ -61,11 +60,9 @@ class Socket {
       event: eventName || 'default',
       data: data,
     };
-    console.log(socketBody);
     const bodyStr = JSON.stringify(socketBody);
     if (this._socket.readyState === 1) {
       this._socket.send(bodyStr);
-      console.log('sended');
     } else {
       // await this._connectAndOpenSocket()
     }
@@ -89,6 +86,10 @@ class Socket {
         case SocketEvents.readAllMessages:
           console.log('readallmessages')
           await this.handlers.readAllMessages(socketData);
+          break;
+        case SocketEvents.removeOneMessage:
+          await this.handlers.deleteMessage(socketData);
+          break;
         default:
           console.log('messs');
           console.log('default event');

@@ -6,6 +6,7 @@ import (
 	"server/database"
 	typedDB "server/types"
 	"server/utils"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -14,9 +15,11 @@ func Chats(route *gin.Engine, db *database.DB) {
 	router := route.Group("/messaging")
 	{
 		router.GET("/get-messages/:userName", func(c *gin.Context) {
+			page, pageErr := strconv.Atoi(c.Query("page"))
+			init, _ := strconv.ParseBool(c.Query("init"))
 			companion := c.Param("userName")
 			if username, _, err := utils.ParseHeader(c); err == nil {
-				if data, err := db.GetMessages(username, companion, 1); err != nil {
+				if data, err := db.GetMessages(username, companion, page, init); err != nil || pageErr != nil {
 					c.JSON(http.StatusConflict, typedDB.GiveResponse(http.StatusBadRequest, "Bad Request"))
 				} else {
 					c.JSON(http.StatusOK, typedDB.GiveOKResponseWithData(data))

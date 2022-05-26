@@ -12,6 +12,10 @@ export const backgrounds = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.5)',
   },
 
+  bg_modal: {
+    backgroundColor: 'rgba(0,0,0,0.2)',
+  },
+
   newsLine: {
     backgroundColor: '#EFF3F5',
   },

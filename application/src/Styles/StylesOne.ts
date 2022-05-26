@@ -199,6 +199,15 @@ export const StylesOne = StyleSheet.create({
     justifyContent: 'space-between',
   },
 
+  flex_jc_sa: {
+    justifyContent: 'space-around',
+  },
+
+  flex_jc_se: {
+    justifyContent: 'space-evenly',
+  },
+
+
   image24: {
     width: mockupWidthToDP(16),
     height: mockupWidthToDP(16),

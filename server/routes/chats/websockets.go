@@ -52,7 +52,6 @@ func handleWS(w http.ResponseWriter, r http.Request, h http.Header, dataSet map[
 		}
 		newMessage := map[string]interface{}{}
 		parsingErr := json.Unmarshal(message, &newMessage)
-		fmt.Println(newMessage, message)
 		currentEvent := newMessage["event"]
 		if parsingErr != nil {
 			fmt.Println("closed2")
@@ -60,7 +59,6 @@ func handleWS(w http.ResponseWriter, r http.Request, h http.Header, dataSet map[
 			Stop(parsingErr, dataSet["cHash"].(string), newConnection)
 			break
 		}
-		fmt.Println(newMessage, "MESSAGE")
 		for _, value := range SocketRoomer[dataSet["cHash"].(string)] {
 			fmt.Println(value, SocketRoomer, "SOCKET ROOMER")
 			fmt.Println("Emitter")
@@ -105,7 +103,10 @@ func SocketEmitter(eventName interface{}, mT int, message []byte, user *models.S
 		handlers.ReadAllMessagesHandler(sendMessageModelProps)
 		break
 	case "RemoveOneMessage":
-		handlers.ReadAllMessagesHandler(sendMessageModelProps)
+		handlers.DeleteMessageHandler(sendMessageModelProps)
+		break
+	case "RemoveBunchMessages":
+		handlers.DeleteMessageBunchHandler(sendMessageModelProps)
 		break
 	default:
 		fmt.Println("default")

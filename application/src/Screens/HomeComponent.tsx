@@ -26,7 +26,6 @@ type IProps = {
 
 const HomeComponent: React.FC<IProps> = (state) => {
   const _renderItem = ({ item }: { item: HomePostEntity }) => {
-    console.log(item);
     return (
       <HomePostView
         entity={item}

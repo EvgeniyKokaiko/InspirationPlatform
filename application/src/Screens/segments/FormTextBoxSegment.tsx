@@ -21,7 +21,6 @@ const FormTextBoxSegment: React.FC<IProps> = (props: IProps): JSX.Element => {
     })
 
     const onMessageSendPress = () => {
-        console.log('message send')
         // if (getState.inputValue === void 0 || getState.inputValue.length <= 0) {
         //     return
         // }

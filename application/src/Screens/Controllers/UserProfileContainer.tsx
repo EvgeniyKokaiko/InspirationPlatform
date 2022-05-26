@@ -50,7 +50,6 @@ const UserProfileContainer = (props: IProps) => {
     }, [ownerId])
 
     const goToChatScreen = () => {
-        console.log(userData)
         INavigation.navigate(StackScreens.U2UChat, {userId: ownerId, socketHash: userData.isSubscribed.socket_hash})
     }
 
@@ -101,7 +100,6 @@ const UserProfileContainer = (props: IProps) => {
 
 
     useEffect(() => {
-        console.log(userData, store);
         if (!userData?.isSubscribe) {
             setUserState({...userState, isFollowed: false})
         }

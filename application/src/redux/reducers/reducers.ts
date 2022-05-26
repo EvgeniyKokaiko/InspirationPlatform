@@ -5,6 +5,7 @@ import { Comment, PlainMessage } from '../../Types/Models';
 import { MessageEntity } from '../../BLL/entity/MessageEntity';
 import { MessageStatus } from '../../Types/enums';
 import { homeEntityProps, HomePostEntity } from '../../BLL/entity/HomePostEntity';
+import { MessageStorage } from '../../BLL/MessageStorage';
 
 export interface Reducers {
   registerReducer: any;
@@ -62,13 +63,12 @@ class ReducersImpl {
         const entities = action.payload.data.map((el: homeEntityProps) => {
           return new HomePostEntity({ ...el });
         });
-        console.log(entities);
         return {
           statusCode: action.payload.statusCode,
           data: entities,
         };
       }
-      }  else if (action.type === ActionTypes.Clear) {
+    } else if (action.type === ActionTypes.Clear) {
       return [];
     }
     return state;
@@ -131,30 +131,28 @@ class ReducersImpl {
 
   public GetUserData(state: any = {}, action: Action) {
     if (action.type === ActionTypes.User) {
-        console.log(action.payload);
-        const posts = action.payload.data?.userPosts;
-        let entities = [];
-        if (Array.isArray(posts)) {
-         entities = action.payload.data?.userPosts.map((el: homeEntityProps) => {
-            return new HomePostEntity({...el});
+      const posts = action.payload.data?.userPosts;
+      let entities = [];
+      if (Array.isArray(posts)) {
+        entities = action.payload.data?.userPosts.map((el: homeEntityProps) => {
+          return new HomePostEntity({ ...el });
         })
+      }
+      const ls = action.payload.data;
+      return {
+        data: {
+          counts: {
+            owner_count: ls?.counts?.owner_count,
+            subscriber_count: ls?.counts?.subscriber_count,
+          },
+          isPrivate: ls?.isPrivate,
+          isSubscribe: ls?.isSubscribe,
+          isSubscribed: ls?.isSubscribed,
+          userData: ls?.userData,
+          userPosts: entities,
         }
-        console.log({ userPosts: entities, ...action.payload }, 'zxcxzczx')
-        const ls = action.payload.data;
-      return { 
-          data: {
-              counts: {
-                  owner_count: ls?.counts?.owner_count,
-                  subscriber_count: ls?.counts?.subscriber_count,
-              },
-              isPrivate: ls?.isPrivate,
-              isSubscribe: ls?.isSubscribe,
-              isSubscribed: ls?.isSubscribed,
-              userData: ls?.userData,
-              userPosts: entities,
-          }
-       };
-     }
+      };
+    }
     return state;
   }
 
@@ -261,93 +259,129 @@ class ReducersImpl {
     };
   }
   //rename to messageReducer!
-  public GetMessagesReducer(state: any = {}, action: Action) {
-    console.log(action, 'messages')
+  public GetMessagesReducer(state: {
+    isModify: number,
+    statusCode: number,
+    statusMessage: string,
+    data: MessageStorage,
+    isMessageUpdate: number,
+    totalPages: number,
+    pageSize: number,
+    pageIndex: number,
+  } = {
+      isModify: 0,
+      statusCode: 0,
+      statusMessage: '',
+      data: new MessageStorage(),
+      isMessageUpdate: 0,
+      totalPages: 0,
+      pageSize: 0,
+      pageIndex: 0,
+    }, action: Action) {
     if (action.type === ActionTypes.U2UMessages) {
-      const Messages: MessageEntity[] = [];
-      const messageProps: PlainMessage[] = action.payload.data;
+      const storage = new MessageStorage();
+      const messageProps: PlainMessage[] = action.payload.data.items;
       if (!Array.isArray(messageProps)) {
         return {
           isModify: 0,
           statusCode: action.payload.statusCode,
           statusMessage: action.payload.statusMessage,
-          data: [],
+          data: new MessageStorage(),
+          totalPages: 0,
+          pageSize: 0,
+          pageIndex: 0,
         };
       }
-      messageProps.forEach((el) => {
-        const newMessage = new MessageEntity({
-          message_hash: el.message_hash as string,
-          type: el.type,
-          plain_message: el.plain_message,
-          created_at: new Date(el.created_at).toString(),
-          sender: el.sender,
-          status: el.status,
-          companion: el.companion,
-        });
-        Messages.push(newMessage);
-      });
+      storage.init(messageProps);
       return {
         isModify: 0,
         statusCode: action.payload.statusCode,
         statusMessage: action.payload.statusMessage,
-        data: Messages,
+        data: storage,
+        isMessageUpdate: 0,
+        totalPages: action.payload.data.totalPages,
+        pageSize: action.payload.data.pageSize,
+        pageIndex: action.payload.data.pageIndex,
+      };
+    } else if (action.type === ActionTypes.U2UMessagesPage) {
+      const isValidMessages = action.payload.statusCode === 200 && Array.isArray(action.payload.data.items)
+      if (isValidMessages) {
+        state.data.addToEnd(action.payload.data.items);
+      }
+      return {
+        isModify: isValidMessages ? state.isModify + 1 : state.isModify,
+        statusCode: isValidMessages ? 200 : 400,
+        statusMessage: 'OK!',
+        data: state.data,
+        isMessageUpdate: 0,
+        totalPages: isValidMessages ? action.payload.data.totalPages : state.totalPages,
+        pageSize: isValidMessages ? action.payload.data.pageSize : state.pageSize,
+        pageIndex: isValidMessages ? action.payload.data.pageIndex : state.pageIndex,
       };
     } else if (action.type === ActionTypes.AddFakeMessage) {
-      console.log(action.payload, state, 'new mess');
+      if (state.data instanceof MessageStorage) state.data.add(action.payload);
       return {
         isModify: (state.isModify += 1),
         statusCode: 200,
         statusMessage: 'OK!',
-        data: [...state.data, action.payload],
+        data: state.data,
+        isMessageUpdate: 0,
+        totalPages: state.totalPages,
+        pageSize: state.pageSize,
+        pageIndex: state.pageIndex,
       };
     } else if (action.type === ActionTypes.SetNewStatus) {
-      const index = (<MessageEntity[]>state.data).findIndex((el) => el.message_hash === action.payload.message_hash);
-      if (index !== -1) {
-        (<MessageEntity[]>state.data)[index].status = action.payload.status;
+      if (state.data instanceof MessageStorage) {
+        const index = state.data.get(action.payload.message_hash);
+        state.data.update(index, 'status', action.payload.status);
       }
       return {
         isModify: state.isModify,
         statusCode: 200,
         statusMessage: 'OK!',
-        data: [...state.data],
+        data: state.data,
+        isMessageUpdate: state.isMessageUpdate + 1,
+        totalPages: state.totalPages,
+        pageSize: state.pageSize,
+        pageIndex: state.pageIndex,
       };
     } else if (action.type === ActionTypes.SetAllReadMessages) {
-      console.log('updated statuses');
-      console.log(state, state.data === void 0, !Array.isArray(state.data), action.payload);
-      if (state.data === void 0 || !Array.isArray(state.data) || action.payload.type !== 0) {
+      if (!(state.data instanceof MessageStorage) || action.payload.type !== 0) {
         return {
           isModify: state.isModify,
           statusCode: 200,
           statusMessage: 'OK!',
-          data: [...state.data],
+          data: state.data,
+          totalPages: state.totalPages,
+          pageSize: state.pageSize,
+          pageIndex: state.pageIndex,
         };
       } else {
-        state.data.forEach((el: MessageEntity) => {
-          console.log('item, el');
-          if (el.status === MessageStatus.SentToServer) {
-            el.status = MessageStatus.ReadByUser;
-          }
-        });
+        if (state.data instanceof MessageStorage) state.data.updateAll('status', MessageStatus.SentToServer, MessageStatus.ReadByUser)
       }
       return {
         isModify: state.isModify,
         statusCode: 200,
         statusMessage: 'OK!',
-        data: [...state.data],
+        data: state.data,
+        isMessageUpdate: state.isMessageUpdate + 1,
+        totalPages: state.totalPages,
+        pageSize: state.pageSize,
+        pageIndex: state.pageIndex,
       };
     } else if (action.type === ActionTypes.ClearMessages) {
       return {
-        isModify: (state.isModify += 1),
+        isModify: 0,
         statusCode: 0,
-        statusMessage: '!',
-        data: [],
-      };
+        statusMessage: '',
+        data: new MessageStorage(),
+        isMessageUpdate: 0,
+        totalPages: 0,
+        pageSize: 0,
+        pageIndex: 0,
+      }
     }
-    return {
-      statusCode: 0,
-      statusMessage: '!',
-      data: state.data,
-    };
+    return state
   }
 
   private SearchUserByNameReducer(state: any = {}, action: Action) {
@@ -357,7 +391,7 @@ class ReducersImpl {
     return state
   }
 
-  private CommentsReducer(state: {statusCode: number; statusMessage: string; data: Array<Comment>, isModify: number} = {
+  private CommentsReducer(state: { statusCode: number; statusMessage: string; data: Array<Comment>, isModify: number } = {
     statusCode: 0,
     statusMessage: '',
     data: [],
@@ -365,19 +399,17 @@ class ReducersImpl {
   }, action: Action) {
     switch (action.type) {
       case ActionTypes.GetComments:
-        console.log(action.payload);
-          return {...action.payload, isModify: state.isModify + 1};
+        return { ...action.payload, isModify: state.isModify + 1 };
       case ActionTypes.CreateComment:
         if (action.payload.statusCode === 200 && typeof action.payload.data === 'object') {
           state.data.push(action.payload.data);
-          console.log(action.payload.data);
-          return {...state, isModify: state.isModify + 1}
+          return { ...state, isModify: state.isModify + 1 }
         }
         return state;
       case ActionTypes.RemoveComment:
         if (action.payload.statusCode === 200) {
           const items = state.data.filter((item) => item.comment_hash !== action.payload.comment_hash);
-          return {...state, data: items};
+          return { ...state, data: items };
         }
         return state;
       case ActionTypes.UpdateComment:
@@ -385,18 +417,18 @@ class ReducersImpl {
           const index = state.data.findIndex((comment) => comment.comment_hash == action.payload.comment_hash)
           if (index !== -1 && state.data.at(index) !== void 0) {
             state.data.at(index)!.comment_string = action.payload.body.comment;
-            return {...state, isModify: state.isModify + 1}
+            return { ...state, isModify: state.isModify + 1 }
           }
           return state;
         }
-      case ActionTypes.ClearComments: 
-      const initialState = {
-        statusCode: 200,
-        statusMessage: '',
-        data: [],
-        isModify: 0,
-      }
-      return {...initialState}
+      case ActionTypes.ClearComments:
+        const initialState = {
+          statusCode: 200,
+          statusMessage: '',
+          data: [],
+          isModify: 0,
+        }
+        return { ...initialState }
     }
     return state;
   }

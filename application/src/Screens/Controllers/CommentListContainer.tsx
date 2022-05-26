@@ -22,7 +22,6 @@ type IProps = BaseProps & {}
 
 function CommentListContainer(props: IProps) {
     const id = props.route.params.post_hash;
-    console.log(id);
     const [getState, setState] = useState<IState>({
         refresh: false,
         comments: [],
@@ -72,7 +71,6 @@ function CommentListContainer(props: IProps) {
 
     useEffect(() => {
         try {
-            console.log('upd');
         if (store !== void 0 && store !== null) {
             if (store.statusCode === 200 && Array.isArray(store.data)) {
                 LayoutAnimation.configureNext(LayoutAnimation.create(250, 'linear', 'opacity'));

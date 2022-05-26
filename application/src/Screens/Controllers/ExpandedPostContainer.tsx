@@ -34,11 +34,9 @@ const ExpandedPostContainer: React.FC<IProps> = (props: IProps): JSX.Element => 
     },
     isLoading: false,
   });
-  console.log('rerender')
   const dispatch = useDispatch();
   const store: any = useSelector<any>((store) => store.getPostWithLikesReducer);
   let post_hash: string = props.route.params.pHash;
-  console.log(post_hash, 'postdata');
   const dataPath = `http://${apiURL}/storage/${getState.data?.owner}/posts/${getState.data?.image}/0.png`;
   const ownerAvatar: string = `http://${apiURL}/storage/${getState.data.owner}/avatar/avatar.png`;
   const onBackBtn = () => {
@@ -86,13 +84,11 @@ const ExpandedPostContainer: React.FC<IProps> = (props: IProps): JSX.Element => 
   useEffect(() => {
     if (store.statusCode === 200) {
       if (store.data instanceof HomePostEntity) {
-        console.log(store.data)
         setState({
           ...getState,
           data: store.data,
           carouselData: { data_count: store.data.data_count, owner: store.data.owner, post_hash: store.data.image },
         });
-        console.log(store.data);
       } else {
         console.warn('Error! expanded post ex');
       }

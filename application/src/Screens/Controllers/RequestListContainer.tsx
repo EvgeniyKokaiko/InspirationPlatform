@@ -37,7 +37,6 @@ const RequestListContainer: React.FC<IProps> = (props) => {
 
     const onRefresh = useCallback(() => {
         dispatch(actionImpl.getRequestList())
-        console.log(getState.requestList)
     }, [])
 
     const STATE = {
@@ -65,7 +64,6 @@ const RequestListContainer: React.FC<IProps> = (props) => {
     useEffect(() => {
         if (store.requestListReducer?.statusCode === 200) {
             setState({...getState, requestList: store.requestListReducer.data})
-            console.log(getState.requestList, store.requestListReducer, 'requests')
         } else {
             setState({...getState, requestList: []})
         }

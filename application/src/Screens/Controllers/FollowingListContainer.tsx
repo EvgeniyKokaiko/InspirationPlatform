@@ -21,7 +21,6 @@ type IState = {
 const FollowingListContainer = (props: IProps) => {
     const dispatch = useDispatch()
     const {userId, listType}: {userId: string, listType: number} = props.route.params
-    console.log(userId, listType)
     const store: any = useSelector<any>(state => state)
     const [getState, setState] = useState<IState>({
         followingList: [],
@@ -36,7 +35,6 @@ const FollowingListContainer = (props: IProps) => {
 
     const onFollowingItemPress = async (ownerId: string) => {
           if (getState.myUserId !== null) {
-              console.log(getState.myUserId, ownerId, 'IDS')
               if (getState.myUserId as string === ownerId) {
                   INavigation.navigate(StackScreens.MyProfile)
               } else {
@@ -49,7 +47,6 @@ const FollowingListContainer = (props: IProps) => {
 
     const onRefresh = useCallback(() => {
         dispatch(actionImpl.getFollowerList(userId, listType))
-        console.log(getState.followingList)
     }, [listType])
 
     const STATE = {
@@ -83,7 +80,6 @@ const FollowingListContainer = (props: IProps) => {
     useEffect(() => {
         if (store.followerListReducer?.statusCode === 200) {
             setState({...getState, followingList: store.followerListReducer.data})
-            console.log(getState.followingList, store.followerListReducer, 'requests')
         }
     }, [store.followerListReducer, onRefresh, listType])
     return (

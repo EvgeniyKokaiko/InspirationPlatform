@@ -92,7 +92,6 @@ const MyPost = (props: myPostProps) => {
   }, [props]);
 
   const showModal = () => {
-    console.warn('showed');
     setState({ ...getState, showModal: true, index: props.index });
   };
 

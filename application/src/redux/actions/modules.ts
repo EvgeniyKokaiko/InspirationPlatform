@@ -3,6 +3,7 @@ import {Action, ActionTypes} from "../types/ActionTypes";
 import {Dispatch} from "redux";
 import {apiURL} from "./index";
 import {MessageEntity} from "../../BLL/entity/MessageEntity";
+import { PlainMessage } from "../../Types/Models";
 
 
 class ModuleActions extends BaseAction {
@@ -11,7 +12,6 @@ class ModuleActions extends BaseAction {
     }
 
     public setAllReadMessages = (status: number, type: number | undefined) => {
-        console.log('setStatus')
         return {
             type: ActionTypes.SetAllReadMessages,
             payload: {
@@ -23,7 +23,6 @@ class ModuleActions extends BaseAction {
 
 
     public setStatus = (status: number, message_hash: string | null) => {
-        console.log('setStatus')
         return {
             type: ActionTypes.SetNewStatus,
             payload: {
@@ -33,7 +32,7 @@ class ModuleActions extends BaseAction {
         }
     }
 
-    public addMessageToStack = (message: MessageEntity) => {
+    public addMessageToStack = (message: PlainMessage) => {
         return {
             type: ActionTypes.AddFakeMessage,
             payload: message
@@ -43,6 +42,13 @@ class ModuleActions extends BaseAction {
     public clearAllMessages = () => {
         return {
             type: ActionTypes.ClearMessages,
+        }
+    }
+
+    public removeMessage = (message_hash: string) => {
+        return {
+            type: ActionTypes.RemoveMessage,
+            payload: message_hash,
         }
     }
 
