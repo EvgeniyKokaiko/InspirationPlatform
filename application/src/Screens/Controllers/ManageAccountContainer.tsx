@@ -39,7 +39,7 @@ const ManageAccountContainer: React.FC<ManageAccountState> = (props: IProps) => 
         INavigation.goBack()
     }
 
-    const getIsPrivate = (): string => getState.originalData.is_private ? 'Yes' : 'No';
+    const getIsPrivate = (): string => getState.originalData?.is_private ? 'Yes' : 'No';
 
     const STATE = {
         state: getState,

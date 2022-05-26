@@ -58,14 +58,14 @@ const ManageAccountComponent = (state: IProps) => {
         </TouchableOpacity>
       </View>
       <View style={MP.mt40}>
-        <SelectSegment onPress={() => state.openModal(true, SelectTitles.Full_Name)} secondTitle={state.state.originalData.full_name} title={SelectTitles.Full_Name} />
-        <SelectSegment onPress={() => state.openModal(true, SelectTitles.Gender)} secondTitle={state.state.originalData.gender} title={SelectTitles.Gender} />
+        <SelectSegment onPress={() => state.openModal(true, SelectTitles.Full_Name)} secondTitle={state.state.originalData?.full_name} title={SelectTitles.Full_Name} />
+        <SelectSegment onPress={() => state.openModal(true, SelectTitles.Gender)} secondTitle={state.state.originalData?.gender} title={SelectTitles.Gender} />
         <SelectSegment onPress={() => state.openModal(true, SelectTitles.Is_Private)} secondTitle={state.getIsPrivate()} title={SelectTitles.Is_Private} />
-        <SelectSegment onPress={() => state.openModal(true, SelectTitles.Email)} secondTitle={state.state.originalData.email} title={SelectTitles.Email} />
-        <SelectSegment onPress={() => state.openModal(true, SelectTitles.About_self)} secondTitle={state.state.originalData.description} title={SelectTitles.About_self} />
-        <SelectSegment onPress={() => state.openModal(true, SelectTitles.Location)} secondTitle={state.state.originalData.location} title={SelectTitles.Location} />
-        <SelectSegment onPress={() => state.openModal(true, SelectTitles.Personal_Site)} secondTitle={state.state.originalData.personal_site} title={SelectTitles.Personal_Site} />
-        <SelectSegment onPress={() => state.openModal(true, SelectTitles.Date_Of_Birth)} secondTitle={state.state.originalData.date_of_birth} title={SelectTitles.Date_Of_Birth} />
+        <SelectSegment onPress={() => state.openModal(true, SelectTitles.Email)} secondTitle={state.state.originalData?.email} title={SelectTitles.Email} />
+        <SelectSegment onPress={() => state.openModal(true, SelectTitles.About_self)} secondTitle={state.state.originalData?.description} title={SelectTitles.About_self} />
+        <SelectSegment onPress={() => state.openModal(true, SelectTitles.Location)} secondTitle={state.state.originalData?.location} title={SelectTitles.Location} />
+        <SelectSegment onPress={() => state.openModal(true, SelectTitles.Personal_Site)} secondTitle={state.state.originalData?.personal_site} title={SelectTitles.Personal_Site} />
+        <SelectSegment onPress={() => state.openModal(true, SelectTitles.Date_Of_Birth)} secondTitle={state.state.originalData?.date_of_birth} title={SelectTitles.Date_Of_Birth} />
       </View>
       <ReusableModalSegment setModalVisible={state.openModal} modalVisibility={state.modalVisible}>
         {state.state.type === null ? <></> : <ModalManagementSegment originalData={state.state.originalData} type={state.state.type} />}

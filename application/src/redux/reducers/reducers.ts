@@ -14,36 +14,16 @@ export interface Reducers {
   meReducer: any;
 }
 
+const emptyReducer = {
+  statusMessage: "Nothing",
+  statusCode: 0,
+  data: {},
+}
+
 class ReducersImpl {
   public async GetTokenReducer(state = '', action: Action) {
     if (action.type === ActionTypes.GetToken) {
       return action.payload;
-    }
-    return state;
-  }
-
-  public RegisterReducer(state = [], action: Action) {
-    if (action.type === ActionTypes.Register) {
-      return action.payload;
-    } else if (action.type === ActionTypes.Clear) {
-      return [];
-    }
-    return state;
-  }
-
-  public SetupReducer(state = {}, action: Action) {
-    if (action.type === ActionTypes.Setup) {
-      return action.payload;
-    }
-
-    return state;
-  }
-
-  public LoginReducer(state = [], action: Action) {
-    if (action.type === ActionTypes.Login) {
-      return action.payload;
-    } else if (action.type === ActionTypes.Clear) {
-      return [];
     }
     return state;
   }
@@ -435,9 +415,6 @@ class ReducersImpl {
 
   public getAllReducers = () => {
     return combineReducers({
-      registerReducer: this.RegisterReducer,
-      setupReducer: this.SetupReducer,
-      loginReducer: this.LoginReducer,
       meReducer: this.MeReducer,
       mePostsReducer: this.MePostsReducer,
       checkForConnectionReducer: this.StatelessReducers,

@@ -1,4 +1,8 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Alert } from "react-native";
+import { StackScreens } from "../Screens/Core/MainNavigationScreen";
+import { INavigation } from "../Screens/Core/OverrideNavigation";
+import { Requests } from "./Requests";
 
 class CurrentUserProps {
     private _token: string | null;
@@ -17,6 +21,42 @@ class CurrentUserProps {
         return this._token;
     }
 
+
+    public authorize = async (username: string, password: string, preloader?: (value: boolean) => void) => {
+        if (username === void 0 || username === null || username === '' || username === ' ') {
+            Alert.alert('Warning!', "Username is invalid");
+            return;
+        }
+        if (password === void 0 || password === null || password === '' || password === ' ') {
+            Alert.alert('Warning!', "Password is invalid");
+            return;
+        }
+       if (preloader) {
+        preloader(true);
+       }
+        const response = await Requests.authorize(username, password);
+        if (response.statusCode === 200) {
+            this._currentUserId = username;
+            this._token = response.data;
+            await this.saveUser()
+            if (preloader) {
+                preloader(false);
+               }
+            INavigation.navigate(StackScreens.Home, {});
+        } else {
+            if (preloader) {
+                preloader(false);
+               }
+               console.warn(response);
+            Alert.alert('Warning!', response.statusMessage);
+            return;
+        }
+    }
+
+    private saveUser = async () => {
+        await AsyncStorage.setItem('currentUserId', this._currentUserId as string);
+        await AsyncStorage.setItem('Access_TOKEN', this._token as string);
+    }
 
     public setToken = async () => {
         await AsyncStorage.getItem('currentUserId').then((el) => {

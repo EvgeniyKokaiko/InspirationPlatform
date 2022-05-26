@@ -18,6 +18,10 @@ export const StylesOne = StyleSheet.create({
     color: colors.SignIn_Font2,
   },
 
+  wh_device: {
+    width: DEVICE_WIDTH,
+    height: DEVICE_HEIGHT,
+  },
 
   w15: {
     width: '15%',
@@ -120,6 +124,15 @@ export const StylesOne = StyleSheet.create({
     fontSize: fontSizeDP(16),
     fontFamily: 'Metropolis-Medium',
     paddingBottom: mockupHeightToDP(20),
+  },
+  fontInputText_dd: {
+    color: colors.SignIn_Font2,
+    fontSize: fontSizeDP(16),
+    fontFamily: 'Metropolis-Medium',
+    paddingBottom: mockupHeightToDP(20),
+    backgroundColor: 'transparent',
+    marginLeft: 40,
+    width: '100%',
   },
   fontInputText_black14: {
     color: colors.SignIn_Font2,
@@ -321,6 +334,15 @@ export const StylesOne = StyleSheet.create({
     textDecorationLine: 'underline',
     textDecorationColor: colors.Primary_Red,
   },
+  CheckBox_pass: {
+    fontSize: fontSizeDP(10),
+    fontFamily: 'Metropolis',
+    fontWeight: '800',
+    color: colors.myMessageBody,
+    textDecorationLine: 'underline',
+    textDecorationColor: colors.myMessageBody,
+    textAlign: 'center',
+  },
   SendBtn_active_text: {
     fontFamily: 'Metropolis',
     fontWeight: '800',
@@ -351,7 +373,6 @@ export const StylesOne = StyleSheet.create({
     fontSize: fontSizeDP(16),
     fontFamily: 'Metropolis-Medium',
     height: mockupHeightToDP(60),
-    marginLeft: mockupWidthToDP(-15),
   },
   borderBottom: {
     borderBottomWidth: 1,

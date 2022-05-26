@@ -27,6 +27,7 @@ import ManageAccountContainer from "../Controllers/ManageAccountContainer";
 import {INavigation, OverrideNavigation} from "./OverrideNavigation";
 import FollowingListContainer from "../Controllers/FollowingListContainer";
 import { CommentListContainer } from '../Controllers/CommentListContainer';
+import RegisterComponent from '../RegisterComponent';
 
 interface IProps {}
 
@@ -103,7 +104,7 @@ const MainNavigationScreen: React.FC = (props: IProps) => {
     // Service screens
     { name: StackScreens.Splash, component: SplashComponent, options: { headerShown: false } },
     { name: StackScreens.SignIn, component: SignInComponent, options: { headerShown: false } },
-    { name: StackScreens.SignUp, component: SignUpComponent, options: { headerShown: false } },
+    { name: StackScreens.SignUp, component: RegisterComponent, options: { headerShown: false } },
     { name: StackScreens.SetupAccount, component: SetupAccountComponent, options: { headerShown: false } },
     { name: StackScreens.EditProfile, component: EditProfileComponent, options: { headerShown: false } },
     { name: StackScreens.Settings, component: SettingsComponent, options: { headerShown: false } },

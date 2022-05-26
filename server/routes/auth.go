@@ -3,78 +3,55 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"server/database"
-	"server/models"
 	typedDB "server/types"
+
+	"github.com/gin-gonic/gin"
 )
 
 func Auth(route *gin.Engine, db *database.DB) {
 	auth := route.Group("/auth")
 	{
 		auth.POST("/register", func(c *gin.Context) { //создавати папку в сторейджі з avatar, posts
-			var requestData = models.EmptyUser{}
+			var requestData = map[string]any{}
 			jsonDataBytes, err := ioutil.ReadAll(c.Request.Body)
-			json.Unmarshal(jsonDataBytes, &requestData)
-			warning := db.CreateEmptyUser(&requestData)
-			if warning != nil {
-				c.JSON(http.StatusAlreadyReported, map[string]interface{}{
-					"data": warning,
-				})
+			errMarsh := json.Unmarshal(jsonDataBytes, &requestData)
+			if err != nil || errMarsh != nil {
+				c.JSON(http.StatusBadRequest, typedDB.GiveResponse(http.StatusBadRequest, "Status BadRequest"))
 			} else {
-				file, err := os.ReadFile("./storage/service/base_avatar.png")
+				warningMsg, err := db.RegisterUser(requestData)
 				if err != nil {
-					fmt.Println("ERR! On Avatar reading")
+					c.JSON(http.StatusOK, typedDB.GiveResponse(http.StatusForbidden, warningMsg))
+				} else {
+					file, err := os.ReadFile("./storage/service/base_avatar.png")
+					if err != nil {
+						fmt.Println("ERR! On Avatar reading")
+					}
+					if err := os.MkdirAll(fmt.Sprintf("./storage/%s/avatar", warningMsg), 0777); err != nil {
+						fmt.Println("ERR! On Avatar folder creating")
+					}
+					if err := os.WriteFile(fmt.Sprintf("./storage/%s/avatar/avatar.png", warningMsg), file, 0777); err != nil {
+						fmt.Println("ERR! On Avatar writing")
+					}
+					c.JSON(http.StatusOK, typedDB.GiveOKResponseWithData(warningMsg))
 				}
-				if err := os.MkdirAll(fmt.Sprintf("./storage/%s/avatar", requestData.Username), 777); err != nil {
-					fmt.Println("ERR! On Avatar folder creating")
-				}
-				if err := os.WriteFile(fmt.Sprintf("./storage/%s/avatar/avatar.png", requestData.Username), file, 777); err != nil {
-					fmt.Println("ERR! On Avatar writing")
-				}
-				c.JSON(http.StatusOK, map[string]interface{}{
-					"data": requestData.Username,
-				})
-			}
-			if err != nil {
-				fmt.Println(err)
-			}
-			fmt.Println(requestData)
-		})
-		auth.POST("/setup", func(c *gin.Context) {
-			var requestedData models.User
-			jsonBytes, _ := ioutil.ReadAll(c.Request.Body)
-			json.Unmarshal(jsonBytes, &requestedData)
-			warning := db.SetupAccount(&requestedData)
-			if warning != nil {
-				c.JSON(http.StatusAlreadyReported, map[string]interface{}{
-					"data": "Oops, something went wrong",
-				})
-			} else {
-				c.JSON(http.StatusOK, typedDB.GiveOKResponse())
 			}
 		})
 		auth.POST("/login", func(c *gin.Context) {
-			var req models.EmptyUser
+			var requestData map[string]any
 			jsonBytes, err := ioutil.ReadAll(c.Request.Body)
-
 			if err != nil {
 				fmt.Println("Something went wrong", err)
 			}
-			json.Unmarshal(jsonBytes, &req)
-			fmt.Println(req, 4)
-			result, errstr := db.Login(&req)
-			if errstr == "Accepted" {
-				c.JSON(http.StatusOK, map[string]interface{}{
-					"data": result.Token,
-				})
+			json.Unmarshal(jsonBytes, &requestData)
+			userToken, errstr := db.Login(requestData)
+			if errstr != nil {
+				c.JSON(http.StatusAlreadyReported, typedDB.GiveResponse(http.StatusAlreadyReported, userToken))
 			} else {
-				c.JSON(http.StatusAlreadyReported, map[string]interface{}{
-					"message": "Invalid Data",
-				})
+				c.JSON(http.StatusOK, typedDB.GiveOKResponseWithData(userToken))
 			}
 
 		})

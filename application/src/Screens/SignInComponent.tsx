@@ -8,57 +8,46 @@ import {fontSizeDP, mockupHeightToDP, mockupWidthToDP} from "../Parts/utils";
 import {colors} from "../Parts/colors";
 import {MP} from "../Styles/MP";
 import {KeyboardAvoidingComponent} from "./Core/KeyboardAvoidingComponent";
-import {StackScreens} from "./Core/MainNavigationScreen";
+import {noGoBack, StackScreens} from "./Core/MainNavigationScreen";
 import {BaseProps} from "../Types/Types";
 import { useDispatch, useSelector } from "react-redux";
 import {actionImpl} from "../redux/actions/index"
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {INavigation} from "./Core/OverrideNavigation";
+import { currentUser } from '../BLL/CurrentUserProps';
 
 
 type IProps = {} & BaseProps
+type IState = {
+    username: string;
+    password: string;
+};
 
 const SignInComponent = (props: IProps) => {
-    const [auth, setAuth]: [{login: string, password: string, currentTry: string}, Function] = useState({
-        login: '',
+    const [getState, setState] = useState<IState>({
+        username: '',
         password: '',
-        currentTry: '',
     });
-    const dispatch = useDispatch();
-    const state: any = useSelector<Reducers>(state => state)
 
-
-
-    const Login = () => {
-        if (auth.login.length > 2 || auth.password.length > 2) {
-            setAuth({...auth, currentTry: auth.login})
-            return  dispatch(actionImpl.authorize(auth.login, auth.password));
+    const Login = async () => {
+        const username = getState.username
+        const password = getState.password
+        if (username === void 0 || username === null || username === '' || username === ' ') {
+            Alert.alert('Warning!', "Username is invalid");
+            return;
         }
-        //зробити красним цветом штуку
+        if (password === void 0 || password === null || password === '' || password === ' ') {
+            Alert.alert('Warning!', "Password is invalid");
+            return;
+        }
+        await currentUser.authorize(username, password);
     }
-
 
     const goToSignUpScreen = () => {
         INavigation.navigate(StackScreens.SignUp);
     }
 
-
-    useLayoutEffect( () => {
-        //TODO переделать всю эту логику в сплеш скрин.
-        if (state.loginReducer.statusCode === 200) {
-          AsyncStorage.setItem("Access_TOKEN", state.loginReducer.data).then(() => {
-              dispatch(actionImpl.clear())
-              AsyncStorage.setItem("currentUserId", auth.currentTry).then()
-              setAuth({login: '', password: '', currentTry: ''});
-              INavigation.navigate(StackScreens.MyProfile)
-          })
-        } else if (state.loginReducer.statusCode === 208) {
-           //тоже зробити красним подсветку
-        }
-    }, [Login])
-
-
-
+    noGoBack()
     return (
     <View style={[StylesOne.screenContainer, backgrounds.signIn_bg]}>
         <KeyboardAvoidingComponent>
@@ -74,16 +63,16 @@ const SignInComponent = (props: IProps) => {
             </View>
         </View>
         <View style={StylesOne.inputContainer}>
-        <TextInput onChangeText={(value) => setAuth({...auth, login: value})}
+        <TextInput onChangeText={(value) => setState({...getState, username: value})}
                    placeholder="Username"
-                   value={auth.login}
+                   value={getState.username}
                    placeholderTextColor={colors.Placeholder}
                    underlineColorAndroid={colors.Underline_rgba}
                    style={StylesOne.fontInputText}
         />
-        <TextInput onChangeText={(value) => setAuth({...auth, password: value})}
+        <TextInput onChangeText={(value) => setState({...getState, password: value})}
                    placeholder="Password"
-                   value={auth.password}
+                   value={getState.password}
                    placeholderTextColor={colors.Placeholder}
                    underlineColorAndroid={colors.Underline_rgba}
                    style={StylesOne.fontInputText}

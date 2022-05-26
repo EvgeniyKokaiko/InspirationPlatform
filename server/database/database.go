@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"math"
+	"net/mail"
+	"regexp"
 	models "server/models"
 	typedDB "server/types"
 	"server/utils"
@@ -46,6 +48,66 @@ func CreateDB() *DB {
 	return &Data
 }
 
+func (db *DB) RegisterUser(userdata map[string]any) (string, error) {
+	username := userdata["name"].(string)
+	email := userdata["email"].(string)
+	password := userdata["password"].(string)
+	fName := userdata["fName"].(string)
+	location := userdata["location"].(string)
+	about := userdata["about"].(string)
+	gender := userdata["gender"].(string)
+	birth := userdata["birth"].(string)
+	site := userdata["site"].(string)
+
+	if len(username) <= 6 {
+		return "Invalid username! Username should be longer than 6 symbols", errors.New("Error! RegisterUser ex")
+	}
+
+	dbCheckIsExistsResponse := db.database.Table(typedDB.TABLES.USERS).Where("username = ?", username).Take(&models.User{})
+	if dbCheckIsExistsResponse.Error == nil {
+		return "Invalid username! User with this name is exists!", errors.New("Error! RegisterUser ex")
+	}
+
+	_, err := mail.ParseAddress(email)
+	if err != nil {
+		return "Invalid email! Example something@mail.com", errors.New("Error! RegisterUser ex")
+	}
+
+	if len(password) < 8 {
+		return "Invalid password! Password should be longer than 8 symbols", errors.New("Error! RegisterUser ex")
+	}
+
+	isValidFullName := regexp.MustCompile(`^[a-zA-Z]{2,}(?: [a-zA-Z]+){0,2}$`).MatchString(fName)
+
+	if !isValidFullName {
+		return "Invalid Full Name! Example Ivan Ivanov", errors.New("Error! RegisterUser ex")
+	}
+
+	isValidLocation := regexp.MustCompile(`^[\p{Lu}]{1,1}[\p{Ll}]+(?:[\s-][\p{Lu}]{1,1}[\p{Ll}]+)*$`).MatchString(location)
+	if !isValidLocation {
+		return "Invalid Location! Example Detroit", errors.New("Error! RegisterUser ex")
+	}
+
+	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(password), 8)
+
+	user := &models.User{
+		Username:     username,
+		Email:        email,
+		Password:     string(hashedPassword),
+		PersonalSite: site,
+		Gender:       gender,
+		Description:  about,
+		FullName:     fName,
+		Location:     location,
+		DateOfBirth:  birth,
+		IsPrivate:    0,
+	}
+	if dbRegisterNewUserResponse := db.database.Table(typedDB.TABLES.USERS).Create(&user); dbRegisterNewUserResponse.Error != nil {
+		return "Something went wrong on userCreation", errors.New("Error! RegisterUser ex")
+	}
+	return username, nil
+}
+
 func (db *DB) CreateEmptyUser(item *models.EmptyUser) error {
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(item.Password), 8)
 	item.Password = string(hashedPassword)
@@ -69,19 +131,20 @@ func (db *DB) SetupAccount(item *models.User) error {
 	return err.Error
 }
 
-func (db *DB) Login(item *models.EmptyUser) (models.EmptyUser, string) {
+func (db *DB) Login(userData map[string]any) (string, error) {
 	var result models.User
-	var tokenModel models.EmptyUser
-	db.database.
-		Raw("SELECT username, email, password, token FROM users WHERE username= ? ;", item.Username).
+	username := userData["username"].(string)
+	password := userData["password"].(string)
+	var currentUserToken = ""
+	db.database.Raw("SELECT username, email, password, token FROM users WHERE username= ?", username).
 		Scan(&result)
-	err := bcrypt.CompareHashAndPassword([]byte(result.Password), []byte(item.Password))
+	err := bcrypt.CompareHashAndPassword([]byte(result.Password), []byte(password))
 	if err != nil {
-		return models.EmptyUser{}, "Denied"
+		return "Error! Wrong Username or password", errors.New("Error! Login ex")
 	} else {
-		tokenModel.Token = utils.CreateToken(result.Username, result.Email)
-		db.database.Table("users").Where("username = ?", result.Username).Updates(&tokenModel)
-		return tokenModel, "Accepted"
+		currentUserToken = utils.CreateToken(result.Username, result.Email)
+		db.database.Table("users").Where("username = ?", result.Username).Updates(map[string]any{"token": currentUserToken})
+		return currentUserToken, nil
 	}
 }
 

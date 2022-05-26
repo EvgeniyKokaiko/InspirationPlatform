@@ -2,21 +2,22 @@ package routes
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
 	"server/database"
 	typedDB "server/types"
 	"server/utils"
+
+	"github.com/gin-gonic/gin"
 )
 
 func Settings(route *gin.Engine, db *database.DB) {
 	router := route.Group("/settings")
 	{
-		router.POST("/avatar", func (c *gin.Context) {
-			form , err := c.MultipartForm()
+		router.POST("/avatar", func(c *gin.Context) {
+			form, err := c.MultipartForm()
 			if err != nil {
-				log.Println("Err2!", err)
+				fmt.Println("Err2!", err)
 				c.JSON(http.StatusBadRequest, typedDB.GiveResponse(400, "Bad Request"))
 				return
 			}
@@ -29,12 +30,12 @@ func Settings(route *gin.Engine, db *database.DB) {
 				c.JSON(http.StatusOK, typedDB.GiveOKResponse())
 			}
 			if err != nil {
-				log.Println("Err3!", err)
+				fmt.Println("Err3!", err)
 				c.JSON(http.StatusBadRequest, typedDB.GiveResponse(400, "Bad Request"))
 				return
 			}
 		})
-		router.POST("/:parameter" , func (c *gin.Context) {
+		router.POST("/:parameter", func(c *gin.Context) {
 			var requestData = map[string]interface{}{}
 			currentChangeableParam := c.Param("parameter")
 			err := c.BindJSON(&requestData)
@@ -62,5 +63,3 @@ func Settings(route *gin.Engine, db *database.DB) {
 		})
 	}
 }
-
-

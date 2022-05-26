@@ -7,9 +7,6 @@ import { BaseAction } from './BaseAction';
 export const apiURL = '192.168.1.90:8080';
 
 interface ActionMethods {
-  register(username: string, email: string, password: string): (dispatch: Dispatch<Action>) => {};
-  setup(username: { data: string }, full_name: string, location: string, description: string, gender: string): (dispatch: Dispatch<Action>) => {};
-  authorize(username: string, password: string): (dispatch: Dispatch<Action>) => {};
   getMe(): (dispatch: Dispatch<Action>) => {};
   getMyPosts(): (dispatch: Dispatch<Action>) => {};
   addPost(caption: string, image: any, type: number): (dispatch: Dispatch<Action>) => {};
@@ -41,57 +38,6 @@ class Actions extends BaseAction implements ActionMethods {
     return {
       type: ActionTypes.ClearComments,
     };
-  };
-
-  public register = (username: string, email: string, password: string) => async (dispatch: Dispatch<Action>) => {
-    try {
-      axios
-        .post(`http://${apiURL}/auth/register`, {
-          username,
-          email,
-          password,
-        })
-        .then((el) => {
-          dispatch({ type: ActionTypes.Register, payload: { statusCode: el.status, data: el.data } });
-        })
-        .catch(() => {
-          dispatch({ type: ActionTypes.Register, payload: { statusCode: 423 } });
-        });
-    } catch (ex) {
-      console.log('register ex', ex);
-    }
-  };
-
-  public setup =
-    (username: { data: string }, full_name: string, location: string, description: string, gender: string) => async (dispatch: Dispatch<Action>) => {
-      axios
-        .post(`http://${apiURL}/auth/setup`, {
-          username: username.data,
-          full_name: full_name,
-          location: location,
-          description: description,
-          gender: gender,
-        })
-        .then((el) => {
-          dispatch({ type: ActionTypes.Setup, payload: { statusCode: el.data.statusCode } });
-        })
-        .catch(() => {
-          dispatch({ type: ActionTypes.Setup, payload: { statusCode: 423 } });
-        });
-    };
-
-  public authorize = (username: string, password: string) => async (dispatch: Dispatch<Action>) => {
-    axios
-      .post(`http://${apiURL}/auth/login`, {
-        username: username,
-        password: password,
-      })
-      .then((el) => {
-        dispatch({ type: ActionTypes.Login, payload: { statusCode: el.status, data: el.data.data } });
-      })
-      .catch(() => {
-        dispatch({ type: ActionTypes.Login, payload: { statusCode: 423 } });
-      });
   };
 
   public getMe = () => async (dispatch: Dispatch<Action>) => {
@@ -410,10 +356,10 @@ class Actions extends BaseAction implements ActionMethods {
     axios.put(`http://${apiURL}/search/search_user?search=${searchVal}`).then((el) => {
       dispatch({ type: ActionTypes.SearchUser, payload: el.data });
     })
-    .catch((err) => {
-      console.log(err, 'messages response error');
-      dispatch({ type: ActionTypes.SearchUser, payload: { statusCode: 423 } });
-    });
+      .catch((err) => {
+        console.log(err, 'messages response error');
+        dispatch({ type: ActionTypes.SearchUser, payload: { statusCode: 423 } });
+      });
   }
 
   public getComments = (post_hash: string) => async (dispatch: Dispatch<Action>) => {
@@ -432,61 +378,61 @@ class Actions extends BaseAction implements ActionMethods {
           dispatch({ type: ActionTypes.GetComments, payload: { statusCode: 423 } });
         });
     });
-    }
+  }
 
-    public addComment = (post_hash: string, body: {comment: string}) => async (dispatch: Dispatch<Action>) => {
-      await this._useToken(async (el: string | null) => {
-        axios
-          .post(`http://${apiURL}/comments/${post_hash}/add`, body, {
-            headers: {
-              Authorization: `Bearer ${el}`,
-            },
-          })
-          .then((el) => {
-            dispatch({ type: ActionTypes.CreateComment, payload: el.data });
-          })
-          .catch((err) => {
-            console.log(err, 'messages response error');
-            dispatch({ type: ActionTypes.CreateComment, payload: { statusCode: 423 } });
-          });
-      });
-      }
-
-      public deleteComment = (post_hash: string, comment_hash: string) => async (dispatch: Dispatch<Action>) => {
-        await this._useToken(async (el: string | null) => {
-          axios
-            .delete(`http://${apiURL}/comments/${post_hash}/${comment_hash}/delete`, {
-              headers: {
-                Authorization: `Bearer ${el}`,
-              },
-            })
-            .then((el) => {
-              dispatch({ type: ActionTypes.RemoveComment, payload: {...el.data, comment_hash: comment_hash} });
-            })
-            .catch((err) => {
-              console.log(err, 'messages response error');
-              dispatch({ type: ActionTypes.RemoveComment, payload: { statusCode: 423 } });
-            });
+  public addComment = (post_hash: string, body: { comment: string }) => async (dispatch: Dispatch<Action>) => {
+    await this._useToken(async (el: string | null) => {
+      axios
+        .post(`http://${apiURL}/comments/${post_hash}/add`, body, {
+          headers: {
+            Authorization: `Bearer ${el}`,
+          },
+        })
+        .then((el) => {
+          dispatch({ type: ActionTypes.CreateComment, payload: el.data });
+        })
+        .catch((err) => {
+          console.log(err, 'messages response error');
+          dispatch({ type: ActionTypes.CreateComment, payload: { statusCode: 423 } });
         });
-        }
+    });
+  }
 
-        public updateComment = (post_hash: string, comment_hash: string, body: {comment: string}) => async (dispatch: Dispatch<Action>) => {
-          await this._useToken(async (el: string | null) => {
-            axios
-              .put(`http://${apiURL}/comments/${post_hash}/${comment_hash}/update`, body, {
-                headers: {
-                  Authorization: `Bearer ${el}`,
-                },
-              })
-              .then((el) => {
-                dispatch({ type: ActionTypes.UpdateComment, payload: {body, comment_hash, ...el.data} });
-              })
-              .catch((err) => {
-                console.log(err, 'messages response error');
-                dispatch({ type: ActionTypes.UpdateComment, payload: { statusCode: 423 } });
-              });
-          });
-          }
+  public deleteComment = (post_hash: string, comment_hash: string) => async (dispatch: Dispatch<Action>) => {
+    await this._useToken(async (el: string | null) => {
+      axios
+        .delete(`http://${apiURL}/comments/${post_hash}/${comment_hash}/delete`, {
+          headers: {
+            Authorization: `Bearer ${el}`,
+          },
+        })
+        .then((el) => {
+          dispatch({ type: ActionTypes.RemoveComment, payload: { ...el.data, comment_hash: comment_hash } });
+        })
+        .catch((err) => {
+          console.log(err, 'messages response error');
+          dispatch({ type: ActionTypes.RemoveComment, payload: { statusCode: 423 } });
+        });
+    });
+  }
+
+  public updateComment = (post_hash: string, comment_hash: string, body: { comment: string }) => async (dispatch: Dispatch<Action>) => {
+    await this._useToken(async (el: string | null) => {
+      axios
+        .put(`http://${apiURL}/comments/${post_hash}/${comment_hash}/update`, body, {
+          headers: {
+            Authorization: `Bearer ${el}`,
+          },
+        })
+        .then((el) => {
+          dispatch({ type: ActionTypes.UpdateComment, payload: { body, comment_hash, ...el.data } });
+        })
+        .catch((err) => {
+          console.log(err, 'messages response error');
+          dispatch({ type: ActionTypes.UpdateComment, payload: { statusCode: 423 } });
+        });
+    });
+  }
 }
 
 export const actionImpl = new Actions(apiURL);
