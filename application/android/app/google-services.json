@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "885518154221",
+    "project_id": "inspirationplatform-a3494",
+    "storage_bucket": "inspirationplatform-a3494.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:885518154221:android:377d7b1a1e87c4a0768fe4",
+        "android_client_info": {
+          "package_name": "com.inpirplat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "885518154221-tdm1d0tnkm5dovo6h6347546kluidj8s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCaRB8bNNsGMDq_33E0FpGmo2b71Rx0Elk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "885518154221-tdm1d0tnkm5dovo6h6347546kluidj8s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

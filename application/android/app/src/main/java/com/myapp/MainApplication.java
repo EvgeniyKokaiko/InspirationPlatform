@@ -1,4 +1,4 @@
-package com.myapp;
+package com.inpirplat;
 
 import android.app.Application;
 import android.content.Context;
@@ -10,6 +10,8 @@ import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
+
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -25,7 +27,7 @@ public class MainApplication extends Application implements ReactApplication {
           @SuppressWarnings("UnnecessaryLocalVariable")
           List<ReactPackage> packages = new PackageList(this).getPackages();
           // Packages that cannot be autolinked yet can be added manually here, for example:
-          // packages.add(new MyReactNativePackage());
+          // packages.add(new ReactNativePushNotificationPackage());
           return packages;
         }
 
@@ -62,7 +64,7 @@ public class MainApplication extends Application implements ReactApplication {
          We use reflection here to pick up the class that initializes Flipper,
         since Flipper library is not available in release mode
         */
-        Class<?> aClass = Class.forName("com.myapp.ReactNativeFlipper");
+        Class<?> aClass = Class.forName("com.inpirplat.ReactNativeFlipper");
         aClass
             .getMethod("initializeFlipper", Context.class, ReactInstanceManager.class)
             .invoke(null, context, reactInstanceManager);

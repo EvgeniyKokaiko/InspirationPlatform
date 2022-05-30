@@ -13,7 +13,8 @@ import {actionImpl} from "./src/redux/actions";
 import {INavigation} from "./src/Screens/Core/OverrideNavigation";
 import {modulesImpl} from "./src/redux/actions/modules";
 import {currentUser} from "./src/BLL/CurrentUserProps";
-
+import messaging from '@react-native-firebase/messaging';
+import { firebase } from '@react-native-firebase/messaging';
 
 
 type IProps = {
@@ -51,8 +52,29 @@ class App extends React.Component<IProps, IState> {
     })
   }
 
+  async requestUserPermission() {
+    const authStatus = await messaging().requestPermission();
+    const enabled =
+      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+  
+    if (enabled) {
+      console.log('Authorization status:', authStatus);
+    }
+  }
+
   async componentDidMount() {
-    await this.onApplicationStarts();
+   await firebase.initializeApp({})
+    console.log(messaging)
+    try {
+      // Notifications.registerRemoteNotifications();
+      const token = await messaging().getToken()
+      console.log(token);
+    } catch(ex) {
+      console.log(ex);
+    } finally {
+      await this.onApplicationStarts();
+    }
   }
 
   render() {

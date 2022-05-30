@@ -1,4 +1,4 @@
-package com.myapp;
+package com.inpirplat;
 
 import com.facebook.react.ReactActivity;
 import android.os.Bundle;
