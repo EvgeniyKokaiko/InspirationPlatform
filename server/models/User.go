@@ -23,6 +23,7 @@ type User struct {
 	DateOfBirth  string `json:"date_of_birth"`
 	IsPrivate    int    `json:"is_private"`
 	Token        string `json:"-"`
+	FBToken      string `json:"-"`
 }
 
 type Username struct {

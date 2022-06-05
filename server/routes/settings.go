@@ -8,10 +8,11 @@ import (
 	typedDB "server/types"
 	"server/utils"
 
+	"firebase.google.com/go/messaging"
 	"github.com/gin-gonic/gin"
 )
 
-func Settings(route *gin.Engine, db *database.DB) {
+func Settings(route *gin.Engine, db *database.DB, firebaseApp *messaging.Client) {
 	router := route.Group("/settings")
 	{
 		router.POST("/avatar", func(c *gin.Context) {

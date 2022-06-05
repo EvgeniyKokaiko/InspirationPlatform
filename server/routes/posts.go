@@ -12,10 +12,11 @@ import (
 	"server/utils"
 	"strconv"
 
+	"firebase.google.com/go/messaging"
 	"github.com/gin-gonic/gin"
 )
 
-func Posts(route *gin.Engine, db *database.DB) {
+func Posts(route *gin.Engine, db *database.DB, firebaseApp *messaging.Client) {
 	router := route.Group("/posts")
 	{ //TODO сделать валидацию если нет токена, ибо рантайм паник.
 		//TODO переделати генерацию папок

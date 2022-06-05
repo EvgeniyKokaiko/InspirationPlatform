@@ -6,10 +6,11 @@ import (
 	typedDB "server/types"
 	"server/utils"
 
+	"firebase.google.com/go/messaging"
 	"github.com/gin-gonic/gin"
 )
 
-func Likes(router *gin.Engine, db *database.DB) {
+func Likes(router *gin.Engine, db *database.DB, firebaseApp *messaging.Client) {
 	route := router.Group("/likes")
 	{
 		route.GET("/:postowner/:posthash/like", func(c *gin.Context) {

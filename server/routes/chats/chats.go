@@ -8,10 +8,11 @@ import (
 	"server/utils"
 	"strconv"
 
+	"firebase.google.com/go/messaging"
 	"github.com/gin-gonic/gin"
 )
 
-func Chats(route *gin.Engine, db *database.DB) {
+func Chats(route *gin.Engine, db *database.DB, firebaseApp *messaging.Client) {
 	router := route.Group("/messaging")
 	{
 		router.GET("/get-messages/:userName", func(c *gin.Context) {

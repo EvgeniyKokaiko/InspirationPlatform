@@ -8,10 +8,11 @@ import (
 	typedDB "server/types"
 	"server/utils"
 
+	"firebase.google.com/go/messaging"
 	"github.com/gin-gonic/gin"
 )
 
-func Comments(router *gin.Engine, db *database.DB) {
+func Comments(router *gin.Engine, db *database.DB, firebaseApp *messaging.Client) {
 	route := router.Group("/comments")
 	{
 		route.POST("/:posthash/add", func(c *gin.Context) {

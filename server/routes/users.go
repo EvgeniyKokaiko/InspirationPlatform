@@ -7,10 +7,11 @@ import (
 	typedDB "server/types"
 	"server/utils"
 
+	"firebase.google.com/go/messaging"
 	"github.com/gin-gonic/gin"
 )
 
-func Users(route *gin.Engine, db *database.DB) {
+func Users(route *gin.Engine, db *database.DB, firebaseApp *messaging.Client) {
 	router := route.Group("/users")
 	{
 		router.GET("/me", func(c *gin.Context) {

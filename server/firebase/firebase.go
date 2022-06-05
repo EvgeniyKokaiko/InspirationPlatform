@@ -1,26 +1,51 @@
 package firebase
 
 import (
+	"context"
+	"errors"
+	"fmt"
+
 	firebase "firebase.google.com/go"
 	"firebase.google.com/go/messaging"
+	"google.golang.org/api/option"
 )
 
-//https://github.com/firebase/firebase-admin-go/blob/bb055ed1cfbe6224367c63caedc4ba72f1437dcd/snippets/messaging.go#L29-L55
-//https://firebase.google.com/docs/cloud-messaging/send-message#go
+const appName = "Valhalla"
 
-var app = &firebase.App{}
+var ctx = context.Background()
 
-func CreateMessage() *messaging.Message {
+func CreateApplication() *messaging.Client {
+	opts := []option.ClientOption{option.WithCredentialsFile("firebase/inspirationplatform-a3494-firebase-adminsdk-86sen-ca8df7f86a.json")}
+	app, err := firebase.NewApp(ctx, nil, opts...)
+	if err != nil {
+		return nil
+	}
+	client, err := app.Messaging(ctx)
+	if err != nil {
+		fmt.Println(err, "ERRRR")
+		return nil
+	}
+	return client
+}
+
+func CreateMessage(title, body, token string, data map[string]string) *messaging.Message {
 	message := &messaging.Message{
-		Data: map[string]string{
-			"score": "850",
-			"time":  "2:45",
+		Data: data,
+		Notification: &messaging.Notification{
+			Title: title,
+			Body:  body,
 		},
-		Token: "",
+		Token: token,
 	}
 	return message
 }
 
-func SendMessage() {
-
+func SendMessage(title, body, token string, data map[string]string) error {
+	client := CreateApplication()
+	if client == nil {
+		return errors.New("error! sendmessage ex")
+	}
+	message := CreateMessage(title, body, token, data)
+	client.Send(ctx, message)
+	return nil
 }

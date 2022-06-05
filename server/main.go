@@ -2,7 +2,8 @@ package main
 
 import (
 	"server/database"
-	_ "server/database"
+	"server/env"
+	"server/firebase"
 	"server/routes"
 	"server/routes/chats"
 
@@ -12,15 +13,19 @@ import (
 func main() {
 	server := gin.Default()
 	db := database.CreateDB()
+	env.EnvironmenttInit()
+	fApp := firebase.CreateApplication()
 	routes.Auth(server, db)
-	routes.Users(server, db)
-	routes.Posts(server, db)
-	routes.Settings(server, db)
-	routes.Likes(server, db)
+	routes.Users(server, db, fApp)
+	routes.Posts(server, db, fApp)
+	routes.Settings(server, db, fApp)
+	routes.Likes(server, db, fApp)
 	routes.Service(server, db)
 	routes.Search(server, db)
-	routes.Comments(server, db)
-	chats.Chats(server, db)
+	routes.Comments(server, db, fApp)
+	routes.Notifications(server, db, fApp)
+	routes.Firebase(server, db, fApp)
+	chats.Chats(server, db, fApp)
 	StaticServer(server)
 	database.InitTables(db)
 	server.Use(CORSMiddleware())

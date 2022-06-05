@@ -552,7 +552,6 @@ func (db *DB) UpdateMessageStatus(sender string, companion string, status int) (
 func (db *DB) LikePostHandler(initiator string, postHash string, owner string) (bool, error) {
 	var likeExist *models.Like
 	dbLikeResponse := db.database.Table(typedDB.TABLES.LIKES).Where("post_hash = ? AND creator = ? AND initiator = ?", postHash, owner, initiator).Take(&likeExist)
-	fmt.Println(likeExist)
 	if likeExist.Initiator == initiator || likeExist.PostHash == postHash {
 		dbLikeRemoveResponse := db.database.Table(typedDB.TABLES.LIKES).Where("post_hash = ? AND creator = ? AND initiator = ?", postHash, owner, initiator).Delete(&models.Like{})
 		if dbLikeResponse.Error != nil || dbLikeRemoveResponse.Error != nil {
@@ -702,4 +701,15 @@ func (db *DB) DeleteMessageBunch(owner string, message_hashes []string) bool {
 		}
 	}
 	return true
+}
+
+func (db *DB) FirebaseToken(owner string, request map[string]any) error {
+	token := request["firebase_token"]
+	if token == "" || len(token.(string)) < 20 {
+		return errors.New("Error! FirebaseToken ex, no token")
+	}
+	if dbFirebaseResponse := db.database.Table(typedDB.TABLES.USERS).Where("username = ?", owner).Update("fbToken", token); dbFirebaseResponse.Error != nil {
+		return errors.New("Error! FirebaseToken ex, database error")
+	}
+	return nil
 }
