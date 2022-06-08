@@ -298,24 +298,26 @@ class Actions extends BaseAction implements ActionMethods {
     });
   };
 
-  public getMessages = (companion: string, page: number | string, isInit: boolean = false) => async (dispatch: Dispatch<Action>) => {
-    await this._useToken(async (el: string | null) => {
-      axios
-        .get(`http://${apiURL}/messaging/get-messages/${companion}?page=${page}&init=${isInit}`, {
-          headers: {
-            Authorization: `Bearer ${el}`,
-          },
-        })
-        .then((el) => {
-          console.log(el.data, 'messages response');
-          dispatch({ type: isInit ? ActionTypes.U2UMessages : ActionTypes.U2UMessagesPage, payload: el.data });
-        })
-        .catch((err) => {
-          console.log(err, 'messages response error');
-          dispatch({ type: isInit ? ActionTypes.U2UMessages : ActionTypes.U2UMessagesPage, payload: { statusCode: 423 } });
-        });
-    });
-  };
+  public getMessages =
+    (companion: string, page: number | string, isInit: boolean = false) =>
+    async (dispatch: Dispatch<Action>) => {
+      await this._useToken(async (el: string | null) => {
+        axios
+          .get(`http://${apiURL}/messaging/get-messages/${companion}?page=${page}&init=${isInit}`, {
+            headers: {
+              Authorization: `Bearer ${el}`,
+            },
+          })
+          .then((el) => {
+            console.log(el.data, 'messages response');
+            dispatch({ type: isInit ? ActionTypes.U2UMessages : ActionTypes.U2UMessagesPage, payload: el.data });
+          })
+          .catch((err) => {
+            console.log(err, 'messages response error');
+            dispatch({ type: isInit ? ActionTypes.U2UMessages : ActionTypes.U2UMessagesPage, payload: { statusCode: 423 } });
+          });
+      });
+    };
 
   public likePost = (imageHash: string, owner: string, type: string) => async (dispatch: Dispatch<Action>) => {
     await this._useToken(async (el: string | null) => {
@@ -351,16 +353,18 @@ class Actions extends BaseAction implements ActionMethods {
           dispatch({ type: ActionTypes.GetPost, payload: { statusCode: 423 } });
         });
     });
-  }
+  };
   public searchUserByName = (searchVal: string) => async (dispatch: Dispatch<Action>) => {
-    axios.put(`http://${apiURL}/search/search_user?search=${searchVal}`).then((el) => {
-      dispatch({ type: ActionTypes.SearchUser, payload: el.data });
-    })
+    axios
+      .put(`http://${apiURL}/search/search_user?search=${searchVal}`)
+      .then((el) => {
+        dispatch({ type: ActionTypes.SearchUser, payload: el.data });
+      })
       .catch((err) => {
         console.log(err, 'messages response error');
         dispatch({ type: ActionTypes.SearchUser, payload: { statusCode: 423 } });
       });
-  }
+  };
 
   public getComments = (post_hash: string) => async (dispatch: Dispatch<Action>) => {
     await this._useToken(async (el: string | null) => {
@@ -378,7 +382,7 @@ class Actions extends BaseAction implements ActionMethods {
           dispatch({ type: ActionTypes.GetComments, payload: { statusCode: 423 } });
         });
     });
-  }
+  };
 
   public addComment = (post_hash: string, body: { comment: string }) => async (dispatch: Dispatch<Action>) => {
     await this._useToken(async (el: string | null) => {
@@ -396,7 +400,7 @@ class Actions extends BaseAction implements ActionMethods {
           dispatch({ type: ActionTypes.CreateComment, payload: { statusCode: 423 } });
         });
     });
-  }
+  };
 
   public deleteComment = (post_hash: string, comment_hash: string) => async (dispatch: Dispatch<Action>) => {
     await this._useToken(async (el: string | null) => {
@@ -414,7 +418,7 @@ class Actions extends BaseAction implements ActionMethods {
           dispatch({ type: ActionTypes.RemoveComment, payload: { statusCode: 423 } });
         });
     });
-  }
+  };
 
   public updateComment = (post_hash: string, comment_hash: string, body: { comment: string }) => async (dispatch: Dispatch<Action>) => {
     await this._useToken(async (el: string | null) => {
@@ -432,7 +436,27 @@ class Actions extends BaseAction implements ActionMethods {
           dispatch({ type: ActionTypes.UpdateComment, payload: { statusCode: 423 } });
         });
     });
-  }
+  };
+  public getNotifications = (pageSize: number, pageIndex: number) => async (dispatch: Dispatch<Action>) => {
+    const body = {
+      pageSize: pageSize,
+      pageIndex: pageIndex,
+    };
+    await this._useToken(async (token: string | null) => {
+      axios
+        .post(`http://${apiURL}/notifications/get-notifications`, body, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((response) => {
+          dispatch({ type: ActionTypes.GetNotifications, payload: response.data });
+        })
+        .catch((error) => {
+          dispatch({ type: ActionTypes.UpdateComment, payload: { statusCode: 423, statusMessage: error } });
+        });
+    });
+  };
 }
 
 export const actionImpl = new Actions(apiURL);

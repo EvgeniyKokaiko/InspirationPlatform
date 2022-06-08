@@ -5,9 +5,9 @@ import { StackScreens } from '../Core/MainNavigationScreen';
 import { useDispatch, useSelector } from 'react-redux';
 import { actionImpl } from '../../redux/actions';
 import { Post } from '../../Types/Models';
-import {Alert, NativeScrollEvent, NativeSyntheticEvent} from 'react-native';
-import {mockupHeightToDP} from "../../Parts/utils";
-import {INavigation} from "../Core/OverrideNavigation";
+import { Alert, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
+import { mockupHeightToDP } from '../../Parts/utils';
+import { INavigation } from '../Core/OverrideNavigation';
 import { homeEntityProps, HomePostEntity } from '../../BLL/entity/HomePostEntity';
 
 export interface menuState {
@@ -24,34 +24,32 @@ const MenuContainer: React.FC<IProps> = (props: IProps): JSX.Element => {
     data: [],
     refresh: false,
   });
-  const [isRequested, setIsRequested] = useState(false)
+  const [isRequested, setIsRequested] = useState(false);
   //{data: Post[], statusCode: number, statusMessage: string}
   const dispatch = useDispatch();
   const state: any = useSelector<any>((state) => state.getNewsLineReducer);
 
   const onPostPress = (postHash: string) => {
     INavigation.navigate(StackScreens.PostDetails, { pHash: postHash });
-  }
+  };
 
   const onRefresh = useCallback(() => {
-    setMenuState({...menuState, page: 0, refresh: true})
+    setMenuState({ ...menuState, page: 0, refresh: true });
     dispatch(actionImpl.getNewsline(0));
-    setMenuState({...menuState, refresh: false})
-  }, [])
+    setMenuState({ ...menuState, refresh: false });
+  }, []);
 
-
-   const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+  const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const nEv = e.nativeEvent;
     const offsetY = nEv.contentOffset.y;
-    if (offsetY > (nEv.contentSize.height - nEv.layoutMeasurement.height - 600)) {
+    if (offsetY > nEv.contentSize.height - nEv.layoutMeasurement.height - 600) {
       if (!isRequested && menuState.page !== state[0].pages) {
-        setMenuState({...menuState, page: menuState.page += 1})
+        setMenuState({ ...menuState, page: (menuState.page += 1) });
         dispatch(actionImpl.getNewsline(menuState.page));
         setIsRequested(true);
       }
     }
-   }
-
+  };
 
   const STATE = {
     menuState,
@@ -61,31 +59,34 @@ const MenuContainer: React.FC<IProps> = (props: IProps): JSX.Element => {
     onScroll,
   };
 
-
   useEffect(() => {
     if (menuState.page === 0) {
       dispatch(actionImpl.getNewsline(menuState.page));
     }
   }, []);
 
-
   useEffect(() => {
     try {
-    if (state.length > 0 && typeof state !== "undefined") {
-      if (state[0].statusCode === 200) {
-                setMenuState({...menuState, data: [...menuState.data, ...state[0].data]})
-              setIsRequested(false)
+      if (state.length > 0 && typeof state !== 'undefined') {
+        if (state[0].statusCode === 200) {
+          setMenuState({ ...menuState, data: [...menuState.data, ...state[0].data] });
+          setIsRequested(false);
+        } else {
+          Alert.alert('Error!', 'Something went wrong');
+        }
       } else {
-        Alert.alert('Error!', 'Something went wrong');
+        setMenuState({ ...menuState, data: [] });
       }
-    } else {
-    }
     } catch (exception) {
-      console.log("menuState ex", exception)
+      console.log('menuState ex', exception);
     }
   }, [state]);
 
-  return <><MenuComponent {...STATE} /></>;
+  return (
+    <>
+      <MenuComponent {...STATE} />
+    </>
+  );
 };
 
 export default MenuContainer;

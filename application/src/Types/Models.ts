@@ -54,7 +54,6 @@ export interface PlainMessage {
   message_hash?: string;
 }
 
-
 export interface Comment {
   creator: string;
   comment_hash: string;
@@ -65,4 +64,14 @@ export interface Comment {
   location?: string;
   full_name?: string;
   username?: string;
+}
+
+export interface Notification {
+  Id: number;
+  holder: string;
+  text: string;
+  author: string;
+  post_hash: string;
+  status: number;
+  createdAt: string;
 }

@@ -10,6 +10,7 @@ import (
 	models "server/models"
 	typedDB "server/types"
 	"server/utils"
+	"sync"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
@@ -101,6 +102,7 @@ func (db *DB) RegisterUser(userdata map[string]any) (string, error) {
 		Location:     location,
 		DateOfBirth:  birth,
 		IsPrivate:    0,
+		FBToken:      "",
 	}
 	if dbRegisterNewUserResponse := db.database.Table(typedDB.TABLES.USERS).Create(&user); dbRegisterNewUserResponse.Error != nil {
 		return "Something went wrong on userCreation", errors.New("Error! RegisterUser ex")
@@ -206,7 +208,7 @@ func (db *DB) GetMyPosts(username string) ([]*models.Post, error) {
 }
 
 func (db *DB) Logout(username string) error {
-	result := db.database.Table(typedDB.TABLES.USERS).Where("username = ?", username).Update("token", "")
+	result := db.database.Table(typedDB.TABLES.USERS).Where("username = ?", username).Updates(map[string]any{"token": "", "fb_token": ""})
 	if result.Error != nil {
 		return errors.New("ERROR! Something went wrong on database")
 	}
@@ -312,7 +314,8 @@ func (db *DB) SubscribeUser(owner string, subscriber string) (bool, error) {
 	ownerUser := models.User{}
 	isExists := models.Subscriptions{}
 	var countOfResponses int = 0
-
+	tokenChan := make(chan bool)
+	var wg sync.WaitGroup
 	dbUserResponse := db.database.
 		Table(typedDB.TABLES.USERS).
 		Where("username = ?", owner).
@@ -326,11 +329,16 @@ func (db *DB) SubscribeUser(owner string, subscriber string) (bool, error) {
 	}
 
 	if dbTwoWaySubscriptionResponse := db.database.Table(typedDB.TABLES.SUBSCRIPTIONS).Where("maker = ? AND subscriber = ? AND status > 1", subscriber, owner).Take(&isExists); isExists.Maker != subscriber && isExists.Subscriber != owner {
-		fmt.Println(1, 2)
+		wg.Add(1)
 		if ownerUser.IsPrivate == 1 {
 			subscription.Status = 1
 		} else {
 			subscription.Status = 2
+		}
+		go db.StartFollowingPush(&wg, owner, subscriber, tokenChan)
+		isSent := <-tokenChan
+		if isSent {
+			fmt.Println("SubscribeUser Push notification sent!")
 		}
 	} else {
 		fmt.Println(3, dbTwoWaySubscriptionResponse.Error)
@@ -338,7 +346,6 @@ func (db *DB) SubscribeUser(owner string, subscriber string) (bool, error) {
 		cHash, _ := utils.GenerateHashWithSalt(owner, subscriber, time.Now())
 		subscription.SocketHash = cHash
 		updateSecondDimension := models.Subscriptions{SocketHash: cHash, Status: 3}
-		fmt.Println(subscription.SocketHash, "BRUH0", updateSecondDimension, "BRUH")
 		if dbMySubscriptionResponse := db.database.
 			Table(typedDB.TABLES.SUBSCRIPTIONS).
 			Where("maker = ? AND subscriber = ? AND status > 1", subscriber, owner).
@@ -363,6 +370,13 @@ func (db *DB) UnfollowUser(owner string, subscriber string) (bool, error) {
 		Delete(&subscription)
 	if dbUnfollowResponse.Error != nil || dbUnfollowResponse.RowsAffected == 0 {
 		return false, errors.New("ERROR! Something went wrong")
+	}
+	tokenChan := make(chan bool)
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go db.UnfollowPush(&wg, owner, subscriber, tokenChan)
+	if isSent := <-tokenChan; isSent {
+		fmt.Println("UnfollowUser Push notification sent!")
 	}
 	return true, nil
 }
@@ -708,8 +722,31 @@ func (db *DB) FirebaseToken(owner string, request map[string]any) error {
 	if token == "" || len(token.(string)) < 20 {
 		return errors.New("Error! FirebaseToken ex, no token")
 	}
-	if dbFirebaseResponse := db.database.Table(typedDB.TABLES.USERS).Where("username = ?", owner).Update("fbToken", token); dbFirebaseResponse.Error != nil {
+	if dbFirebaseResponse := db.database.Table(typedDB.TABLES.USERS).Where("username = ?", owner).Update("fb_token", token); dbFirebaseResponse.Error != nil {
 		return errors.New("Error! FirebaseToken ex, database error")
+	}
+	return nil
+}
+
+func (db *DB) GetNotifications(owner string, selectData map[string]any) ([]*models.Notification, error) {
+	data := []*models.Notification{}
+
+	if dbGetNotificationsResponse := db.database.Table(typedDB.TABLES.NOTIFICATIONS).Where("holder = ?", owner).Scan(&data); dbGetNotificationsResponse.Error != nil {
+		return []*models.Notification{}, errors.New("Error! GetNotifications ex")
+	}
+	return data, nil
+}
+
+func (db *DB) AddNewNotification(holder, text, author, additionalInfo string) error {
+	newNotification := *&models.Notification{
+		Holder:         holder,
+		Text:           text,
+		Author:         author,
+		AdditionalInfo: additionalInfo,
+		CreatedAt:      time.Time{},
+	}
+	if AddNewNotificationResponse := db.database.Table(typedDB.TABLES.NOTIFICATIONS).Create(&newNotification); AddNewNotificationResponse.Error != nil {
+		return errors.New("Error! AddNewNotification ex")
 	}
 	return nil
 }

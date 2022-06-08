@@ -1,17 +1,13 @@
 import React from 'react';
-import { View, Text, FlatList, RefreshControl, Image, TouchableOpacity } from 'react-native';
-import { Post } from '../Types/Models';
-import { apiURL } from '../redux/actions';
-import { dateParser, mockupHeightToDP, mockupWidthToDP } from '../Parts/utils';
+import { View, Text, FlatList, RefreshControl } from 'react-native';
+import { mockupHeightToDP } from '../Parts/utils';
 import { StylesOne } from '../Styles/StylesOne';
-import { St } from '../Styles/StylesTwo';
 import { StylesFour } from '../Styles/StylesFour';
-import { MP } from '../Styles/MP';
 import { backgrounds } from '../Styles/Backgrounds';
-import { images } from '../assets/images';
 import { HomePostEntity } from '../BLL/entity/HomePostEntity';
 import { HomePostView } from './segments/HomePostView';
 import { HeaderSegment } from './segments/Header/HeaderSegment';
+import { MP } from '../Styles/MP';
 
 type IProps = {
   onRefresh(): void;
@@ -40,7 +36,7 @@ const HomeComponent: React.FC<IProps> = (state) => {
 
   return (
     <View style={[backgrounds.newsLine, StylesOne.wh100]}>
-     <HeaderSegment headerTitle='Home' />
+      <HeaderSegment hideLeftButton headerTitle="Home" />
       <FlatList
         data={state.data}
         renderItem={_renderItem}
@@ -52,8 +48,8 @@ const HomeComponent: React.FC<IProps> = (state) => {
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={() => {
           return (
-            <View>
-              <Text style={{ color: 'black' }}>No posts</Text>
+            <View style={[StylesOne.wh100, StylesOne.flexCenter, MP.mt20]}>
+              <Text style={StylesFour.noItems}>NO POSTS</Text>
             </View>
           );
         }}

@@ -24,7 +24,7 @@ type IState = {
 export function CommentItemView(props: IProps): JSX.Element {
   const [getState, setState] = useState<IState>({
     commentValue: props.comment_string,
-    inputValue: 'zxczxc',
+    inputValue: '',
     isUpdate: false,
   });
   const dispatch = useDispatch();
@@ -35,14 +35,13 @@ export function CommentItemView(props: IProps): JSX.Element {
 
   const formboxProps: FormTextBoxProps = {
     multiline: true,
-    onChange: (value: string) => setState({...getState, inputValue: value}),
+    onChange: (value: string) => setState({ ...getState, inputValue: value }),
     currentValue: getState.inputValue,
     placeholder: getState.commentValue,
-    style: {container: [StylesOne.w100, {height: 40}], input: StylesOne.wh100},
+    style: { container: [StylesOne.w100, { height: 40 }], input: StylesOne.wh100 },
     placeholderColor: colors.Placeholder,
     underline: colors.SignIn_BG,
-  }
-
+  };
 
   const onRemovePress = () => {
     const body = {
@@ -54,17 +53,17 @@ export function CommentItemView(props: IProps): JSX.Element {
 
   const onUpdatePress = () => {
     setState({ ...getState, commentValue: getState.commentValue, isUpdate: true });
-  }
+  };
 
   const onUpdateCancelPress = () => {
     setState({ ...getState, commentValue: getState.commentValue, isUpdate: false });
-  }
+  };
 
   const onUpdateSavePress = () => {
     if (getState.inputValue.length < 5) {
-      Alert.alert("Warning!", "Length of your comment can't be less than 5 characters!")
+      Alert.alert('Warning!', "Length of your comment can't be less than 5 characters!");
       return;
-  }
+    }
     const body = {
       post_hash: props.post_hash,
       comment_hash: props.comment_hash,
@@ -133,9 +132,11 @@ export function CommentItemView(props: IProps): JSX.Element {
           )}
         </View>
       </View>
-      {!getState.isUpdate ? <View style={[StylesOne.w100, MP.mt5]}>
-        <Text style={StylesFour.commentComment_title}>{getState.commentValue}</Text>
-      </View> : (
+      {!getState.isUpdate ? (
+        <View style={[StylesOne.w100, MP.mt5]}>
+          <Text style={StylesFour.commentComment_title}>{getState.commentValue}</Text>
+        </View>
+      ) : (
         <View style={[StylesOne.w100, MP.mt5]}>
           <FormTextBox {...formboxProps} />
         </View>

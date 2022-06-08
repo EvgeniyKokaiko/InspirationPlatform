@@ -1,15 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { NavigationContainer, NavigationProp, StackRouterOptions, useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
+import React, { useEffect } from 'react';
+import { NavigationContainer, NavigationProp, useFocusEffect } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import SignInComponent from '../SignInComponent';
 import { Component } from '../../Types/Types';
-import SignUpComponent from '../SignUpComponent';
 import { AppState, BackHandler } from 'react-native';
 import SetupAccountComponent from '../SetupAccountComponent';
 import MyProfileComponent from '../MyProfileComponent';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import HomeComponent from '../HomeComponent';
-import MenuComponent from '../MenuComponent';
 import AddComponent from '../AddComponent';
 import NotificationsComponent from '../NotificationsComponent';
 import BottomNavigation from '../segments/BottomNavigation';
@@ -22,12 +18,13 @@ import ExpandedPostContainer from '../Controllers/ExpandedPostContainer';
 import UserProfileContainer from '../Controllers/UserProfileContainer';
 import RequestListContainer from '../Controllers/RequestListContainer';
 import HomeContainer from '../Controllers/HomeContainer';
-import U2UChatContainer from "../Controllers/U2UChatContainer";
-import ManageAccountContainer from "../Controllers/ManageAccountContainer";
-import {INavigation, OverrideNavigation} from "./OverrideNavigation";
-import FollowingListContainer from "../Controllers/FollowingListContainer";
+import U2UChatContainer from '../Controllers/U2UChatContainer';
+import ManageAccountContainer from '../Controllers/ManageAccountContainer';
+import { INavigation } from './OverrideNavigation';
+import FollowingListContainer from '../Controllers/FollowingListContainer';
 import { CommentListContainer } from '../Controllers/CommentListContainer';
 import RegisterComponent from '../RegisterComponent';
+import { NotificationContainer } from '../Controllers/NotificationContainer';
 
 interface IProps {}
 
@@ -61,38 +58,32 @@ export const noGoBack = () => {
   });
 };
 
-
 export function onFocus(callback: Function, deps: Array<any> = []) {
- return useFocusEffect(
-      React.useCallback(() => {
-        callback()
-      }, [INavigation.navigationStack, ...deps])
-
+  return useFocusEffect(
+    React.useCallback(() => {
+      callback();
+    }, [INavigation.navigationStack, ...deps])
   );
 }
 
 export function onBlur(callback: Function, deps: Array<any> = []) {
   return useFocusEffect(
-      React.useCallback(() => {
-        return () => callback();
-      }, [INavigation.navigationStack, ...deps])
-
+    React.useCallback(() => {
+      return () => callback();
+    }, [INavigation.navigationStack, ...deps])
   );
 }
-
 
 export const goBack = (navProps: NavigationProp<any>) => {
   navProps.goBack();
 };
 
-
-export const goToUserProfileScreenOnBottomButton = (navProps: any) => {
+export const goToUserProfileScreenOnBottomButton = () => {
   BackHandler.addEventListener('hardwareBackPress', () => {
-    navProps.navigate(StackScreens.MyProfile);
-    return false;
+    INavigation.goBack();
+    return true;
   });
 };
-
 
 const MainNavigationScreen: React.FC = (props: IProps) => {
   const Stack = createNativeStackNavigator();
@@ -108,11 +99,11 @@ const MainNavigationScreen: React.FC = (props: IProps) => {
     { name: StackScreens.SetupAccount, component: SetupAccountComponent, options: { headerShown: false } },
     { name: StackScreens.EditProfile, component: EditProfileComponent, options: { headerShown: false } },
     { name: StackScreens.Settings, component: SettingsComponent, options: { headerShown: false } },
-    { name: StackScreens.Manage, component: ManageAccountContainer, options: {headerShown: false} },
-    { name: StackScreens.Following, component: FollowingListContainer, options: {headerShown: false} },
-    {name: StackScreens.Comments, component: CommentListContainer, options: {headerShown: false} },
+    { name: StackScreens.Manage, component: ManageAccountContainer, options: { headerShown: false } },
+    { name: StackScreens.Following, component: FollowingListContainer, options: { headerShown: false } },
+    { name: StackScreens.Comments, component: CommentListContainer, options: { headerShown: false } },
     //Main screens
-    { name: StackScreens.U2UChat, component: U2UChatContainer, options: {headerShown: false} },
+    { name: StackScreens.U2UChat, component: U2UChatContainer, options: { headerShown: false } },
     { name: StackScreens.PostDetails, component: ExpandedPostContainer, options: { headerShown: false } },
     { name: StackScreens.RequestList, component: RequestListContainer, options: { headerShown: false } },
     { name: StackScreens.UserProfile, component: UserProfileContainer, options: { headerShown: false } },
@@ -120,7 +111,7 @@ const MainNavigationScreen: React.FC = (props: IProps) => {
     { name: StackScreens.Home, component: HomeContainer, options: { headerShown: false } },
     { name: StackScreens.Menu, component: MenuContainer, options: { headerShown: false } },
     { name: StackScreens.Add, component: AddComponent, options: { headerShown: false } },
-    { name: StackScreens.Notifications, component: NotificationsComponent, options: { headerShown: false } },
+    { name: StackScreens.Notifications, component: NotificationContainer, options: { headerShown: false } },
   ];
 
   // const onStartApp = () => {

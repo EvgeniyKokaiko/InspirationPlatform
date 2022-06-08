@@ -1,11 +1,10 @@
 import { combineReducers } from 'redux';
-import { Action, ActionTypes, ClassicPayload } from '../types/ActionTypes';
-import { act } from 'react-test-renderer';
+import { Action, ActionTypes } from '../types/ActionTypes';
 import { Comment, PlainMessage } from '../../Types/Models';
-import { MessageEntity } from '../../BLL/entity/MessageEntity';
 import { MessageStatus } from '../../Types/enums';
 import { homeEntityProps, HomePostEntity } from '../../BLL/entity/HomePostEntity';
 import { MessageStorage } from '../../BLL/MessageStorage';
+import { Alert } from 'react-native';
 
 export interface Reducers {
   registerReducer: any;
@@ -14,10 +13,39 @@ export interface Reducers {
   meReducer: any;
 }
 
-const emptyReducer = {
-  statusMessage: "Nothing",
+const emptyReducerObj = {
+  statusMessage: 'Nothing',
   statusCode: 0,
   data: {},
+};
+
+const emptyReducerArray = {
+  statusMessage: 'Nothing',
+  statusCode: 0,
+  data: [],
+};
+
+export interface Store {
+  meReducer: any;
+  mePostsReducer: any;
+  checkForConnectionReducer: any;
+  getNewsLineReducer: any;
+  GetMyNewsLineReducer: any;
+  getUserDataReducer: any;
+  postDelete: any;
+  subscribeReducer: any;
+  unfollowReducer: any;
+  requestListReducer: any;
+  currentRequestStatus: any;
+  logoutReducer: any;
+  setParamReducer: any;
+  followerListReducer: any;
+  getMessagesReducer: any;
+  getTokenReducer: any;
+  getPostWithLikesReducer: any;
+  searchUserByNameReducer: any;
+  commentsReducer: any;
+  notificationsReducer: any;
 }
 
 class ReducersImpl {
@@ -90,8 +118,7 @@ class ReducersImpl {
         result.data.push(newHomePost);
       });
       return result;
-    }
-    else if (action.type === ActionTypes.Clear) {
+    } else if (action.type === ActionTypes.Clear) {
       return {
         isModify: state.isModify + 1,
         pages: 0,
@@ -116,7 +143,7 @@ class ReducersImpl {
       if (Array.isArray(posts)) {
         entities = action.payload.data?.userPosts.map((el: homeEntityProps) => {
           return new HomePostEntity({ ...el });
-        })
+        });
       }
       const ls = action.payload.data;
       return {
@@ -130,7 +157,7 @@ class ReducersImpl {
           isSubscribed: ls?.isSubscribed,
           userData: ls?.userData,
           userPosts: entities,
-        }
+        },
       };
     }
     return state;
@@ -239,16 +266,17 @@ class ReducersImpl {
     };
   }
   //rename to messageReducer!
-  public GetMessagesReducer(state: {
-    isModify: number,
-    statusCode: number,
-    statusMessage: string,
-    data: MessageStorage,
-    isMessageUpdate: number,
-    totalPages: number,
-    pageSize: number,
-    pageIndex: number,
-  } = {
+  public GetMessagesReducer(
+    state: {
+      isModify: number;
+      statusCode: number;
+      statusMessage: string;
+      data: MessageStorage;
+      isMessageUpdate: number;
+      totalPages: number;
+      pageSize: number;
+      pageIndex: number;
+    } = {
       isModify: 0,
       statusCode: 0,
       statusMessage: '',
@@ -257,7 +285,9 @@ class ReducersImpl {
       totalPages: 0,
       pageSize: 0,
       pageIndex: 0,
-    }, action: Action) {
+    },
+    action: Action
+  ) {
     if (action.type === ActionTypes.U2UMessages) {
       const storage = new MessageStorage();
       const messageProps: PlainMessage[] = action.payload.data.items;
@@ -284,7 +314,7 @@ class ReducersImpl {
         pageIndex: action.payload.data.pageIndex,
       };
     } else if (action.type === ActionTypes.U2UMessagesPage) {
-      const isValidMessages = action.payload.statusCode === 200 && Array.isArray(action.payload.data.items)
+      const isValidMessages = action.payload.statusCode === 200 && Array.isArray(action.payload.data.items);
       if (isValidMessages) {
         state.data.addToEnd(action.payload.data.items);
       }
@@ -299,7 +329,9 @@ class ReducersImpl {
         pageIndex: isValidMessages ? action.payload.data.pageIndex : state.pageIndex,
       };
     } else if (action.type === ActionTypes.AddFakeMessage) {
-      if (state.data instanceof MessageStorage) state.data.add(action.payload);
+      if (state.data instanceof MessageStorage) {
+        state.data.add(action.payload);
+      }
       return {
         isModify: (state.isModify += 1),
         statusCode: 200,
@@ -337,7 +369,9 @@ class ReducersImpl {
           pageIndex: state.pageIndex,
         };
       } else {
-        if (state.data instanceof MessageStorage) state.data.updateAll('status', MessageStatus.SentToServer, MessageStatus.ReadByUser)
+        if (state.data instanceof MessageStorage) {
+          state.data.updateAll('status', MessageStatus.SentToServer, MessageStatus.ReadByUser);
+        }
       }
       return {
         isModify: state.isModify,
@@ -359,31 +393,34 @@ class ReducersImpl {
         totalPages: 0,
         pageSize: 0,
         pageIndex: 0,
-      }
+      };
     }
-    return state
+    return state;
   }
 
   private SearchUserByNameReducer(state: any = {}, action: Action) {
     if (action.type === ActionTypes.SearchUser) {
-      return action.payload
+      return action.payload;
     }
-    return state
+    return state;
   }
 
-  private CommentsReducer(state: { statusCode: number; statusMessage: string; data: Array<Comment>, isModify: number } = {
-    statusCode: 0,
-    statusMessage: '',
-    data: [],
-    isModify: 0,
-  }, action: Action) {
+  private CommentsReducer(
+    state: { statusCode: number; statusMessage: string; data: Array<Comment>; isModify: number } = {
+      statusCode: 0,
+      statusMessage: '',
+      data: [],
+      isModify: 0,
+    },
+    action: Action
+  ) {
     switch (action.type) {
       case ActionTypes.GetComments:
         return { ...action.payload, isModify: state.isModify + 1 };
       case ActionTypes.CreateComment:
         if (action.payload.statusCode === 200 && typeof action.payload.data === 'object') {
           state.data.push(action.payload.data);
-          return { ...state, isModify: state.isModify + 1 }
+          return { ...state, isModify: state.isModify + 1 };
         }
         return state;
       case ActionTypes.RemoveComment:
@@ -394,21 +431,38 @@ class ReducersImpl {
         return state;
       case ActionTypes.UpdateComment:
         if (action.payload.statusCode === 200) {
-          const index = state.data.findIndex((comment) => comment.comment_hash == action.payload.comment_hash)
+          const index = state.data.findIndex((comment) => comment.comment_hash == action.payload.comment_hash);
           if (index !== -1 && state.data.at(index) !== void 0) {
             state.data.at(index)!.comment_string = action.payload.body.comment;
-            return { ...state, isModify: state.isModify + 1 }
+            return { ...state, isModify: state.isModify + 1 };
           }
           return state;
         }
+        break;
       case ActionTypes.ClearComments:
         const initialState = {
           statusCode: 200,
           statusMessage: '',
           data: [],
           isModify: 0,
-        }
-        return { ...initialState }
+        };
+        return { ...initialState };
+    }
+    return state;
+  }
+
+  public GetNotificationsReducer(state = emptyReducerArray, action: Action) {
+    if (action.type === ActionTypes.GetNotifications) {
+      if (action.payload && action.payload.statusCode === 200) {
+        return {
+          statusCode: action.payload?.statusCode || 0,
+          statusMessage: action.payload?.statusMessage || '',
+          data: action.payload?.data || [],
+        };
+      } else {
+        Alert.alert('Notifications', 'Something went wrong :(');
+        return state;
+      }
     }
     return state;
   }
@@ -434,6 +488,7 @@ class ReducersImpl {
       getPostWithLikesReducer: this.GetPostWithLikesReducer,
       searchUserByNameReducer: this.SearchUserByNameReducer,
       commentsReducer: this.CommentsReducer,
+      notificationsReducer: this.GetNotificationsReducer,
     });
   };
 }

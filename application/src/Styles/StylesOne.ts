@@ -199,6 +199,10 @@ export const StylesOne = StyleSheet.create({
     alignItems: 'center',
   },
 
+  flex_ai_fe: {
+    alignItems: 'flex-end',
+  },
+
   flex_jc_c: {
     justifyContent: 'center',
   },

@@ -30,6 +30,13 @@ export const StylesFour = StyleSheet.create({
     lineHeight: 24,
     color: colors.ownerDark,
   },
+  noItems: {
+    fontFamily: `SFProDisplay-Regular`,
+    fontWeight: '100',
+    fontSize: fontSizeDP(24),
+    color: colors.mintGreen,
+    height: '100%',
+  },
   myNewsLine_avatar: {
     width: mockupWidthToDP(50),
     height: mockupHeightToDP(50),
