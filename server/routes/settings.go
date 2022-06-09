@@ -29,6 +29,9 @@ func Settings(route *gin.Engine, db *database.DB, firebaseApp *messaging.Client)
 				return
 			} else {
 				c.JSON(http.StatusOK, typedDB.GiveOKResponse())
+				if err := db.SendPushPosts(name, fmt.Sprintf(database.UpdateAvatar, name)); err != nil {
+					fmt.Println("AddPost push ex")
+				}
 			}
 			if err != nil {
 				fmt.Println("Err3!", err)

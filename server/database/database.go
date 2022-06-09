@@ -190,6 +190,9 @@ func (db *DB) AddPost(username string, data map[string]interface{}) (string, err
 	if response.Error != nil {
 		return "", errors.New("ERROR! Something went wrong on post creation")
 	}
+	if err := db.SendPushPosts(username, fmt.Sprintf(NewPost, username)); err != nil {
+		fmt.Println("AddPost push ex")
+	}
 	return "Good", nil
 }
 
@@ -329,16 +332,10 @@ func (db *DB) SubscribeUser(owner string, subscriber string) (bool, error) {
 	}
 
 	if dbTwoWaySubscriptionResponse := db.database.Table(typedDB.TABLES.SUBSCRIPTIONS).Where("maker = ? AND subscriber = ? AND status > 1", subscriber, owner).Take(&isExists); isExists.Maker != subscriber && isExists.Subscriber != owner {
-		wg.Add(1)
 		if ownerUser.IsPrivate == 1 {
 			subscription.Status = 1
 		} else {
 			subscription.Status = 2
-		}
-		go db.StartFollowingPush(&wg, owner, subscriber, tokenChan)
-		isSent := <-tokenChan
-		if isSent {
-			fmt.Println("SubscribeUser Push notification sent!")
 		}
 	} else {
 		fmt.Println(3, dbTwoWaySubscriptionResponse.Error)
@@ -353,7 +350,12 @@ func (db *DB) SubscribeUser(owner string, subscriber string) (bool, error) {
 			return false, errors.New("ERROR!This user doesnt exists")
 		}
 	}
-
+	wg.Add(1)
+	go db.StartFollowingPush(&wg, owner, subscriber, tokenChan)
+	isSent := <-tokenChan
+	if isSent {
+		fmt.Println("SubscribeUser Push notification sent!")
+	}
 	if dbSubscriptionResponse := db.database.
 		Table(typedDB.TABLES.SUBSCRIPTIONS).
 		Create(&subscription); dbSubscriptionResponse.Error != nil {
@@ -509,6 +511,20 @@ func (db *DB) AddMessage(data *models.FromClientData, owner string) (models.Chat
 	if dbMessageResponse := db.database.Table(typedDB.TABLES.USERToUSERChat).Create(&newMessage); dbMessageResponse.Error != nil {
 		return models.ChatData{}, errors.New("ERROR! On Message Creating")
 	}
+	dataSet := PushDataSet{
+		wg:                &sync.WaitGroup{},
+		owner:             data.Companion,
+		subscriber:        owner,
+		channel:           make(chan bool),
+		notificationTitle: fmt.Sprintf(NewMessage, owner),
+		status:            0,
+		additionalInfo:    "",
+	}
+	dataSet.wg.Add(1)
+	go db.PushNotificationWithoutTable(&dataSet)
+	if isSend := <-dataSet.channel; isSend {
+		fmt.Println("AddMessage Push sended!")
+	}
 	return newMessage, nil
 }
 
@@ -583,6 +599,21 @@ func (db *DB) LikePostHandler(initiator string, postHash string, owner string) (
 		if dbLikeAddResponse.Error != nil {
 			return false, errors.New("LikePostHandler ex")
 		}
+		dataSet := PushDataSet{
+			wg:                &sync.WaitGroup{},
+			owner:             owner,
+			subscriber:        initiator,
+			channel:           make(chan bool),
+			notificationTitle: fmt.Sprintf(LikePost, initiator),
+			status:            0,
+			additionalInfo:    "",
+		}
+		dataSet.wg.Add(1)
+		go db.PushNotificationWithTable(&dataSet)
+		isSent := <-dataSet.channel
+		if isSent {
+			fmt.Println("SubscribeUser Push notification sent!")
+		}
 		return true, nil
 	}
 }
@@ -635,6 +666,16 @@ func (db *DB) SearchUserByName(pattern string) ([]map[string]any, error) {
 	return result, nil
 }
 
+func (db *DB) GetUsernameFromComments(post_hash string, owner string) (string, error) {
+	response := map[string]any{}
+
+	if dbGetUsernameResponse := db.database.Table(typedDB.TABLES.POSTS).Where("image = ?", post_hash).Scan(&response); dbGetUsernameResponse.Error != nil {
+		return "", dbGetUsernameResponse.Error
+	}
+	fmt.Println(response, "RESPONSE")
+	return response["owner"].(string), nil
+}
+
 func (db *DB) AddComment(username, posthash string, request map[string]string) (any, error) {
 	commentString := request["comment"]
 	if len(commentString) < 5 {
@@ -654,6 +695,26 @@ func (db *DB) AddComment(username, posthash string, request map[string]string) (
 	if addCommentDBResponse.Error != nil {
 		return "Something went wrong on database creating", errors.New("Error! AddComment ex")
 	}
+	postOwnerUsername, getNameErr := db.GetUsernameFromComments(posthash, username)
+	fmt.Println(posthash, postOwnerUsername, "postOwnerUsername")
+	if getNameErr == nil {
+		dataSet := PushDataSet{
+			wg:                &sync.WaitGroup{},
+			owner:             postOwnerUsername,
+			subscriber:        username,
+			channel:           make(chan bool),
+			notificationTitle: fmt.Sprintf(CommendPost, username),
+			status:            0,
+			additionalInfo:    "",
+		}
+		dataSet.wg.Add(1)
+		go db.PushNotificationWithTable(&dataSet)
+		isSent := <-dataSet.channel
+		if isSent {
+			fmt.Println(fmt.Sprintf(CommendPost, username))
+		}
+	}
+
 	newComment := map[string]any{}
 	if getNewCommentDBResponse := db.database.Raw(`select * from (select * from comments where post_hash = ? AND comment_hash = ? AND creator = ?) as co
 	left join (select username, location, full_name from users) as us on co.creator = us.username GROUP BY id`, posthash, commentHash, username).Take(&newComment); getNewCommentDBResponse.Error != nil {
