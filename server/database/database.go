@@ -253,7 +253,7 @@ func (db *DB) GetNewsLine(initiator string, page int) ([]map[string]any, int, er
 func (db *DB) GetUserDataWithPosts(username string, name string, page int) (map[string]interface{}, error) {
 	var userData *models.User
 	var userPosts *[]models.Post
-	var userSubscription *models.Subscriptions
+	var userSubscription *models.User_Subscriptions
 	var userCounts = map[string]interface{}{}
 	dbResult := utils.StandardMap{}
 	dbUserDataResponse := db.database.
@@ -309,13 +309,13 @@ func (db *DB) GetUserDataWithPosts(username string, name string, page int) (map[
 //status 3 - two dimension subscription
 
 func (db *DB) SubscribeUser(owner string, subscriber string) (bool, error) {
-	subscription := models.Subscriptions{}
+	subscription := models.User_Subscriptions{}
 	subscription.Subscriber = subscriber
 	subscription.Maker = owner
 	subscription.CreatedAt = time.Now()
 	subscription.UpdatedAt = time.Now()
 	ownerUser := models.User{}
-	isExists := models.Subscriptions{}
+	isExists := models.User_Subscriptions{}
 	var countOfResponses int = 0
 	tokenChan := make(chan bool)
 	var wg sync.WaitGroup
@@ -342,7 +342,7 @@ func (db *DB) SubscribeUser(owner string, subscriber string) (bool, error) {
 		subscription.Status = 3
 		cHash, _ := utils.GenerateHashWithSalt(owner, subscriber, time.Now())
 		subscription.SocketHash = cHash
-		updateSecondDimension := models.Subscriptions{SocketHash: cHash, Status: 3}
+		updateSecondDimension := models.User_Subscriptions{SocketHash: cHash, Status: 3}
 		if dbMySubscriptionResponse := db.database.
 			Table(typedDB.TABLES.SUBSCRIPTIONS).
 			Where("maker = ? AND subscriber = ? AND status > 1", subscriber, owner).
@@ -365,7 +365,7 @@ func (db *DB) SubscribeUser(owner string, subscriber string) (bool, error) {
 }
 
 func (db *DB) UnfollowUser(owner string, subscriber string) (bool, error) {
-	subscription := models.Subscriptions{}
+	subscription := models.User_Subscriptions{}
 	dbUnfollowResponse := db.database.
 		Table(typedDB.TABLES.SUBSCRIPTIONS).
 		Where("maker = ? AND subscriber = ?", owner, subscriber).
@@ -384,7 +384,7 @@ func (db *DB) UnfollowUser(owner string, subscriber string) (bool, error) {
 }
 
 func (db *DB) AcceptRequestOnSubscription(owner string, username string, accepted bool) (bool, error) {
-	subscription := models.Subscriptions{}
+	subscription := models.User_Subscriptions{}
 	if accepted {
 		if dbAcceptRequestResponse := db.database.
 			Table(typedDB.TABLES.SUBSCRIPTIONS).

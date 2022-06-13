@@ -19,7 +19,7 @@ class Socket {
   private readonly _cHash: string;
   private _socket: WebSocket;
   private _makeDispatch: Function;
-  private readonly serverURL: string = 'ws://192.168.1.90:8080/messaging';
+  private readonly serverURL: string = 'ws://ec2-3-69-148-251.eu-central-1.compute.amazonaws.com:8080/messaging';
   private readonly _handlers: SocketHandlers;
   private _userName: string;
   constructor(cHash: string, token: string | null, dispatch: Function, userName: string) {
@@ -30,7 +30,7 @@ class Socket {
     this._socket = new WebSocket(`${this.serverURL}/valhalla/${cHash}?token=${token}`);
     this._socket.onopen = () => {
       this.emitByEvent(SocketEvents.connect, '');
-      this.emitByEvent(SocketEvents.readAllMessages, this._userName)
+      this.emitByEvent(SocketEvents.readAllMessages, this._userName);
       console.log('Socket opened successfully!');
     };
     this._socket.onclose = () => {
@@ -84,7 +84,7 @@ class Socket {
           await this.handlers.serverGotMessage(socketData);
           break;
         case SocketEvents.readAllMessages:
-          console.log('readallmessages')
+          console.log('readallmessages');
           await this.handlers.readAllMessages(socketData);
           break;
         case SocketEvents.removeOneMessage:

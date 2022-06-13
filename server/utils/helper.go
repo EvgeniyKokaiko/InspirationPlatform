@@ -16,7 +16,7 @@ import (
 )
 
 type StandardMap map[string]interface{}
-type Subscriptions models.Subscriptions
+type Subscriptions models.User_Subscriptions
 
 func ParseHeader(c *gin.Context) (string, string, error) {
 	authorizationHeader := strings.Split(c.Request.Header.Get("Authorization"), " ")

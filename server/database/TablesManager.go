@@ -57,7 +57,7 @@ func (db *DB) CreateUsersTable() {
 
 func (db *DB) CreateUserSubsTable() {
 	db.BaseTableCreator(typedDB.TABLES.SUBSCRIPTIONS, func(tableName string) {
-		err := db.database.Migrator().AutoMigrate(&models.Subscriptions{})
+		err := db.database.Migrator().AutoMigrate(&models.User_Subscriptions{})
 		if err != nil {
 			return
 		}

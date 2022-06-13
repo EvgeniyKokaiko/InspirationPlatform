@@ -2,7 +2,7 @@ package models
 
 import "time"
 
-type Subscriptions struct {
+type User_Subscriptions struct {
 	Id         uint      `gorm:"primaryKey"`
 	Maker      string    `json:"maker"`
 	Subscriber string    `json:"subscriber,required"`
