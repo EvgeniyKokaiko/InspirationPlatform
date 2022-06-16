@@ -43,6 +43,7 @@ type myPostProps = {
   setReload?(value: number): void;
   onLikePress?(post_hash: string, owner: string): void;
   entity: HomePostEntity
+  makeRequest(): void;
 };
 
 type IState = {
@@ -74,7 +75,7 @@ const MyPost = (props: myPostProps) => {
     refreshOrUpdate: 0,
   });
   const state: any = useSelector<any>((state) => state.postDelete);
-
+  const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
 
 
   const onPostDelete = useCallback(() => {
@@ -111,6 +112,7 @@ const MyPost = (props: myPostProps) => {
   const onAlertDeletePost = useCallback(() => {
     dispatch(actionImpl.deletePost(props.entity.image, props.entity.owner));
     props.setReload!(2);
+    props.makeRequest();
   }, [props.entity.image, props.entity.owner]);
 
 
@@ -129,7 +131,6 @@ const MyPost = (props: myPostProps) => {
       }
     }
   }, [state]);
-
   return (
     <View key={props.index} style={[St.postListItem, St.zIndex2]}>
       <TouchableOpacity onPress={showModal} key={props.index} style={St.image100}>
@@ -156,7 +157,7 @@ const MyPost = (props: myPostProps) => {
                 defaultText={getState.labelText}
               />
             </View>
-            <TouchableOpacity
+            {props.isMe && <TouchableOpacity
               activeOpacity={0.8}
               onPress={onPostDelete}
               style={[StylesOne.minWidth15, StylesOne.h100, StylesOne.flex_row, StylesOne.flex_ai_c, StylesOne.flex_jc_fs, MP.pl15]}
@@ -164,10 +165,13 @@ const MyPost = (props: myPostProps) => {
               <View>
                 <Image style={[ImageStyles.imageDoubleAvatar, ImageStyles.tintColorWhite]} source={images.burger} />
               </View>
-            </TouchableOpacity>
+            </TouchableOpacity>}
           </View>
           <View style={[StylesOne.flex1, StylesOne.flexCenter]}>
             <SingleCarouselComponent reload={props.reload} onMomentumScrollEnd={onMomentumScrollEnd} carouselData={getState.carouselData} />
+          </View>
+          <View>
+            <Text style={[StylesOne.post_date]}>{new Date(props.entity.date_of_creation).toLocaleDateString("en-US", dateOptions)} at {new Date(props.entity.date_of_creation).toLocaleTimeString("en-GB")}</Text>
           </View>
           <View style={[StylesOne.flex_row, MP.mt10, MP.mb20]}>
             <LikeButton owner={props.entity.owner} textColor={'white'} postHash={props.entity.image as string} />
@@ -178,12 +182,12 @@ const MyPost = (props: myPostProps) => {
               <Image style={[StylesOne.wh100, StylesOne.rm_c]} source={images.commend} />
               <Text style={{ color: 'white' }}></Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              onPress={props.onRepostPress}
-              style={[{ width: mockupWidthToDP(40), height: mockupHeightToDP(30) }, StylesOne.flex_row, StylesOne.flex_ai_c, MP.mr20]}
-            >
-              <Image style={[StylesOne.wh100, StylesOne.rm_c]} source={images.repost} />
-            </TouchableOpacity>
+            {/*<TouchableOpacity*/}
+            {/*  onPress={props.onRepostPress}*/}
+            {/*  style={[{ width: mockupWidthToDP(40), height: mockupHeightToDP(30) }, StylesOne.flex_row, StylesOne.flex_ai_c, MP.mr20]}*/}
+            {/*>*/}
+            {/*  <Image style={[StylesOne.wh100, StylesOne.rm_c]} source={images.repost} />*/}
+            {/*</TouchableOpacity>*/}
           </View>
           <View style={[StylesOne.flex_row, StylesOne.flex_jc_fs, StylesOne.w100, MP.ph15]}>
             <Text selectable style={[SThree.post_caption, { color: 'white' }]}>{props.entity.caption}</Text>

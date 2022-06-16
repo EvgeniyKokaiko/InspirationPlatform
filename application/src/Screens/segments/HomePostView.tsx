@@ -66,9 +66,9 @@ const HomePostView: React.FC<IProps> = (props: IProps): JSX.Element => {
             </Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity onPress={props.onBurgerPress} style={[StylesOne.flex_row, StylesOne.flex_ai_c]}>
-          <Image style={St.image20} source={images.burgerBtn} />
-        </TouchableOpacity>
+        {/*<TouchableOpacity onPress={props.onBurgerPress} style={[StylesOne.flex_row, StylesOne.flex_ai_c]}>*/}
+        {/*  <Image style={St.image20} source={images.burgerBtn} />*/}
+        {/*</TouchableOpacity>*/}
       </View>
       <View style={[MP.mb10]}>
         <Text style={[StylesFour.myNewsLine_caption]}>{props.entity.caption}</Text>
@@ -85,12 +85,12 @@ const HomePostView: React.FC<IProps> = (props: IProps): JSX.Element => {
           <Image style={[StylesOne.wh100, StylesOne.rm_c]} source={images.commend} />
           <Text style={{ color: 'black' }}>{/** Counter here */}</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={props.onRepostPress}
-          style={[{ width: mockupWidthToDP(40), height: mockupHeightToDP(30) }, StylesOne.flex_row, StylesOne.flex_ai_c, MP.mr20]}
-        >
-          <Image style={[StylesOne.wh100, StylesOne.rm_c]} source={images.repost} />
-        </TouchableOpacity>
+        {/*<TouchableOpacity*/}
+        {/*  onPress={props.onRepostPress}*/}
+        {/*  style={[{ width: mockupWidthToDP(40), height: mockupHeightToDP(30) }, StylesOne.flex_row, StylesOne.flex_ai_c, MP.mr20]}*/}
+        {/*>*/}
+        {/*  <Image style={[StylesOne.wh100, StylesOne.rm_c]} source={images.repost} />*/}
+        {/*</TouchableOpacity>*/}
       </View>
       <View style={St.horizontalLine} />
     </View>

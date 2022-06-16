@@ -15,7 +15,7 @@ import { Post, User } from '../Types/Models';
 import MyPost from './segments/MyPost';
 import FullScreenPreloader from './segments/FullScreenPreloader';
 import { INavigation } from "./Core/OverrideNavigation";
-import { mockupHeightToDP } from '../Parts/utils';
+import {DEVICE_HEIGHT, mockupHeightToDP} from '../Parts/utils';
 import { HomePostEntity } from '../BLL/entity/HomePostEntity';
 import { ActionTypes } from '../redux/types/ActionTypes';
 
@@ -89,12 +89,32 @@ const MyProfileComponent: React.FC<IProps> = (props: IProps) => {
   }, [state.meReducer, state.mePostsReducer]);
 
   const renderPosts = () => {
-    return getState.posts.map((el: HomePostEntity, index) => {
-
-      return <React.Fragment key={index}><MyPost onCommendPress={onCommendPress} onLikePress={onLikePress} entity={el} setReload={setReload} reload={getState.reload} isMe={isMe} index={index} /></React.Fragment>;
-    });
+   const result = [];
+   if (!getState.posts) {
+     return [];
+   }
+   for (let i = getState.posts.length; i >= 0; i--) {
+     const item = getState.posts[i];
+     if (!item) {
+       continue;
+     }
+     result.push(
+         <React.Fragment key={i}>
+            <MyPost
+                makeRequest={makeRequest}
+                onRepostPress={() => {}}
+                onCommendPress={onCommendPress}
+                onLikePress={onLikePress}
+                entity={item}
+                setReload={setReload}
+                reload={getState.reload}
+                isMe={isMe}
+                index={i} />
+         </React.Fragment>);
+   }
+   return result;
   };
-
+//
 
   async function onPersonalSitePress() {
     await Linking.openURL((getState.user as unknown as User).personal_site);
@@ -116,12 +136,12 @@ const MyProfileComponent: React.FC<IProps> = (props: IProps) => {
 
 
   return getState.user && getState.posts ? (
+  <View style={{height: DEVICE_HEIGHT}}>
     <ScrollView nestedScrollEnabled style={[StylesOne.screenContainer, MP.ph25]} refreshControl={<RefreshControl refreshing={getState.refresh} onRefresh={makeRequest} />}>
       <View style={[StylesOne.w100]}>
-        <View style={[StylesOne.flex_row, StylesOne.flex_jc_sb, StylesOne.flex_ai_c, MP.mv20]}>
-          <View />
-          <View><Image source={images.logo} style={[StylesOne.image40, { tintColor: 'black' }]} /><Text style={St.ownerTextWithoutOffsets}>{(getState.user! as any).username}</Text></View>
-          <View />
+        <View style={[StylesOne.flex_column, StylesOne.flex_jc_sb, StylesOne.flex_ai_c, MP.mv20]}>
+          <Image source={images.logo} style={[StylesOne.image40, { tintColor: 'black' }]} />
+          <Text style={St.ownerTextWithoutOffsets}>{(getState.user! as any).username}</Text>
         </View>
       </View>
       <View style={[MP.mt20, StylesOne.w100, St.borderRadius30, backgrounds.myProfileBlocks, MP.pv20, MP.ph20]}>
@@ -176,10 +196,11 @@ const MyProfileComponent: React.FC<IProps> = (props: IProps) => {
       {/*    <TouchableOpacity>*/}
       {/*    </TouchableOpacity>*/}
       {/*</View>*/}
-      <ScrollView nestedScrollEnabled showsVerticalScrollIndicator={false} style={[St.postListStyles]} contentContainerStyle={St.listContainer}>
+      <View style={[St.postListStyles]}>
         {renderPosts()}
-      </ScrollView>
+      </View>
     </ScrollView>
+  </View>
   ) : (
     <ScrollView
       contentContainerStyle={[StylesOne.screenContainer, MP.ph25]}

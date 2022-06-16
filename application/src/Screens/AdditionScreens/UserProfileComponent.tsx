@@ -6,12 +6,11 @@ import {images} from "../../assets/images";
 import {St} from "../../Styles/StylesTwo";
 import {backgrounds} from "../../Styles/Backgrounds";
 import Avatar from "../segments/Avatar";
-import { mockupHeightToDP } from "../../Parts/utils";
+import {DEVICE_HEIGHT, mockupHeightToDP} from "../../Parts/utils";
 import {Post, User} from "../../Types/Models";
 import FullScreenPreloader from "../segments/FullScreenPreloader";
 import MyPost from "../segments/MyPost";
 import {colors} from "../../Parts/colors";
-import { HomePostEntity } from '../../BLL/entity/HomePostEntity';
 
 type IProps = {
     ownerId: string;
@@ -35,22 +34,47 @@ type IProps = {
 const UserProfileComponent = (state: IProps) => {
 
     const renderPosts = () => {
+        const items = state.user?.userPosts;
+        const result = [];
         if (!Array.isArray(state.user?.userPosts) || state.user?.isPrivate) {
-            return
+            return []
         }
-        return state.user?.userPosts?.map((el: HomePostEntity, index: number) => {
-            return <MyPost onCommendPress={state.onCommendPress} onLikePress={state.onLikePress} entity={el} isMe={state.isMe} index={index} key={index} />;
-        });
+        for (let i = items.length; i >= 0; i--) {
+            const item = items[i];
+            if (!item) {
+                continue;
+            }
+            result.push(
+                <React.Fragment key={i}>
+                    <MyPost
+                        makeRequest={() => {}}
+                        onRepostPress={() => {}}
+                        onCommendPress={state.onCommendPress}
+                        onLikePress={state.onLikePress}
+                        entity={item}
+                        isMe={state.isMe}
+                        index={i}
+                        key={i}
+                    />
+                </React.Fragment>);
+        }
+        return result;
     };
 
-    return state?.user !== void 0 && state?.user !== null && state?.user?.userData  ? (
+
+
+    return state?.user && state?.user?.userData  ? (
+    <View style={{height: DEVICE_HEIGHT}}>
         <ScrollView style={[StylesOne.screenContainer, MP.ph25]} refreshControl={<RefreshControl refreshing={state.refresh} onRefresh={state.makeRequest} />}>
             <View style={[StylesOne.w100]}>
                 <View style={[StylesOne.flex_row, StylesOne.flex_jc_sb, StylesOne.flex_ai_c, MP.mv20]}>
                     <TouchableOpacity onPress={state.onBackBtn} style={StylesOne.image24}>
                         <Image style={[StylesOne.wh100, StylesOne.rm_c, St.blackArrow]} source={images.arrowLeft} />
                     </TouchableOpacity>
-                    <View><Image source={images.logo} style={[StylesOne.image40, { tintColor: 'black' }]} /><Text style={St.ownerTextWithoutOffsets}>{state.user.userData?.username}</Text></View>
+                    <View style={[StylesOne.flex_column, StylesOne.flex_jc_sb, StylesOne.flex_ai_c]}>
+                        <Image source={images.logo} style={[StylesOne.image40, { tintColor: 'black' }]} />
+                        <Text style={St.ownerTextWithoutOffsets}>{state.user.userData?.username}</Text>
+                    </View>
                     <View />
                 </View>
             </View>
@@ -106,10 +130,11 @@ const UserProfileComponent = (state: IProps) => {
                     </TouchableOpacity>
                 </View>
             </View>
-            <ScrollView showsVerticalScrollIndicator={false} style={[St.postListStyles]} contentContainerStyle={St.listContainer}>
+            <View style={[St.postListStyles]}>
                 {renderPosts()}
-            </ScrollView>
+            </View>
         </ScrollView>
+    </View>
     ) : (
         <ScrollView
             contentContainerStyle={[StylesOne.screenContainer, MP.ph25]}

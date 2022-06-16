@@ -39,7 +39,7 @@ export const StylesFour = StyleSheet.create({
   },
   myNewsLine_avatar: {
     width: mockupWidthToDP(50),
-    height: mockupHeightToDP(50),
+    height: mockupWidthToDP(50),
     borderRadius: 15,
   },
   myNewsLine_img: {

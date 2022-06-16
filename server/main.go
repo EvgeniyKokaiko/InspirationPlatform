@@ -11,6 +11,7 @@ import (
 )
 
 func main() {
+	gin.SetMode(gin.ReleaseMode)
 	server := gin.Default()
 	db := database.CreateDB()
 	env.EnvironmenttInit()

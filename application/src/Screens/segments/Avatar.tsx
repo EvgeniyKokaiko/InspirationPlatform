@@ -16,7 +16,6 @@ type IProps = {
 type IState = {
     isLoading: boolean;
 };
-//peredelati na norm component
 const Avatar: React.FC<IProps> = (props: IProps) => {
     const [getState, setState] = useState<IState>({
         isLoading: false,

@@ -135,8 +135,8 @@ android {
         applicationId "com.inpirplat"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 3
-        versionName "2.2"
+        versionCode 4
+        versionName "2.3"
     }
     splits {
         abi {

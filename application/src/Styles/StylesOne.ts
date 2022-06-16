@@ -321,6 +321,18 @@ export const StylesOne = StyleSheet.create({
     height: mockupWidthToDP(200),
   },
 
+  whiteColor: {
+    color: colors.White,
+  },
+
+
+  AboutText: {
+    color: colors.White,
+    textAlign: 'center',
+    fontSize: fontSizeDP(17),
+    fontFamily: 'SFProDisplay-Regular'
+  },
+
   whc_img100: {
     width: '100%',
     height: '100%',
@@ -435,4 +447,12 @@ export const StylesOne = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.declineColor
   },
+
+  post_date: {
+    marginTop: mockupHeightToDP(10),
+    paddingRight: mockupWidthToDP(20),
+    textAlign: 'right',
+    fontSize: fontSizeDP(9),
+    fontFamily: 'SFProDisplay-Regular'
+}
 });

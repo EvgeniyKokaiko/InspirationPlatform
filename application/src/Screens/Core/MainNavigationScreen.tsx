@@ -25,6 +25,7 @@ import FollowingListContainer from '../Controllers/FollowingListContainer';
 import { CommentListContainer } from '../Controllers/CommentListContainer';
 import RegisterComponent from '../RegisterComponent';
 import { NotificationContainer } from '../Controllers/NotificationContainer';
+import {AboutUserComponent} from "../AboutUserComponent";
 
 interface IProps {}
 
@@ -47,6 +48,7 @@ export enum StackScreens {
   Manage = 'ManageAccountComponent',
   Following = 'FollowingListComponent',
   Comments = 'CommentListComponent',
+  AboutUser = 'AboutUserComponent',
 }
 
 export const noGoBack = () => {
@@ -102,6 +104,7 @@ const MainNavigationScreen: React.FC = (props: IProps) => {
     { name: StackScreens.Manage, component: ManageAccountContainer, options: { headerShown: false } },
     { name: StackScreens.Following, component: FollowingListContainer, options: { headerShown: false } },
     { name: StackScreens.Comments, component: CommentListContainer, options: { headerShown: false } },
+    { name: StackScreens.AboutUser, component: AboutUserComponent, options: { headerShown: false } },
     //Main screens
     { name: StackScreens.U2UChat, component: U2UChatContainer, options: { headerShown: false } },
     { name: StackScreens.PostDetails, component: ExpandedPostContainer, options: { headerShown: false } },

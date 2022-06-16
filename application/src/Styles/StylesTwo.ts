@@ -85,16 +85,16 @@ export const St = StyleSheet.create({
   },
   postListStyles: {
     width: '100%',
-    height: DEVICE_HEIGHT / 1.7,
     backgroundColor: colors.WhiteAlice,
     marginTop: mockupHeightToDP(20),
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
     borderRadius: 30,
-    flexDirection: 'column',
+    flexDirection: 'row',
     flexWrap: 'wrap',
     padding: 0,
-    paddingTop: mockupHeightToDP(15),
+    paddingTop: mockupHeightToDP(10),
+    paddingBottom: mockupHeightToDP(80),
   },
 
   zIndex2: {

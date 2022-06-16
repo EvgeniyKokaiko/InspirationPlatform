@@ -33,6 +33,7 @@ const SettingsComponent: React.FC<IProps> = (props: IProps) => {
             ManageAccount: StackScreens.Manage,
             RequestList: StackScreens.RequestList,
             Pustishka: StackScreens.EditProfile,
+            About: StackScreens.AboutUser,
     }
 
 
@@ -70,23 +71,25 @@ const SettingsComponent: React.FC<IProps> = (props: IProps) => {
             </View>
             <View style={[StylesOne.flex_column, StylesOne.flex_jc_sb, MP.pb15, StylesOne.h80]}>
             <View>
-                {/*Смена картинки, имени(но не юзернейма, он несменный), дескрипшина,*/}
+                {/*зміна картинки, імені(но не юзернейма, він незмінний), про себе, і т.д*/}
                 <ListItem navigation={props.navigation} title={"Manage account"} icon={images.avatar_mini} route={routes.ManageAccount} />
-                {/*Управление уведомлениями*/}
-                <ListItem navigation={props.navigation} title={"Notifications"} icon={images.notifications} route={routes.Pustishka} />
-                {/*Смена пароля, логина и т.д*/}
-                <ListItem navigation={props.navigation} title={"Security"} icon={images.security} route={routes.Pustishka} />
-                {/*Инвайты с кьюаром*/}
-                <ListItem navigation={props.navigation} title={"Invitation"} icon={images.invite} route={routes.Pustishka} />
-                {/*Про приложение*/}
-                <ListItem navigation={props.navigation} title={"About"} icon={images.about} route={routes.Pustishka} />
+                {/*Налаштування сповіщень*/}
+                {/*<ListItem navigation={props.navigation} title={"Notifications"} icon={images.notifications} route={routes.Pustishka} />*/}
+                {/*Зміна пароля, логіна и т.д*/}
+                {/*<ListItem navigation={props.navigation} title={"Security"} icon={images.security} route={routes.Pustishka} />*/}
+                {/*Інвайти с кьюаром*/}
+                {/*<ListItem navigation={props.navigation} title={"Invitation"} icon={images.invite} route={routes.Pustishka} />*/}
 
                 <ListItem isDisabled={checkIsPrivate()} navigation={props.navigation} title={"Requests"} icon={images.circleArrow} route={routes.RequestList} />
+
+                {/*Про додаток*/}
+                <ListItem navigation={props.navigation} title={"About"} icon={images.about} route={routes.About} />
+
             </View>
             <View>
-                {/*Удаление аккаунта*/}
-                <ListItem navigation={props.navigation} title={"Hazard"} icon={images.hazard} route={routes.Pustishka} />
-                {/*Выход*/}
+                {/*Видалення аккаунта*/}
+                {/*<ListItem navigation={props.navigation} title={"Hazard"} icon={images.hazard} route={routes.Pustishka} />*/}
+                {/*Вихід*/}
                 <LogoutSegment title={"Log Out"} icon={images.logout} onPress={onLogoutPress} />
             </View>
             </View>

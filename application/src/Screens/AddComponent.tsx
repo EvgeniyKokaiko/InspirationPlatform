@@ -50,7 +50,7 @@ const AddComponent: React.FC<IProps> = (props) => {
   };
 
   const openImagePicker = async () => {
-    await launchImageLibrary({ mediaType: 'photo', selectionLimit: 10, quality: 1 }, (response) => {
+    await launchImageLibrary({ mediaType: 'photo', selectionLimit: 10, quality: 1, maxWidth: 1536, maxHeight: 1536 }, (response) => {
       if (response.didCancel) {
         return Alert.alert('Oops,', 'Something went wrong');
       }
