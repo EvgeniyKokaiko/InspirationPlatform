@@ -12,7 +12,7 @@ type IProps = {
 };
 
 //Constants
-const windowWidth = Dimensions.get('window').width - mockupWidthToDP(40);
+const windowWidth = Dimensions.get('window').width - mockupWidthToDP(10);
 let IMAGES_PER_ROW = 3;
 
 const UserMenuPost: React.FC<IProps> = (props: IProps): JSX.Element => {
@@ -32,10 +32,11 @@ const UserMenuPost: React.FC<IProps> = (props: IProps): JSX.Element => {
     <TouchableOpacity
       onPress={onPostPress}
       style={{
-        width: props.isExpanded ? calculatedSize() * 2 + 2 : calculatedSize(),
+        width: props.isExpanded ? calculatedSize() : calculatedSize(),
         aspectRatio: 4 / 4,
         marginRight: mockupWidthToDP(2),
         marginBottom: mockupHeightToDP(2),
+        flex: props.isExpanded ? 1 : 1/3,
       }}
     >
       <Image style={[StylesOne.wh100]} source={{ uri: `${dataPath}?${new Date().getHours()}` }} />

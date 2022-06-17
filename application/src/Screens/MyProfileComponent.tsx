@@ -107,7 +107,6 @@ const MyProfileComponent: React.FC<IProps> = (props: IProps) => {
                 onLikePress={onLikePress}
                 entity={item}
                 setReload={setReload}
-                reload={getState.reload}
                 isMe={isMe}
                 index={i} />
          </React.Fragment>);

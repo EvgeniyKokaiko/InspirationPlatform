@@ -39,7 +39,6 @@ type myPostProps = {
   isMe: boolean;
   onCommendPress(hash: string): void;
   onRepostPress(): void;
-  reload?: number;
   setReload?(value: number): void;
   onLikePress?(post_hash: string, owner: string): void;
   entity: HomePostEntity
@@ -50,11 +49,7 @@ type IState = {
   showModal: boolean;
   index: number;
   longPressed: boolean;
-  carouselData: {
-    data_count: number;
-    owner: string;
-    post_hash: string;
-  };
+
   labelText: string;
   refreshOrUpdate: number;
 };
@@ -62,15 +57,15 @@ type IState = {
 const MyPost = (props: myPostProps) => {
   const dispatch = useDispatch();
   const dataPath = `http://${apiURL}/storage/${props.entity.owner}/posts/${props.entity.image.length > 0 && props.entity.data_count > 0 ? props.entity.image : props.entity.video}/`;
+  const postData = {
+    data_count: props.entity.data_count,
+        owner: props.entity.owner,
+        post_hash: props.entity.image,
+  };
   const [getState, setState] = useState<IState>({
     showModal: false,
     index: -1,
     longPressed: false,
-    carouselData: {
-      data_count: props.entity.data_count,
-      owner: props.entity.owner,
-      post_hash: props.entity.image,
-    },
     labelText: `1 of ${props.entity.data_count}`,
     refreshOrUpdate: 0,
   });
@@ -168,7 +163,7 @@ const MyPost = (props: myPostProps) => {
             </TouchableOpacity>}
           </View>
           <View style={[StylesOne.flex1, StylesOne.flexCenter]}>
-            <SingleCarouselComponent reload={props.reload} onMomentumScrollEnd={onMomentumScrollEnd} carouselData={getState.carouselData} />
+            <SingleCarouselComponent onMomentumScrollEnd={onMomentumScrollEnd} carouselData={postData} />
           </View>
           <View>
             <Text style={[StylesOne.post_date]}>{new Date(props.entity.date_of_creation).toLocaleDateString("en-US", dateOptions)} at {new Date(props.entity.date_of_creation).toLocaleTimeString("en-GB")}</Text>

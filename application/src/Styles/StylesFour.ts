@@ -48,6 +48,13 @@ export const StylesFour = StyleSheet.create({
     zIndex: 999,
     resizeMode: 'stretch',
   },
+  profilePost_img: {
+    width: '100%',
+    height: mockupHeightToDP(500),
+    zIndex: 999,
+    resizeMode: 'stretch',
+  },
+
   manageAcc_photoBlur: {
     width: '100%',
     height: '100%',

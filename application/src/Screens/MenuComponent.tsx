@@ -4,7 +4,7 @@ import { StylesOne } from '../Styles/StylesOne';
 import { MP } from '../Styles/MP';
 import Input from './segments/Input';
 import UserMenuPost from './segments/UserMenuPost';
-import { mockupHeightToDP } from '../Parts/utils';
+import {mockupHeightToDP, mockupWidthToDP} from '../Parts/utils';
 import { SThree } from '../Styles/StylesThree';
 import { Post } from '../Types/Models';
 import { menuState } from './Controllers/MenuContainer';
@@ -19,19 +19,19 @@ type IProps = {
 };
 
 const MenuComponent: React.FC<IProps> = (state) => {
-  const renderPosts = () => {
-    const expandedIndex = 8;
-    return (state.menuState.data.length < 0 ? [] : state.menuState.data).map((post, index) => {
-      const onPostPress = () => state.onPostPress(post.image)
+
+
+  const renderPosts = ({item, index}: {item: Post, index: number}) => {
+    const expandedIndex = 20;
+      const onPostPress = () => state.onPostPress(item.image)
       return (
         <UserMenuPost
-          key={`${post.image}${index}`}
+          key={`${item.image}${index}`}
           onPostPress={onPostPress}
-          postData={post}
+          postData={item}
           isExpanded={!(index % expandedIndex)}
         />
       );
-    });
   };
 
   return (
@@ -39,14 +39,18 @@ const MenuComponent: React.FC<IProps> = (state) => {
       <View>
         <SearchUserModal />
       </View>
-      <ScrollView
+      <FlatList
         onScroll={(e) => state.onScroll(e)}
         refreshControl={<RefreshControl refreshing={state.menuState.refresh} onRefresh={state.onRefresh} />}
         contentContainerStyle={SThree.menuPostsContainer}
-        style={MP.ph15}
-      >
-        {renderPosts()}
-      </ScrollView>
+        style={{paddingRight: mockupWidthToDP(2)}}
+        data={state.menuState.data}
+        renderItem={renderPosts}
+        columnWrapperStyle={{flexWrap: 'wrap'}}
+        keyExtractor={(item, index) => `${index}`}
+        numColumns={3}
+
+      />
     </View>
   );
 };

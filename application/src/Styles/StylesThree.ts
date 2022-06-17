@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { fontSizeDP, mockupHeightToDP, mockupWidthToDP } from '../Parts/utils';
+import {DEVICE_WIDTH, fontSizeDP, mockupHeightToDP, mockupWidthToDP} from '../Parts/utils';
 import { colors } from '../Parts/colors';
 
 export const SThree = StyleSheet.create({
@@ -33,8 +33,7 @@ export const SThree = StyleSheet.create({
 
   //Menu
   menuPostsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    width: DEVICE_WIDTH,
     paddingBottom: mockupHeightToDP(100),
   },
 });
