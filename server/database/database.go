@@ -630,7 +630,6 @@ func (db *DB) GetPostWithLikesByHash(postHash string, initiator string) (map[str
 	return dbData, nil
 }
 
-// переписати, і вертати каунтер а не обьект с каунтером (дерьмова типізація)!
 func (db *DB) GetLikesByHash(post_hash string, initiator string) (map[string]any, error) {
 	var response = map[string]any{}
 	var likesData int64 = 0
