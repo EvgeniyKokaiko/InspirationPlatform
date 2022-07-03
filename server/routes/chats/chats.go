@@ -1,15 +1,14 @@
 package chats
 
 import (
+	"firebase.google.com/go/messaging"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"net/http"
 	"server/database"
 	typedDB "server/types"
 	"server/utils"
 	"strconv"
-
-	"firebase.google.com/go/messaging"
-	"github.com/gin-gonic/gin"
 )
 
 func Chats(route *gin.Engine, db *database.DB, firebaseApp *messaging.Client, hub Hub) {

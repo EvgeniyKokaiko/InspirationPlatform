@@ -1,13 +1,23 @@
-package handlers
+package chats
 
 import (
 	"fmt"
 	"net/http"
-	"server/models/mutable"
-	"server/routes/chats"
+	"server/database"
+	"server/models"
 	"server/utils"
 	"time"
 )
+
+type ClientInterface interface {
+}
+
+type SocketHandler struct {
+	SocketMessage *SocketMessage
+	Client        *SocketClient
+	Db            *database.DB
+	SocketEvent   *models.SocketEvent
+}
 
 const (
 	sendMessage         = "SendMessage"
@@ -19,7 +29,7 @@ const (
 	removeBunchMessages = "RemoveBunchMessages"
 )
 
-func SendMessageHandler(h mutable.SocketHandler) {
+func SendMessageHandler(h SocketHandler) {
 	message, error := h.Db.AddMessage(h.SocketEvent, h.Client.Username)
 	if error != nil {
 		fmt.Println(error)
@@ -54,7 +64,7 @@ func SendMessageHandler(h mutable.SocketHandler) {
 	}
 }
 
-func SendHandlerByUser(messageType int, client *chats.SocketClient, message any, threadError chan bool) {
+func SendHandlerByUser(messageType int, client *SocketClient, message any, threadError chan bool) {
 	defer close(threadError)
 	body, creatingBodyError := utils.CreateSocketBody(sendMessage, message, true)
 	if err := client.WriteMessage(messageType, body); err != nil || creatingBodyError != nil {
@@ -63,7 +73,7 @@ func SendHandlerByUser(messageType int, client *chats.SocketClient, message any,
 	threadError <- false
 }
 
-func ReadAllMessagesHandler(h mutable.SocketHandler) {
+func ReadAllMessagesHandler(h SocketHandler) {
 	threadError := make(chan bool)
 	for _, client := range h.Client.Hub[h.Client.ChatHash] {
 		if h.Client.UUID == client.UUID {
@@ -100,7 +110,7 @@ func ReadAllMessagesHandler(h mutable.SocketHandler) {
 	}
 }
 
-func DeleteMessageHandler(h mutable.SocketHandler) {
+func DeleteMessageHandler(h SocketHandler) {
 	//response := models.SocketEvent{}
 	//err := json.Unmarshal(h.Message, &response)
 	//if err != nil {
@@ -131,7 +141,7 @@ func DeleteMessageHandler(h mutable.SocketHandler) {
 	//}
 }
 
-func DeleteMessageBunchHandler(h mutable.SocketHandler) {
+func DeleteMessageBunchHandler(h SocketHandler) {
 	//response := models.SocketEvent{}
 	//err := json.Unmarshal(h.Message, &response)
 	//if err != nil {

@@ -499,21 +499,22 @@ func (db *DB) SetUserParam(param string, value interface{}, username string) (bo
 }
 
 func (db *DB) AddMessage(data *models.SocketEvent, owner string) (models.ChatData, error) {
+	set := data.Data.(map[string]any)
 	newMessage := models.ChatData{
 		Sender:       owner,
-		Companion:    data.Data["companion"].(string),
+		Companion:    set["companion"].(string),
 		CreatedAt:    time.Now().UnixMilli(),
-		PlainMessage: data.Data["plain_message"].(string),
+		PlainMessage: set["plain_message"].(string),
 		Status:       2,
 		Type:         0,
-		MessageHash:  data.Data["message_hash"].(string),
+		MessageHash:  set["message_hash"].(string),
 	}
 	if dbMessageResponse := db.database.Table(typedDB.TABLES.USERToUSERChat).Create(&newMessage); dbMessageResponse.Error != nil {
 		return models.ChatData{}, errors.New("ERROR! On Message Creating")
 	}
 	dataSet := PushDataSet{
 		wg:                &sync.WaitGroup{},
-		owner:             data.Data["companion"].(string),
+		owner:             set["companion"].(string),
 		subscriber:        owner,
 		channel:           make(chan bool),
 		notificationTitle: fmt.Sprintf(NewMessage, owner),

@@ -4,13 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	uuid2 "github.com/google/uuid"
+	"github.com/gorilla/websocket"
 	"net/http"
 	"server/database"
-	"server/handlers"
 	"server/models"
-	"server/models/mutable"
-
-	"github.com/gorilla/websocket"
 )
 
 var upgrader = websocket.Upgrader{
@@ -74,7 +71,7 @@ func SocketEmitter(client *SocketClient, socketMessage SocketMessage, db *databa
 		Event: eventName,
 		Data:  data.(map[string]any),
 	}
-	handler := mutable.SocketHandler{
+	handler := SocketHandler{
 		SocketMessage: &socketMessage,
 		Client:        client,
 		Db:            db,
@@ -82,19 +79,19 @@ func SocketEmitter(client *SocketClient, socketMessage SocketMessage, db *databa
 	}
 	switch eventName {
 	case "SendMessage":
-		handlers.SendMessageHandler(handler)
+		SendMessageHandler(handler)
 		break
 	case "Connect":
 		fmt.Println("Connected!")
 	case "ReadAllMessages":
 		fmt.Println("read all messages sf[olewokfoke")
-		handlers.ReadAllMessagesHandler(handler)
+		ReadAllMessagesHandler(handler)
 		break
 	case "RemoveOneMessage":
-		handlers.DeleteMessageHandler(handler)
+		DeleteMessageHandler(handler)
 		break
 	case "RemoveBunchMessages":
-		handlers.DeleteMessageBunchHandler(handler)
+		DeleteMessageBunchHandler(handler)
 		break
 	default:
 		fmt.Println("default")
