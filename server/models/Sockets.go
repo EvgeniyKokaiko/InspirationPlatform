@@ -1,20 +1,8 @@
 package models
 
-import "github.com/gorilla/websocket"
-
-type SocketConnection struct {
-	Username  string
-	Connector *websocket.Conn
-}
-
-type SocketMessage struct {
-	Event string         `json:"event"`
-	Data  FromClientData `json:"data"`
-}
-
 type SocketEvent struct {
-	Event string         `json:"event"`
-	Data  map[string]any `json:"data"`
+	Event string `json:"event"`
+	Data  any    `json:"data"`
 }
 
 type FromClientData struct {

@@ -4,8 +4,8 @@ import { Action, ActionTypes } from '../types/ActionTypes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BaseAction } from './BaseAction';
 //90 - 92 = MAC OS
-export const apiURL = 'ec2-3-69-148-251.eu-central-1.compute.amazonaws.com:8080';
-
+// export const apiURL = 'ec2-3-69-148-251.eu-central-1.compute.amazonaws.com:8080';
+export const apiURL = '192.168.1.92:8080'
 interface ActionMethods {
   getMe(): (dispatch: Dispatch<Action>) => {};
   getMyPosts(): (dispatch: Dispatch<Action>) => {};

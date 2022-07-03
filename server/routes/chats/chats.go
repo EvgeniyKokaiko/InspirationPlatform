@@ -12,7 +12,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Chats(route *gin.Engine, db *database.DB, firebaseApp *messaging.Client) {
+func Chats(route *gin.Engine, db *database.DB, firebaseApp *messaging.Client, hub Hub) {
 	router := route.Group("/messaging")
 	{
 		router.GET("/get-messages/:userName", func(c *gin.Context) {
@@ -44,7 +44,7 @@ func Chats(route *gin.Engine, db *database.DB, firebaseApp *messaging.Client) {
 			if err != nil {
 				c.JSON(http.StatusConflict, typedDB.GiveResponse(http.StatusConflict, "Socket Conflicts"))
 			}
-			handleWS(c.Writer, *c.Request, nil, dataSet)
+			runWebsocket(c.Writer, *c.Request, nil, dataSet, hub)
 		})
 	}
 }

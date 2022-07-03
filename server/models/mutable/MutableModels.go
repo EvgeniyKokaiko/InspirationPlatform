@@ -3,13 +3,12 @@ package mutable
 import (
 	"server/database"
 	"server/models"
+	"server/routes/chats"
 )
 
 type SocketHandler struct {
-	MT int
-	Message []byte
-	User    *models.SocketConnection
-	Db      *database.DB
-	Owner 	string
-	Me 		bool
+	SocketMessage *chats.SocketMessage
+	Client        *chats.SocketClient
+	Db            *database.DB
+	SocketEvent   *models.SocketEvent
 }

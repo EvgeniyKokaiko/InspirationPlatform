@@ -26,7 +26,8 @@ func main() {
 	routes.Comments(server, db, fApp)
 	routes.Notifications(server, db, fApp)
 	routes.Firebase(server, db, fApp)
-	chats.Chats(server, db, fApp)
+	hub := chats.Hub{}
+	chats.Chats(server, db, fApp, hub)
 	StaticServer(server)
 	database.InitTables(db)
 	server.Use(CORSMiddleware())
