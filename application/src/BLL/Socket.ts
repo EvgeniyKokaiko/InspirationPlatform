@@ -14,12 +14,12 @@ export type SocketData = {
   data: any;
   message?: any;
 };
-
+//'ws://ec2-3-69-148-251.eu-central-1.compute.amazonaws.com:8080/messaging'
 class Socket {
   private readonly _cHash: string;
   private _socket: WebSocket;
   private _makeDispatch: Function;
-  private readonly serverURL: string = 'ws://ec2-3-69-148-251.eu-central-1.compute.amazonaws.com:8080/messaging';
+  private readonly serverURL: string = 'ws://192.168.1.90:8080/messaging';
   private readonly _handlers: SocketHandlers;
   private _userName: string;
   constructor(cHash: string, token: string | null, dispatch: Function, userName: string) {

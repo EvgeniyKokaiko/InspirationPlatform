@@ -40,7 +40,7 @@ func runWebsocket(w http.ResponseWriter, r http.Request, h http.Header, dataSet 
 	}
 	defer socket.Close()
 	hub.AddClient(&Client, ChatHash)
-	go Client.ReadSocketStream(dataSet["db"].(*database.DB))
+	Client.ReadSocketStream(dataSet["db"].(*database.DB))
 }
 
 func (ownClient *SocketClient) ReadSocketStream(db *database.DB) {
