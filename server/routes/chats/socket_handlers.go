@@ -1,12 +1,12 @@
 package chats
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"server/database"
 	"server/models"
 	"server/utils"
-	"time"
 )
 
 type ClientInterface interface {
@@ -42,33 +42,34 @@ func SendMessageHandler(h SocketHandler) {
 		"username":   h.Client.Username,
 		"message":    message,
 	}
-
+	bytesMessage, _ := json.Marshal(&ownResponse)
 	threadError := make(chan bool)
 	for _, client := range h.Client.Hub[h.Client.ChatHash] {
+		fmt.Println("dasdasdsa", h.Client.Hub[h.Client.ChatHash], client.UUID, client.Username)
+		fmt.Println(h.Client.UUID == client.UUID, "uuid checks")
 		if h.Client.UUID == client.UUID {
-			err := h.Client.WriteMessage(h.SocketMessage.MessageType, ownResponse)
+			fmt.Println("daunito")
+			err := h.Client.WriteMessage(h.SocketMessage.MessageType, bytesMessage)
 			if err != nil {
 				panic(err)
 			}
 		} else {
-			for i := 0; i <= 3; i++ {
-				go SendHandlerByUser(h.SocketMessage.MessageType, client, message, threadError)
-				isError := <-threadError
-				if isError {
-					time.Sleep(time.Second * 5)
-				} else {
-					break
-				}
+			fmt.Println("nigger zxc", client.Username)
+			go SendHandlerByUser(sendMessage, h.SocketMessage.MessageType, client, message, threadError)
+			isError := <-threadError
+			if isError {
+			} else {
+				break
 			}
 		}
 	}
 }
 
-func SendHandlerByUser(messageType int, client *SocketClient, message any, threadError chan bool) {
-	defer close(threadError)
-	body, creatingBodyError := utils.CreateSocketBody(sendMessage, message, true)
-	if err := client.WriteMessage(messageType, body); err != nil || creatingBodyError != nil {
+func SendHandlerByUser(eventName string, messageType int, client *SocketClient, message any, threadError chan bool) {
+	body, creatingBodyError := utils.CreateSocketBody(eventName, message, true)
+	if err := client.WriteMessage(messageType, body.([]byte)); err != nil || creatingBodyError != nil {
 		threadError <- true
+		return
 	}
 	threadError <- false
 }
@@ -77,34 +78,28 @@ func ReadAllMessagesHandler(h SocketHandler) {
 	threadError := make(chan bool)
 	for _, client := range h.Client.Hub[h.Client.ChatHash] {
 		if h.Client.UUID == client.UUID {
-			statusCode, err := h.Db.UpdateMessageStatus(h.SocketEvent.Data.(string), h.Client.Username, 3)
-			body, err := utils.CreateSocketBody(readAllMessage, map[string]any{
+			statusCode, err := h.Db.UpdateMessageStatus(h.SocketEvent.Data, h.Client.Username, 3)
+			body := map[string]any{
 				"statusCode":    statusCode,
 				"statusMessage": err,
 				"type":          1,
-			}, true)
-			go SendHandlerByUser(h.SocketMessage.MessageType, h.Client, body, threadError)
+			}
+			go SendHandlerByUser(readAllMessage, h.SocketMessage.MessageType, h.Client, body, threadError)
 			isError := <-threadError
 			if isError {
 				fmt.Println("ReadAllMessagesHandler ex")
 			}
 		} else {
-			for i := 0; i <= 3; i++ {
-				body, err := utils.CreateSocketBody("ReadAllMessages", map[string]any{
-					"statusCode":    200,
-					"type":          0,
-					"statusMessage": nil,
-				}, true)
-				if err != nil {
-					panic("Error! ReadAllMessagesHandler ex")
-				}
-				go SendHandlerByUser(h.SocketMessage.MessageType, client, body, threadError)
-				isError := <-threadError
-				if isError {
-					time.Sleep(time.Second * 5)
-				} else {
-					break
-				}
+			body := map[string]any{
+				"statusCode":    200,
+				"type":          0,
+				"statusMessage": nil,
+			}
+			go SendHandlerByUser(readAllMessage, h.SocketMessage.MessageType, client, body, threadError)
+			isError := <-threadError
+			if isError {
+			} else {
+				break
 			}
 		}
 	}

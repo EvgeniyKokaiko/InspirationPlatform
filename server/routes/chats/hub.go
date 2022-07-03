@@ -1,7 +1,6 @@
 package chats
 
 import (
-	"encoding/json"
 	"github.com/gorilla/websocket"
 )
 
@@ -47,12 +46,8 @@ func GetClientByUUID(a []*SocketClient, x string) *SocketClient {
 	return nil
 }
 
-func (ownClient *SocketClient) WriteMessage(messageType int, data any) error {
-	byteSlices, err := json.Marshal(data)
-	if err != nil {
-		return err
-	}
-	sendError := ownClient.Connector.WriteMessage(messageType, byteSlices)
+func (ownClient *SocketClient) WriteMessage(messageType int, data []byte) error {
+	sendError := ownClient.Connector.WriteMessage(messageType, data)
 	if sendError != nil {
 		return sendError
 	}

@@ -567,7 +567,7 @@ func (db *DB) GetMessages(owner string, to string, page int, init bool) (map[str
 	return response, nil
 }
 
-func (db *DB) UpdateMessageStatus(sender string, companion string, status int) (int, error) {
+func (db *DB) UpdateMessageStatus(sender any, companion string, status int) (int, error) {
 	if updateMessageStatusResponse := db.database.Table(typedDB.TABLES.USERToUSERChat).
 		Where("sender = ? AND companion = ?", sender, companion).
 		Update("status", status); updateMessageStatusResponse.Error != nil {

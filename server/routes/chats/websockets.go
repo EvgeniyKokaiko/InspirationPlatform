@@ -38,8 +38,8 @@ func runWebsocket(w http.ResponseWriter, r http.Request, h http.Header, dataSet 
 		UUID:      uuid.String(),
 		ChatHash:  ChatHash,
 	}
-	defer socket.Close()
 	hub.AddClient(&Client, ChatHash)
+	fmt.Println("clients", hub)
 	Client.ReadSocketStream(dataSet["db"].(*database.DB))
 }
 
@@ -51,12 +51,16 @@ func (ownClient *SocketClient) ReadSocketStream(db *database.DB) {
 			MessageType: mT,
 			Message:     message,
 		}
+		fmt.Println("asd")
 		if err != nil {
-			ownClient.Hub.RemoveClient(ownClient.UUID, ownClient.ChatHash)
+			fmt.Println("LEAVED", ownClient.Username)
+			ownClient.Hub[ownClient.ChatHash] = ownClient.Hub.RemoveClient(ownClient.UUID, ownClient.ChatHash)
+			return
 		}
 		errorEmitter := SocketEmitter(ownClient, socketMessage, db)
 		if errorEmitter != nil {
-			ownClient.Hub.RemoveClient(ownClient.UUID, ownClient.ChatHash)
+			ownClient.Hub[ownClient.ChatHash] = ownClient.Hub.RemoveClient(ownClient.UUID, ownClient.ChatHash)
+			return
 		}
 	}
 }
@@ -66,10 +70,10 @@ func (ownClient *SocketClient) ReadSocketStream(db *database.DB) {
 // ----------------EMITTER----------------------- //
 
 func SocketEmitter(client *SocketClient, socketMessage SocketMessage, db *database.DB) error {
-	eventName, data := socketMessage.ParseSocketMessage()
+	event := socketMessage.ParseSocketMessage()
 	parsedSocketMessage := models.SocketEvent{
-		Event: eventName,
-		Data:  data.(map[string]any),
+		Event: event["event"].(string),
+		Data:  event["data"],
 	}
 	handler := SocketHandler{
 		SocketMessage: &socketMessage,
@@ -77,7 +81,7 @@ func SocketEmitter(client *SocketClient, socketMessage SocketMessage, db *databa
 		Db:            db,
 		SocketEvent:   &parsedSocketMessage,
 	}
-	switch eventName {
+	switch event["event"].(string) {
 	case "SendMessage":
 		SendMessageHandler(handler)
 		break
@@ -99,11 +103,12 @@ func SocketEmitter(client *SocketClient, socketMessage SocketMessage, db *databa
 	return nil
 }
 
-func (message SocketMessage) ParseSocketMessage() (string, any) {
+func (message SocketMessage) ParseSocketMessage() map[string]any {
 	result := map[string]any{}
 	err := json.Unmarshal(message.Message, &result)
 	if err != nil {
-		return "default", map[string]any{}
+		return map[string]any{}
 	}
-	return result["event"].(string), result["data"]
+	fmt.Println("res", result)
+	return result
 }
