@@ -13,7 +13,6 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-// -------------------DEFINES---------------------- //
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
@@ -27,7 +26,6 @@ type SocketMessage struct {
 	Message     []byte
 }
 
-// ------------------SOCKET HANDLER-------------------------- //
 func runWebsocket(w http.ResponseWriter, r http.Request, h http.Header, dataSet map[string]any, hub Hub) {
 	socket, error := upgrader.Upgrade(w, &r, h)
 	if error != nil {
