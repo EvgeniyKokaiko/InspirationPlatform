@@ -45,16 +45,12 @@ func SendMessageHandler(h SocketHandler) {
 	bytesMessage, _ := json.Marshal(&ownResponse)
 	threadError := make(chan bool)
 	for _, client := range h.Client.Hub[h.Client.ChatHash] {
-		fmt.Println("dasdasdsa", h.Client.Hub[h.Client.ChatHash], client.UUID, client.Username)
-		fmt.Println(h.Client.UUID == client.UUID, "uuid checks")
 		if h.Client.UUID == client.UUID {
-			fmt.Println("daunito")
 			err := h.Client.WriteMessage(h.SocketMessage.MessageType, bytesMessage)
 			if err != nil {
 				panic(err)
 			}
 		} else {
-			fmt.Println("nigger zxc", client.Username)
 			go SendHandlerByUser(sendMessage, h.SocketMessage.MessageType, client, message, threadError)
 			isError := <-threadError
 			if isError {

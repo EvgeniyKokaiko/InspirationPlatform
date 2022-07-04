@@ -33,7 +33,6 @@ func Chats(route *gin.Engine, db *database.DB, firebaseApp *messaging.Client, hu
 			var cHash = c.Param("cHash")
 			var token = c.Query("token")
 
-			fmt.Println(token, "TT")
 			username, _, err := utils.ParseToken(token)
 			dataSet := map[string]any{
 				"db":       db,

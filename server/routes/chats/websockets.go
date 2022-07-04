@@ -39,7 +39,6 @@ func runWebsocket(w http.ResponseWriter, r http.Request, h http.Header, dataSet 
 		ChatHash:  ChatHash,
 	}
 	hub.AddClient(&Client, ChatHash)
-	fmt.Println("clients", hub)
 	Client.ReadSocketStream(dataSet["db"].(*database.DB))
 }
 
@@ -51,9 +50,7 @@ func (ownClient *SocketClient) ReadSocketStream(db *database.DB) {
 			MessageType: mT,
 			Message:     message,
 		}
-		fmt.Println("asd")
 		if err != nil {
-			fmt.Println("LEAVED", ownClient.Username)
 			ownClient.Hub[ownClient.ChatHash] = ownClient.Hub.RemoveClient(ownClient.UUID, ownClient.ChatHash)
 			return
 		}
@@ -109,6 +106,5 @@ func (message SocketMessage) ParseSocketMessage() map[string]any {
 	if err != nil {
 		return map[string]any{}
 	}
-	fmt.Println("res", result)
 	return result
 }
